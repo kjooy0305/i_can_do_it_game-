@@ -1,0 +1,578 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>끝에 도달하는 이야기 시안</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=JetBrains+Mono:wght@500;800&display=swap" rel="stylesheet">
+<style>
+/* 시안 모음. 위에 화면 고르는 줄, 가운데에 폰 비율(390×844) 한 대, 또는 전체 보기에서는 여러 대를 격자로. 흑백 + 예외색 1개. */
+:root{
+  --paper:#fff;--ink:#000;
+  --warn:#fff3a8;  /* 흑백 규칙의 유일한 예외: 임박/주의 */
+  --font-body:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --font-num:"JetBrains Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{background:var(--paper)}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font-body);font-size:14px;line-height:1.45;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 48px}
+.page{max-width:1180px;margin:0 auto;display:grid;gap:16px}
+.head h1{margin:0;font-size:26px;font-weight:900;letter-spacing:-.02em;text-wrap:balance}
+.head p{margin:4px 0 0;max-width:68ch}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.chip{font:inherit;color:var(--ink);background:var(--paper);border:1px solid var(--ink);border-radius:999px;padding:6px 12px;min-height:36px;cursor:pointer}
+.chip[aria-pressed="true"]{border-width:3px;padding:4px 10px;font-weight:700}
+.mode{display:flex;gap:8px;margin-left:auto}
+.chip:focus-visible,.btn:focus-visible,.seg button:focus-visible,.menu-btn:focus-visible,.sq:focus-visible,.cell-b:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.stage-wrap{display:flex;flex-wrap:wrap;gap:28px;justify-content:center;align-items:flex-start}
+figure{margin:0}
+.cell{display:grid;gap:8px;justify-items:center}
+.cell figcaption{font-weight:700}
+.slot{position:relative}
+.phone-scale{transform-origin:top left}
+.note{max-width:68ch;margin:0 auto;text-align:center}
+.legend{display:none;gap:8px;flex-wrap:wrap;justify-content:center}
+.zones .legend{display:flex}
+.legend span{border:3px solid;border-radius:8px;padding:0 8px;font-size:12px;font-weight:700}
+
+/* ===== 폰 ===== */
+.phone{width:390px;height:844px;background:var(--paper);border:2px solid var(--ink);border-radius:38px;display:flex;flex-direction:column;overflow:hidden;position:relative}
+.status{height:30px;display:flex;justify-content:space-between;align-items:center;padding:8px 24px 0;font-family:var(--font-num);font-size:12px;font-weight:800;flex:none}
+.gesture{height:20px;display:flex;justify-content:center;align-items:center;flex:none}
+.gesture i{width:120px;border-top:3px solid var(--ink);border-radius:3px}
+.screen{flex:1;min-height:0;display:flex;flex-direction:column}
+.scroll{flex:1;min-height:0;overflow-y:auto;padding:0 16px 16px}
+.btn{font:inherit;font-weight:700;color:var(--ink);background:var(--paper);border:1.5px solid var(--ink);border-radius:12px;padding:0 12px;min-height:44px;min-width:44px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;text-align:center}
+.btn.primary{border-width:3px}
+.btn.block{width:100%}
+.btn.small{min-height:36px;font-size:13px;padding:0 10px}
+.btn[disabled]{border-style:dashed;cursor:not-allowed}
+.btn[aria-pressed="true"]{border-width:3px}
+.topbar{display:flex;align-items:center;gap:8px;padding:6px 16px 8px;flex:none}
+.topbar h2{margin:0;font-size:18px;font-weight:900;flex:1;letter-spacing:-.01em}
+.sub{font-size:12px}
+.mono{font-family:var(--font-num);font-weight:800}
+.sec{margin:14px 0 4px;font-weight:900;font-size:15px;border-bottom:2px solid var(--ink);padding-bottom:3px;display:flex;justify-content:space-between;align-items:baseline}
+.sec small{font-size:12px;font-weight:500}
+.row2{display:flex;align-items:center;gap:8px;min-height:48px;padding:6px 0;border-bottom:1px solid var(--ink)}
+.row2 .grow{flex:1;min-width:0}
+.row2 .grow b{display:block}
+.row2 small{font-size:12px}
+.tag{display:inline-block;border:1px solid var(--ink);border-radius:6px;padding:0 6px;font-size:11px;font-weight:700;white-space:nowrap}
+.tag.k{background:var(--ink);color:var(--paper)}
+.tag.w{background:var(--warn)}
+.seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:6px}
+.seg button{font:inherit;color:var(--ink);background:var(--paper);border:1px solid var(--ink);border-radius:10px;min-height:40px;cursor:pointer}
+.seg button[aria-pressed="true"]{border-width:3px;font-weight:700}
+.field{display:flex;gap:8px}
+.field input{flex:1;min-width:0;font:inherit;color:var(--ink);background:var(--paper);border:1.5px solid var(--ink);border-radius:10px;padding:0 12px;min-height:44px}
+::placeholder{color:var(--ink);opacity:.55}
+.lockline{border:1.5px dashed var(--ink);border-radius:10px;padding:10px 12px;text-align:center;font-size:13px}
+.toggle{width:46px;height:26px;border:2px solid var(--ink);border-radius:999px;position:relative;flex:none;background:var(--paper)}
+.toggle::after{content:"";position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;border:2px solid var(--ink);background:var(--paper)}
+.toggle.on{background:var(--ink)}
+.toggle.on::after{left:22px}
+.bar2{height:12px;border:2px solid var(--ink);border-radius:999px;overflow:hidden;background:var(--paper)}
+.bar2 i{display:block;height:100%;background:var(--ink)}
+.ph{border:2px solid var(--ink);border-radius:10px;background:
+  linear-gradient(to top right,transparent calc(50% - 1px),var(--ink) 0 calc(50% + 1px),transparent 0),
+  linear-gradient(to bottom right,transparent calc(50% - 1px),var(--ink) 0 calc(50% + 1px),transparent 0);
+  display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px}
+.ph span{background:var(--paper);padding:0 6px}
+
+/* 홈 */
+.home{flex:1;display:flex;flex-direction:column;padding:8px 24px 20px;gap:14px}
+.steps{display:flex;align-items:flex-end;gap:4px;height:64px;margin-top:18px}
+.steps i{flex:1;background:var(--ink);border-radius:3px 3px 0 0}
+.steps i:nth-child(1){height:12%}.steps i:nth-child(2){height:24%}.steps i:nth-child(3){height:38%}.steps i:nth-child(4){height:52%}.steps i:nth-child(5){height:68%}
+.steps i:nth-child(6){height:84%}.steps i:nth-child(7){height:100%;background:var(--paper);border:3px solid var(--ink);display:flex;align-items:center;justify-content:center;font:800 12px var(--font-num)}
+.home h2{margin:6px 0 0;font-size:36px;line-height:1.1;font-weight:900;letter-spacing:-.04em;text-wrap:balance}
+.home .lead{margin:0;font-size:13px}
+.menu{display:grid;gap:10px;margin-top:auto}
+.menu-btn{font:inherit;text-align:left;color:var(--ink);background:var(--paper);border:1.5px solid var(--ink);border-radius:14px;padding:12px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;min-height:62px}
+.menu-btn b{font-size:18px;font-weight:900;display:block}
+.menu-btn small{font-size:12px}
+.menu-btn.first{border-width:3px}
+.foot{text-align:center;font-size:11px;font-family:var(--font-num)}
+
+/* 게임 틀: 와이어프레임 — 위 막대(작은 칸+넓은 칸), 굵은 선, 가운데 무대, 좌우 얇은 레일, 아래 큰 칸 */
+.game{flex:1;min-height:0;display:flex;flex-direction:column;padding:0 6px 6px}
+.gtop{display:flex;gap:8px;align-items:stretch;height:50px;flex:none}
+.sq{width:50px;flex:none;border:3px solid var(--ink);border-radius:12px;background:var(--paper);font:inherit;font-size:20px;font-weight:900;cursor:pointer;color:var(--ink)}
+.gmid{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;padding:0 4px}
+.gmid b{font-size:15px;font-weight:900;line-height:1.2}
+.gmid small{font-size:11px}
+.gst{width:132px;flex:none;border:3px solid var(--ink);border-radius:12px;padding:4px 8px;display:grid;gap:3px;align-content:center;font-size:11px;font-weight:700}
+.gst .bar2{height:9px;border-width:1.5px}
+.gline{height:4px;background:var(--ink);margin:6px 0;flex:none;border-radius:2px}
+.gmain{flex:1;min-height:0;display:flex;gap:6px}
+.rail{width:52px;flex:none;align-self:flex-start;display:grid;gap:4px;align-content:start;margin-top:10px;border:1.5px solid var(--ink);border-radius:12px;padding:4px}
+.rail h4{margin:0;font-size:10px;text-align:center;font-weight:900;border-bottom:1.5px solid var(--ink);padding-bottom:2px}
+.cell-b{font:inherit;width:100%;aspect-ratio:1;border:1.5px solid var(--ink);border-radius:8px;background:var(--paper);color:var(--ink);padding:0;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.1;font-size:10px;font-weight:700}
+.cell-b em{font:800 9px var(--font-num);font-style:normal;border:1px solid var(--ink);border-radius:50%;width:16px;height:16px;display:inline-flex;align-items:center;justify-content:center;margin-top:2px}
+.cell-b em.k{background:var(--ink);color:var(--paper)}
+.cell-b em.w{background:var(--warn)}
+.cell-b[aria-pressed="true"]{border-width:3px}
+.pips{display:flex;gap:1px;margin-top:2px}
+.pips i{width:5px;height:5px;border:1px solid var(--ink)}
+.pips i.f{background:var(--ink)}
+.gstage{flex:1;min-width:0;border:3px solid var(--ink);border-radius:14px;display:flex;flex-direction:column;overflow:hidden}
+.gstage .head2{padding:6px 10px;border-bottom:1.5px solid var(--ink);font-size:12px;font-weight:900;display:flex;justify-content:space-between}
+.gstage .art{margin:8px;height:138px;flex:none}
+.log{flex:1;min-height:0;overflow:hidden;padding:0 10px 8px;font-size:13px;line-height:1.6}
+.log p{margin:0 0 6px}
+.log .me{font-weight:700}
+.log .sys{font-family:var(--font-num);font-size:11px;font-weight:800;border-top:1px dashed var(--ink);padding-top:4px}
+.gbot{flex:none;height:208px;margin-top:6px;border:3px solid var(--ink);border-radius:14px;padding:8px;display:flex;flex-direction:column;gap:6px}
+.gbot .q{font-size:12px;font-weight:700;display:flex;justify-content:space-between}
+.choices{display:grid;gap:6px;flex:1;min-height:0;align-content:start}
+.choices .btn{justify-content:flex-start;text-align:left;min-height:38px;font-size:13px;padding:0 10px;width:100%}
+.choices .btn .n{font-family:var(--font-num);font-weight:800;border:1.5px solid var(--ink);border-radius:6px;min-width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;font-size:12px;flex:none}
+.acts{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.acts .btn{min-height:50px;flex-direction:column;gap:0;font-size:13px;line-height:1.2}
+.acts .btn small{font-size:10px;font-weight:500}
+.timer{margin:8px 8px 0;flex:none}
+.timer .t{display:flex;justify-content:space-between;font:800 12px var(--font-num);margin-bottom:2px}
+.timer .bar2{height:16px}
+.timer .bar2 i{width:62%;animation:drain 10s linear infinite}
+@keyframes drain{from{width:100%}to{width:0}}
+@media (prefers-reduced-motion:reduce){.timer .bar2 i{animation:none}}
+.warn{background:var(--warn)}
+
+/* 구역 표시 (사용자 와이어프레임의 색 구역) */
+.zones .gstage{outline:4px solid #22b14c;outline-offset:2px}
+.zones .rail.l{outline:4px solid #ff7f27;outline-offset:2px}
+.zones .rail.r{outline:4px solid #fff200;outline-offset:2px}
+.zones .gtop{outline:4px dashed #000;outline-offset:2px}
+.zones .gbot{outline:4px dashed #000;outline-offset:3px}
+
+/* 신체 */
+.tree{font-size:13px}
+.tree details{border-bottom:1px solid var(--ink)}
+.tree summary{cursor:pointer;font-weight:900;padding:10px 0;display:flex;justify-content:space-between;list-style:none}
+.tree summary::-webkit-details-marker{display:none}
+.tree summary::before{content:"▸";margin-right:6px}
+.tree details[open]>summary::before{content:"▾"}
+.part{display:flex;align-items:center;gap:8px;padding:6px 0 6px 14px;border-top:1px dashed var(--ink);min-height:40px}
+.part::before{content:"ㄴ";font-weight:400}
+.part .grow{flex:1;min-width:0}
+.part.sel{border-top:3px solid var(--ink);border-bottom:3px solid var(--ink);font-weight:700}
+.kinds{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;font-size:11px;text-align:center}
+.kinds div{border:1px solid var(--ink);border-radius:8px;padding:4px 0}
+.kinds b{display:block;font:800 12px var(--font-num)}
+.slots{display:grid;gap:6px}
+.slot2{border:1.5px solid var(--ink);border-radius:12px;padding:8px 12px;display:flex;gap:10px;align-items:center}
+.slot2 .ph{width:44px;height:44px;flex:none}
+.slot2 .grow{flex:1;min-width:0}
+.slot2 .grow b{display:block}
+.req{font-size:11px;margin-top:2px}
+</style>
+</head>
+<body>
+<div class="page" id="page">
+  <div class="head">
+    <h1>끝에 도달하는 이야기 · 화면 시안</h1>
+    <p>텍스트 기반 선택형 아포칼립스 사이버펑크 게임. 흑백 + 예외색 1개(주의). 아래 칩으로 화면을 고르고, 폰 안의 버튼을 눌러 이동해 볼 수 있어요. "구역 표시"를 켜면 와이어프레임의 색 구역(초록 무대 · 주황 왼쪽 레일 · 노랑 오른쪽 레일)이 겹쳐 보여요.</p>
+  </div>
+  <div class="bar" id="bar">
+    <div class="bar" id="chips"></div>
+    <div class="mode">
+      <button class="chip" id="zonesBtn" aria-pressed="false">구역 표시</button>
+      <button class="chip" id="oneBtn" aria-pressed="true">한 화면</button>
+      <button class="chip" id="allBtn" aria-pressed="false">전체 보기</button>
+    </div>
+  </div>
+  <div class="legend" id="legend"><span style="border-color:#22b14c">초록 · 무대(장면+글)</span><span style="border-color:#ff7f27">주황 · 왼쪽 레일(내 몸)</span><span style="border-color:#fff200">노랑 · 오른쪽 레일(주변)</span><span style="border-color:#000;border-style:dashed">검정 · 위 막대 / 아래 선택창</span></div>
+  <div class="stage-wrap" id="stage">
+
+  <!-- 1. 홈 -->
+  <figure class="cell" data-screen="home"><div class="slot"><div class="phone-scale"><div class="phone">
+    <div class="status"><span>9:41</span><span>100%</span></div>
+    <div class="screen"><div class="home">
+      <div class="steps"><i></i><i></i><i></i><i></i><i></i><i></i><i>끝</i></div>
+      <h2>끝에 도달하는 이야기</h2>
+      <p class="lead">80억 분의 1, 단 하나의 선택으로 이어지는 길.</p>
+      <div class="menu">
+        <button class="menu-btn first" data-go="create"><span><b>게임 시작</b><small>기본 캐릭터를 설정하고 시작</small></span><span class="mono">→</span></button>
+        <button class="menu-btn" data-go="load"><span><b>이어서 하기</b><small>3일차 · 폐허 도시 외곽 · 저장 3개</small></span><span class="mono">→</span></button>
+        <button class="menu-btn" data-go="dict"><span><b>사전</b><small>발견 14 / 120 · 몬스터 · 장비 · 변이</small></span><span class="mono">→</span></button>
+        <button class="menu-btn" data-go="set"><span><b>설정</b><small>저장 · 전투 · 화면 · 소리</small></span><span class="mono">→</span></button>
+      </div>
+      <div class="foot">v0.1 시안</div>
+    </div></div>
+    <div class="gesture"><i></i></div>
+  </div></div></div><figcaption>홈</figcaption></figure>
+
+  <!-- 2. 게임 시작: 기본 캐릭터 설정 -->
+  <figure class="cell" data-screen="create"><div class="slot"><div class="phone-scale"><div class="phone">
+    <div class="status"><span>9:41</span><span>100%</span></div>
+    <div class="screen">
+      <div class="topbar"><button class="btn small" data-go="home">← 홈</button><h2>기본 캐릭터 설정</h2><span class="sub mono">1/2</span></div>
+      <div class="scroll">
+        <div class="sec"><span>이름</span></div>
+        <div class="field"><input placeholder="이름을 입력" value="이안"></div>
+        <div class="sec"><span>성별</span></div>
+        <div class="seg"><button aria-pressed="true">여</button><button aria-pressed="false">남</button><button aria-pressed="false">직접 입력</button></div>
+        <div class="sec"><span>신체</span><small>시작 상태는 모두 원본</small></div>
+        <div class="tree">
+          <details open><summary><span>얼굴</span><span class="sub">4부위</span></summary>
+            <div class="part"><span class="grow">왼눈</span><span class="tag">원본</span></div>
+            <div class="part"><span class="grow">오른눈</span><span class="tag">원본</span></div>
+            <div class="part"><span class="grow">코</span><span class="tag">원본</span></div>
+            <div class="part"><span class="grow">입</span><span class="tag">원본</span></div>
+            <div class="part"><span class="grow">귀</span><span class="tag">원본</span></div>
+          </details>
+          <details open><summary><span>몸</span><span class="sub">3부위</span></summary>
+            <div class="part"><span class="grow">가슴 <small>(여 캐릭터: 크기)</small></span><div class="seg" style="width:150px"><button aria-pressed="false">소</button><button aria-pressed="true">중</button><button aria-pressed="false">대</button></div></div>
+            <div class="part"><span class="grow">성기</span><span class="tag">원본</span></div>
+            <div class="part"><span class="grow">몸통</span><span class="tag">원본</span></div>
+          </details>
+          <details><summary><span>팔</span><span class="sub">왼 · 오른</span></summary>
+            <div class="part"><span class="grow">왼팔 / 왼손</span><span class="tag">원본</span></div>
+            <div class="part"><span class="grow">오른팔 / 오른손</span><span class="tag">원본</span></div>
+          </details>
+          <details><summary><span>다리</span><span class="sub">왼 · 오른</span></summary>
+            <div class="part"><span class="grow">왼다리 / 왼발</span><span class="tag">원본</span></div>
+            <div class="part"><span class="grow">오른다리 / 오른발</span><span class="tag">원본</span></div>
+          </details>
+        </div>
+        <div class="sec"><span>특성</span><small>2개 선택</small></div>
+        <div class="bar"><button class="chip" aria-pressed="true">손재주</button><button class="chip" aria-pressed="true">야간 시야</button><button class="chip" aria-pressed="false">튼튼한 위장</button><button class="chip" aria-pressed="false">약한 체질</button><button class="chip" aria-pressed="false">말발</button></div>
+        <div class="lockline" style="margin-top:12px">시작 후에는 신체를 변이·대체로 바꿀 수 있어요</div>
+        <button class="btn primary block" style="margin-top:12px;min-height:52px" data-go="explore">이 모습으로 시작</button>
+      </div>
+    </div>
+    <div class="gesture"><i></i></div>
+  </div></div></div><figcaption>게임 시작 · 기본 캐릭터 설정</figcaption></figure>
+
+  <!-- 3. 이어서 하기 -->
+  <figure class="cell" data-screen="load"><div class="slot"><div class="phone-scale"><div class="phone">
+    <div class="status"><span>9:41</span><span>100%</span></div>
+    <div class="screen">
+      <div class="topbar"><button class="btn small" data-go="home">← 홈</button><h2>이어서 하기</h2></div>
+      <div class="scroll">
+        <div class="sec"><span>자동 저장</span></div>
+        <div class="slot2" style="border-width:3px"><div class="ph"><span>자</span></div><div class="grow"><b>이안 · 3일차</b><small>폐허 도시 외곽 · 오늘 21:04</small><div class="req">변이: 침식 1 · 대체 1</div></div><button class="btn small" data-go="explore">불러오기</button></div>
+        <div class="sec"><span>수동 저장</span><small>3 / 5칸</small></div>
+        <div class="slot2"><div class="ph"><span>1</span></div><div class="grow"><b>이안 · 3일차</b><small>폐허 도시 외곽 · 10/30 18:20</small><div class="req">플레이 4시간 12분</div></div><button class="btn small">불러오기</button></div>
+        <div class="slot2" style="margin-top:6px"><div class="ph"><span>2</span></div><div class="grow"><b>이안 · 1일차</b><small>첫 정착지 · 10/28 23:40</small><div class="req">플레이 1시간 3분</div></div><button class="btn small">불러오기</button></div>
+        <div class="slot2" style="margin-top:6px"><div class="ph"><span>3</span></div><div class="grow"><b>하린 · 7일차</b><small>침식 지대 · 10/25 02:11</small><div class="req">변이: 감염 2 · 창조 1</div></div><button class="btn small">불러오기</button></div>
+        <div class="slot2" style="margin-top:6px;border-style:dashed"><div class="ph"><span>＋</span></div><div class="grow"><b>빈 칸</b><small>탐험 중 메뉴에서 저장</small></div></div>
+        <div class="sec"><span>파일</span></div>
+        <div class="bar"><button class="btn small">저장 파일 가져오기</button><button class="btn small">전체 내보내기</button></div>
+        <p class="sub" style="margin-top:8px">저장은 이 기기 브라우저에 남아요. 기기를 바꾸거나 브라우저를 정리하기 전에 내보내기로 백업해 두세요.</p>
+      </div>
+    </div>
+    <div class="gesture"><i></i></div>
+  </div></div></div><figcaption>이어서 하기</figcaption></figure>
+
+  <!-- 4. 사전 -->
+  <figure class="cell" data-screen="dict"><div class="slot"><div class="phone-scale"><div class="phone">
+    <div class="status"><span>9:41</span><span>100%</span></div>
+    <div class="screen">
+      <div class="topbar"><button class="btn small" data-go="home">← 홈</button><h2>사전</h2><span class="sub mono">14/120</span></div>
+      <div class="scroll">
+        <div class="seg"><button aria-pressed="true">몬스터</button><button aria-pressed="false">장비</button><button aria-pressed="false">변이</button><button aria-pressed="false">기타</button></div>
+        <div class="field" style="margin-top:8px"><input placeholder="이름 검색"></div>
+        <div class="sec"><span>기본</span><small>발견 4 / 6</small></div>
+        <div class="row2" data-go="dictd" style="cursor:pointer"><div class="ph" style="width:44px;height:44px"><span>고</span></div><div class="grow"><b>고블린</b><small>처치 12 · 약점 불</small></div><span class="tag">발견</span></div>
+        <div class="row2"><div class="ph" style="width:44px;height:44px"><span>트</span></div><div class="grow"><b>트롤</b><small>처치 2 · 재생</small></div><span class="tag">발견</span></div>
+        <div class="row2"><div class="ph" style="width:44px;height:44px"><span>오</span></div><div class="grow"><b>오크</b><small>처치 5</small></div><span class="tag">발견</span></div>
+        <div class="row2"><div class="ph" style="width:44px;height:44px"><span>슬</span></div><div class="grow"><b>슬라임</b><small>처치 1</small></div><span class="tag w">새로움</span></div>
+        <div class="row2"><div class="ph" style="width:44px;height:44px"><span>?</span></div><div class="grow"><b>???</b><small>아직 만나지 못했다</small></div><span class="tag">미발견</span></div>
+        <div class="row2"><div class="ph" style="width:44px;height:44px"><span>?</span></div><div class="grow"><b>???</b><small>아직 만나지 못했다</small></div><span class="tag">미발견</span></div>
+        <div class="sec"><span>변종 · 신종</span><small>발견 2 / 30</small></div>
+        <div class="row2"><div class="ph" style="width:44px;height:44px"><span>침</span></div><div class="grow"><b>침식된 고블린</b><small>침식 · 처치 3</small></div><span class="tag">발견</span></div>
+        <div class="lockline" style="margin-top:12px">사전은 기기에 영구 저장돼요 · 백업은 설정 &gt; 저장</div>
+      </div>
+    </div>
+    <div class="gesture"><i></i></div>
+  </div></div></div><figcaption>사전 · 목록</figcaption></figure>
+
+  <!-- 5. 사전 상세 -->
+  <figure class="cell" data-screen="dictd"><div class="slot"><div class="phone-scale"><div class="phone">
+    <div class="status"><span>9:41</span><span>100%</span></div>
+    <div class="screen">
+      <div class="topbar"><button class="btn small" data-go="dict">← 목록</button><h2>고블린</h2><span class="tag">몬스터</span></div>
+      <div class="scroll">
+        <div class="ph" style="height:200px"><span>픽셀 일러스트 32×32</span></div>
+        <div class="sec"><span>기록</span></div>
+        <div class="row2"><span class="grow">처치</span><span class="mono">12</span></div>
+        <div class="row2"><span class="grow">첫 조우</span><span class="mono">1일차 · 첫 정착지</span></div>
+        <div class="row2"><span class="grow">약점</span><span class="mono">불 · 둔기</span></div>
+        <div class="sec"><span>설명</span></div>
+        <p style="margin:6px 0">작은 체구에 떼로 몰려다닌다. 폐허에서 주운 부품으로 무기를 만들어 쓴다. 혼자서는 약하지만 주변에 동료가 있으면 공격 횟수가 늘어난다.</p>
+        <div class="sec"><span>변이 가능성</span></div>
+        <div class="kinds"><div><b>침식</b>발견</div><div><b>감염</b>???</div><div><b>대체</b>발견</div><div><b>창조</b>???</div><div><b>원본</b>—</div></div>
+        <div class="sec"><span>드롭</span></div>
+        <div class="bar"><span class="tag">녹슨 단검</span><span class="tag">이빨</span><span class="tag">???</span></div>
+        <div class="bar" style="margin-top:14px"><button class="btn small">이 항목 내보내기</button></div>
+      </div>
+    </div>
+    <div class="gesture"><i></i></div>
+  </div></div></div><figcaption>사전 · 상세</figcaption></figure>
+
+  <!-- 6. 설정 -->
+  <figure class="cell" data-screen="set"><div class="slot"><div class="phone-scale"><div class="phone">
+    <div class="status"><span>9:41</span><span>100%</span></div>
+    <div class="screen">
+      <div class="topbar"><button class="btn small" data-go="home">← 홈</button><h2>설정</h2></div>
+      <div class="scroll">
+        <div class="sec"><span>저장</span></div>
+        <div class="row2"><div class="grow"><b>자동 저장</b><small>장면이 바뀔 때마다</small></div><div class="toggle on"></div></div>
+        <div class="row2"><div class="grow"><b>저장 파일 내보내기</b><small>게임 + 사전 전체 .json</small></div><button class="btn small">내보내기</button></div>
+        <div class="row2"><div class="grow"><b>저장 파일 가져오기</b><small>덮어쓰기 전에 확인</small></div><button class="btn small">가져오기</button></div>
+        <div class="sec"><span>전투</span></div>
+        <div class="row2"><div class="grow"><b>타이머 속도</b><small>선택 제한 시간</small></div></div>
+        <div class="seg"><button aria-pressed="false">느림 15s</button><button aria-pressed="true">보통 10s</button><button aria-pressed="false">빠름 6s</button></div>
+        <div class="row2"><div class="grow"><b>타이머 일시정지</b><small>메뉴 열면 멈춤</small></div><div class="toggle on"></div></div>
+        <div class="sec"><span>화면</span></div>
+        <div class="row2"><div class="grow"><b>글자 크기</b></div></div>
+        <div class="seg"><button aria-pressed="false">작게</button><button aria-pressed="true">보통</button><button aria-pressed="false">크게</button></div>
+        <div class="row2"><div class="grow"><b>글자 나타나는 속도</b></div></div>
+        <div class="seg"><button aria-pressed="false">즉시</button><button aria-pressed="true">보통</button><button aria-pressed="false">천천히</button></div>
+        <div class="row2"><div class="grow"><b>고대비 · 굵은 선</b></div><div class="toggle"></div></div>
+        <div class="sec"><span>소리</span></div>
+        <div class="row2"><div class="grow"><b>효과음</b></div><div class="toggle on"></div></div>
+        <div class="row2"><div class="grow"><b>음악</b></div><div class="toggle"></div></div>
+        <div class="sec"><span>데이터</span></div>
+        <div class="row2"><div class="grow"><b>사전 초기화</b><small>되돌릴 수 없어요</small></div><button class="btn small" style="border-style:dashed">초기화</button></div>
+        <div class="row2"><div class="grow"><b>전체 삭제</b><small>저장 · 사전 · 설정</small></div><button class="btn small" style="border-style:dashed">삭제</button></div>
+      </div>
+    </div>
+    <div class="gesture"><i></i></div>
+  </div></div></div><figcaption>설정</figcaption></figure>
+
+  <!-- 7. 탐험 (게임 화면 기본 틀) -->
+  <figure class="cell" data-screen="explore"><div class="slot"><div class="phone-scale"><div class="phone">
+    <div class="status"><span>9:41</span><span>100%</span></div>
+    <div class="screen"><div class="game">
+      <div class="gtop">
+        <button class="sq" data-go="body" aria-label="메뉴">☰</button>
+        <div class="gmid"><b>3일차 · 폐허 도시 외곽</b><small>저녁 · 흐림</small></div>
+        <div class="gst"><span>HP 24/30</span><div class="bar2"><i style="width:80%"></i></div><span>식량 5 · 부품 12</span></div>
+      </div>
+      <div class="gline"></div>
+      <div class="gmain">
+        <aside class="rail l"><h4>내 몸</h4>
+          <button class="cell-b">머리<em>원</em></button>
+          <button class="cell-b">몸<em>원</em></button>
+          <button class="cell-b">왼팔<em>원</em></button>
+          <button class="cell-b">오른팔<em class="k">대</em></button>
+          <button class="cell-b">왼다리<em>침</em></button>
+        </aside>
+        <section class="gstage">
+          <div class="head2"><span>장면</span><span class="mono">#042</span></div>
+          <div class="ph art"><span>장면 일러스트</span></div>
+          <div class="log">
+            <p>무너진 고가도로 아래, 녹슨 버스 한 대가 길을 막고 있다. 그 안에서 희미한 불빛이 깜박인다.</p>
+            <p>바람에 섞여 금속이 긁히는 소리가 들린다. 누군가 이쪽을 보고 있는 것 같다.</p>
+            <p class="me">오른팔의 의수가 가볍게 떨린다.</p>
+            <p class="sys">식량 −1 · 시간 경과</p>
+          </div>
+        </section>
+        <aside class="rail r"><h4>주변</h4>
+          <button class="cell-b">버스<span class="pips"><i class="f"></i></span></button>
+          <button class="cell-b">그림자<span class="pips"><i></i></span></button>
+        </aside>
+      </div>
+      <div class="gbot">
+        <div class="q"><span>어떻게 할까?</span><span class="mono">1 / 2</span></div>
+        <div class="choices">
+          <button class="btn"><span class="n">1</span>버스 안을 살핀다</button>
+          <button class="btn"><span class="n">2</span>소리가 난 쪽으로 다가간다</button>
+          <button class="btn" data-go="battle"><span class="n">3</span>돌을 던져 신호를 보낸다</button>
+          <button class="btn" data-go="choice"><span class="n">4</span>다른 길로 돌아간다</button>
+        </div>
+      </div>
+    </div></div>
+    <div class="gesture"><i></i></div>
+  </div></div></div><figcaption>탐험 · 게임 화면 기본 틀</figcaption></figure>
+
+  <!-- 8. 전투 -->
+  <figure class="cell" data-screen="battle"><div class="slot"><div class="phone-scale"><div class="phone">
+    <div class="status"><span>9:41</span><span>100%</span></div>
+    <div class="screen"><div class="game">
+      <div class="gtop">
+        <button class="sq" data-go="explore" aria-label="도망">×</button>
+        <div class="gmid"><b>전투 · 3라운드</b><small>주변 적 3 · 공격 범위 안</small></div>
+        <div class="gst"><span>HP 17/30</span><div class="bar2"><i style="width:57%"></i></div><span>고블린 ×2 · 트롤</span></div>
+      </div>
+      <div class="gline"></div>
+      <div class="gmain">
+        <aside class="rail l"><h4>내 몸</h4>
+          <button class="cell-b">머리<em>원</em></button>
+          <button class="cell-b">몸<em class="w">!</em></button>
+          <button class="cell-b">왼팔<em>원</em></button>
+          <button class="cell-b">오른팔<em class="k">대</em></button>
+          <button class="cell-b">왼다리<em>침</em></button>
+        </aside>
+        <section class="gstage">
+          <div class="timer"><div class="t"><span>선택 시간</span><span>06.2s</span></div><div class="bar2"><i></i></div></div>
+          <div class="ph art" style="height:104px"><span>전투 장면</span></div>
+          <div class="log">
+            <p>고블린이 달려든다! 뒤에서 트롤이 곤봉을 끌며 다가온다.</p>
+            <p class="me">오른팔 의수로 막았다. 의수에 금이 갔다.</p>
+            <p>시간이 지나면 <b>적이 먼저 움직인다.</b></p>
+            <p class="sys">트롤이 공격 범위에 들어왔다</p>
+          </div>
+        </section>
+        <aside class="rail r"><h4>대상</h4>
+          <button class="cell-b" aria-pressed="true">고블린1<span class="pips"><i class="f"></i><i class="f"></i><i></i></span></button>
+          <button class="cell-b">고블린2<span class="pips"><i class="f"></i><i class="f"></i><i class="f"></i></span></button>
+          <button class="cell-b">트롤<span class="pips"><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i></span></button>
+        </aside>
+      </div>
+      <div class="gbot">
+        <div class="q"><span>공격 방식 · 대상: 고블린1</span><span class="tag w">06s</span></div>
+        <div class="acts">
+          <button class="btn primary"><span>근접</span><small>무기</small></button>
+          <button class="btn"><span>이식형</span><small>가시 발사</small></button>
+          <button class="btn"><span>대체형</span><small>의수 충격</small></button>
+          <button class="btn"><span>방어</span><small>피해 −50%</small></button>
+          <button class="btn"><span>회피</span><small>다리 상태 영향</small></button>
+          <button class="btn"><span>물건</span><small>3개</small></button>
+        </div>
+      </div>
+    </div></div>
+    <div class="gesture"><i></i></div>
+  </div></div></div><figcaption>전투 · 실시간 턴제</figcaption></figure>
+
+  <!-- 9. 신체 · 장비 -->
+  <figure class="cell" data-screen="body"><div class="slot"><div class="phone-scale"><div class="phone">
+    <div class="status"><span>9:41</span><span>100%</span></div>
+    <div class="screen">
+      <div class="topbar"><button class="btn small" data-go="explore">← 닫기</button><h2>신체 · 장비</h2></div>
+      <div class="scroll">
+        <div class="seg"><button aria-pressed="true">신체</button><button aria-pressed="false">장비</button><button aria-pressed="false">기록</button></div>
+        <div class="sec"><span>변이 종류</span></div>
+        <div class="kinds"><div><b>원</b>원본</div><div><b>침</b>침식</div><div><b>감</b>감염</div><div><b>대</b>대체</div><div><b>창</b>창조</div></div>
+        <div class="sec"><span>신체</span><small>부위를 눌러 보기</small></div>
+        <div class="tree">
+          <details open><summary><span>팔</span></summary>
+            <div class="part"><span class="grow">왼팔 · 왼손</span><span class="tag">원본</span></div>
+            <div class="part sel"><span class="grow">오른팔 · 오른손</span><span class="tag k">대체</span></div>
+          </details>
+          <details open><summary><span>다리</span></summary>
+            <div class="part"><span class="grow">왼다리 · 왼발</span><span class="tag">침식 1</span></div>
+            <div class="part"><span class="grow">오른다리 · 오른발</span><span class="tag">원본</span></div>
+          </details>
+          <details><summary><span>얼굴</span></summary>
+            <div class="part"><span class="grow">왼눈 · 오른눈 · 코 · 입 · 귀</span><span class="tag">원본</span></div>
+          </details>
+          <details><summary><span>몸</span></summary>
+            <div class="part"><span class="grow">가슴 · 성기 · 몸통</span><span class="tag">원본</span></div>
+          </details>
+        </div>
+        <div class="sec"><span>선택한 부위</span></div>
+        <div class="slot2" style="border-width:3px"><div class="ph"><span>팔</span></div><div class="grow"><b>오른팔 · 기계 의수</b><small>대체 · 내구 8/12</small><div class="req">대체형 무기 칸 사용 · 충격 공격</div></div></div>
+        <div class="sec"><span>장비 칸</span></div>
+        <div class="slots">
+          <div class="slot2"><div class="ph"><span>무</span></div><div class="grow"><b>무기</b><small>녹슨 쇠파이프</small></div><button class="btn small">바꾸기</button></div>
+          <div class="slot2"><div class="ph"><span>이</span></div><div class="grow"><b>이식형 무기</b><small>비어 있음</small></div><button class="btn small">이식</button></div>
+          <div class="slot2"><div class="ph"><span>대</span></div><div class="grow"><b>대체형 무기</b><small>오른팔 의수</small></div><button class="btn small">점검</button></div>
+        </div>
+      </div>
+    </div>
+    <div class="gesture"><i></i></div>
+  </div></div></div><figcaption>신체 · 장비</figcaption></figure>
+
+  <!-- 10. 선택 이벤트 -->
+  <figure class="cell" data-screen="choice"><div class="slot"><div class="phone-scale"><div class="phone">
+    <div class="status"><span>9:41</span><span>100%</span></div>
+    <div class="screen"><div class="game">
+      <div class="gtop">
+        <button class="sq" data-go="body" aria-label="메뉴">☰</button>
+        <div class="gmid"><b>3일차 · 낡은 검문소</b><small>밤 · 비</small></div>
+        <div class="gst"><span>HP 24/30</span><div class="bar2"><i style="width:80%"></i></div><span>식량 4 · 부품 12</span></div>
+      </div>
+      <div class="gline"></div>
+      <div class="gmain">
+        <aside class="rail l"><h4>내 몸</h4>
+          <button class="cell-b">머리<em>원</em></button>
+          <button class="cell-b">몸<em>원</em></button>
+          <button class="cell-b">왼팔<em>원</em></button>
+          <button class="cell-b">오른팔<em class="k">대</em></button>
+          <button class="cell-b">왼다리<em>침</em></button>
+        </aside>
+        <section class="gstage">
+          <div class="head2"><span>선택</span><span class="mono">#057</span></div>
+          <div class="ph art"><span>장면 일러스트</span></div>
+          <div class="log">
+            <p>검문소 문이 반쯤 열려 있다. 안쪽에서 낮은 목소리가 들린다. "들어와. 거래하자."</p>
+            <p>문 옆 단말기에는 팔 모양의 인식 홈이 나 있다.</p>
+            <p class="sys">당신의 몸이 선택지를 바꾼다</p>
+          </div>
+        </section>
+        <aside class="rail r"><h4>주변</h4>
+          <button class="cell-b">목소리<span class="pips"><i></i></span></button>
+          <button class="cell-b">단말기<span class="pips"><i class="f"></i></span></button>
+        </aside>
+      </div>
+      <div class="gbot">
+        <div class="q"><span>어떻게 할까?</span><span class="mono">5개 중 3개 가능</span></div>
+        <div class="choices">
+          <button class="btn"><span class="n">1</span>안으로 들어가 거래한다</button>
+          <button class="btn"><span class="n">2</span>단말기에 의수를 대 본다 <span class="tag k" style="margin-left:auto">대체 팔</span></button>
+          <button class="btn"><span class="n">3</span>문을 부수고 들어간다</button>
+          <button class="btn" disabled><span class="n">4</span>목소리를 흉내 낸다 <span class="tag" style="margin-left:auto">잠김 · 입 변이</span></button>
+        </div>
+      </div>
+    </div></div>
+    <div class="gesture"><i></i></div>
+  </div></div></div><figcaption>선택 이벤트 · 몸에 따라 달라지는 선택지</figcaption></figure>
+
+  </div>
+  <p class="note">하단 선택창은 탐험에서는 글 선택지, 전투에서는 공격 방식 버튼이 돼요. 위 막대의 왼쪽 정사각 버튼은 탐험에서는 메뉴(☰), 전투에서는 도망(×)으로 바뀌어요.</p>
+</div>
+<script>
+const SCREENS = [['home','홈'],['create','게임 시작'],['load','이어서 하기'],['dict','사전'],['dictd','사전 상세'],['set','설정'],['explore','탐험'],['battle','전투'],['body','신체·장비'],['choice','선택 이벤트']];
+const $ = id => document.getElementById(id);
+const cells = [...document.querySelectorAll('.cell')];
+let cur = (location.hash || '#home').slice(1), mode = 'one';
+if (!SCREENS.some(s => s[0] === cur)) cur = 'home';
+
+const chips = $('chips');
+SCREENS.forEach(([k, label]) => {
+  const b = document.createElement('button'); b.className = 'chip'; b.textContent = label; b.dataset.k = k;
+  b.onclick = () => go(k); chips.append(b);
+});
+function fit() {
+  const stage = $('stage'), avail = Math.min(stage.clientWidth || 390, 1180);
+  const s = mode === 'one' ? Math.min(1, avail / 390) : Math.min(.62, avail / 390);
+  cells.forEach(c => {
+    const slot = c.querySelector('.slot'), sc = c.querySelector('.phone-scale');
+    sc.style.transform = `scale(${s})`; slot.style.width = 390 * s + 'px'; slot.style.height = 844 * s + 'px';
+  });
+}
+function render() {
+  cells.forEach(c => { c.hidden = mode === 'one' && c.dataset.screen !== cur; });
+  chips.querySelectorAll('.chip').forEach(b => b.setAttribute('aria-pressed', b.dataset.k === cur && mode === 'one'));
+  $('oneBtn').setAttribute('aria-pressed', mode === 'one'); $('allBtn').setAttribute('aria-pressed', mode === 'all');
+  fit();
+}
+function go(k) { cur = k; mode = 'one'; try { history.replaceState(null, '', '#' + k); } catch (e) {} render(); window.scrollTo({ top: 0 }); }
+document.querySelectorAll('[data-go]').forEach(b => b.addEventListener('click', () => go(b.dataset.go)));
+$('oneBtn').onclick = () => { mode = 'one'; render(); };
+$('allBtn').onclick = () => { mode = 'all'; render(); };
+$('zonesBtn').onclick = e => {
+  const on = e.currentTarget.getAttribute('aria-pressed') !== 'true';
+  e.currentTarget.setAttribute('aria-pressed', on); $('page').classList.toggle('zones', on);
+};
+// 시안 안의 선택 버튼(토글/칩/세그먼트)은 눌리는 느낌만
+document.querySelectorAll('.seg').forEach(g => g.addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b || b.dataset.go) return;
+  g.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x === b));
+}));
+document.querySelectorAll('.phone .chip').forEach(c => c.addEventListener('click', () => c.setAttribute('aria-pressed', c.getAttribute('aria-pressed') !== 'true')));
+document.querySelectorAll('.toggle').forEach(t => t.addEventListener('click', () => t.classList.toggle('on')));
+window.addEventListener('hashchange', () => { const k = location.hash.slice(1); if (SCREENS.some(s => s[0] === k)) { cur = k; mode = 'one'; render(); } });
+window.addEventListener('resize', fit);
+render();
+</script>
+</body>
+</html>
