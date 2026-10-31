@@ -58,12 +58,12 @@ code{font:800 12px var(--font-num);border:1px solid var(--ink);border-radius:5px
   <header class="head">
     <a class="back" href="../mock/">← 화면 시안</a>
     <h1>세계관 노트</h1>
-    <p>말씀해 주신 핵심에 살을 붙여 정리한 곳이에요. 줄을 누르면 열려요. 핵심을 더 던져 주시면 해당 줄에 살을 붙이거나 새 줄을 추가해요.</p>
+    <p>말씀해 주신 핵심에 첨언을 덧붙여 정리한 곳이에요. 줄을 누르면 열려요. 핵심을 더 던져 주시면 해당 줄에 첨언을 달거나 새 줄을 추가해요.</p>
   </header>
 
   <div class="legend">
     <div><span class="tag k">핵심</span> 사용자가 정해 준 것 · 바꾸지 않아요</div>
-    <div><span class="tag w">살</span> Claude가 붙인 초안 · 마음에 안 들면 바꿔요</div>
+    <div><span class="tag w">첨언</span> Claude가 덧붙인 아이디어 초안 · 마음에 안 들면 바꿔요</div>
     <div><span class="tag">열린 질문</span> 정해야 할 것</div>
   </div>
 
@@ -80,7 +80,7 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;',
 const md = s => esc(s).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/`(.+?)`/g, '<code>$1</code>');
 const all = W.groups.flatMap(g => g.items.map(i => ({ ...i, group: g.id, gname: g.name })));
 const byId = Object.fromEntries(all.map(i => [i.id, i]));
-const STATUS = { seed: ['핵심만', ''], draft: ['살 붙임', 'w'], ok: ['확정', 'k'] };
+const STATUS = { seed: ['핵심만', ''], draft: ['첨언 있음', 'w'], ok: ['확정', 'k'] };
 let filter = 'all', q = '';
 
 const chips = $('chips');
@@ -93,13 +93,13 @@ chip('all', '전체'); W.groups.forEach(g => chip(g.id, g.name)); chip('ask', '�
 function itemHTML(i) {
   const [st, cls] = STATUS[i.status] || STATUS.draft;
   const core = i.core.map(c => `<li>${md(c)}</li>`).join('');
-  const flesh = i.flesh.map(c => `<li>${md(c)}</li>`).join('');
+  const flesh = i.add.map(c => `<li>${md(c)}</li>`).join('');
   const ask = (i.ask || []).map(c => `<li>${md(c)}</li>`).join('');
   const refs = (i.link || []).filter(id => byId[id]).map(id => `<button class="ref" data-open="${id}">${esc(byId[id].title)}</button>`).join('');
-  return `<details class="line" id="i-${i.id}" data-id="${i.id}"><summary><span class="ttl">${esc(i.title)}<small>핵심 ${i.core.length} · 살 ${i.flesh.length}${ask ? ' · 질문 ' + i.ask.length : ''}</small></span><span class="tag ${cls}">${st}</span></summary>
+  return `<details class="line" id="i-${i.id}" data-id="${i.id}"><summary><span class="ttl">${esc(i.title)}<small>핵심 ${i.core.length} · 첨언 ${i.add.length}${ask ? ' · 질문 ' + i.ask.length : ''}</small></span><span class="tag ${cls}">${st}</span></summary>
     <div class="body">
       <div class="blk core"><h3><span class="tag k">핵심</span></h3><ul>${core}</ul></div>
-      <div class="blk"><h3><span class="tag w">살</span></h3><ul>${flesh}</ul></div>
+      <div class="blk"><h3><span class="tag w">첨언</span></h3><ul>${flesh}</ul></div>
       ${ask ? `<div class="blk ask"><h3><span class="tag">열린 질문</span></h3><ul>${ask}</ul></div>` : ''}
       ${refs ? `<div class="blk"><h3>이어지는 줄</h3><div class="refs">${refs}</div></div>` : ''}
     </div></details>`;
@@ -112,7 +112,7 @@ function render() {
   W.groups.forEach(g => {
     const items = all.filter(i => i.group === g.id && (filter === 'all' || filter === 'ask' || filter === g.id)
       && (filter !== 'ask' || (i.ask && i.ask.length))
-      && (!k || [i.title, ...i.core, ...i.flesh, ...(i.ask || [])].join(' ').toLowerCase().includes(k)));
+      && (!k || [i.title, ...i.core, ...i.add, ...(i.ask || [])].join(' ').toLowerCase().includes(k)));
     if (!items.length) return;
     n += items.length;
     html += `<section class="grp"><h2><span>${esc(g.name)}</span><small>${items.length}</small></h2>${items.map(itemHTML).join('')}</section>`;

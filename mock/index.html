@@ -93,8 +93,8 @@ figure{margin:0}
 .steps i:nth-child(6){height:84%}.steps i:nth-child(7){height:100%;background:var(--paper);border:3px solid var(--ink);display:flex;align-items:center;justify-content:center;font:800 12px var(--font-num)}
 .home h2{margin:6px 0 0;font-size:36px;line-height:1.1;font-weight:900;letter-spacing:-.04em;text-wrap:balance}
 .home .lead{margin:0;font-size:13px}
-.menu{display:grid;gap:10px;margin-top:auto}
-.menu-btn{font:inherit;text-align:left;color:var(--ink);background:var(--paper);border:1.5px solid var(--ink);border-radius:14px;padding:12px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;min-height:62px}
+.menu{display:grid;gap:8px;margin-top:auto}
+.menu-btn{font:inherit;text-align:left;color:var(--ink);background:var(--paper);border:1.5px solid var(--ink);border-radius:14px;padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;min-height:58px}
 .menu-btn b{font-size:18px;font-weight:900;display:block}
 .menu-btn small{font-size:12px}
 .menu-btn.first{border-width:3px}
@@ -174,6 +174,7 @@ figure{margin:0}
 .opt[aria-pressed="true"]{border-width:3px;padding:8.5px 12.5px}
 .opt b{display:block;font-weight:900}
 .opt small{font-size:12px}
+.opt[disabled]{border-style:dashed;cursor:not-allowed}
 .mini{display:flex;height:10px;margin:8px 0 2px;border-bottom:0}
 .mini .pre{border-bottom:2px dotted var(--ink);height:10px}
 .mini .post{border-bottom:6px solid var(--ink);height:10px}
@@ -222,6 +223,7 @@ figure{margin:0}
         <button class="menu-btn first" data-go="create"><span><b>게임 시작</b><small>0세부터 한 달씩, 태어나는 것에서 시작</small></span><span class="mono">→</span></button>
         <button class="menu-btn" data-go="load"><span><b>이어서 하기</b><small>3세 5개월 · 지하 대피소 · 저장 3개</small></span><span class="mono">→</span></button>
         <button class="menu-btn" data-go="dict"><span><b>사전</b><small>발견 14 / 120 · 몬스터 · 장비 · 변이</small></span><span class="mono">→</span></button>
+        <button class="menu-btn" data-go="ach"><span><b>업적</b><small>달성 6 / 48 · 새로 얻은 업적 1</small></span><span class="mono">→</span></button>
         <button class="menu-btn" data-go="set"><span><b>설정</b><small>저장 · 전투 · 화면 · 소리</small></span><span class="mono">→</span></button>
       </div>
       <div class="foot">v0.1 시안</div>
@@ -238,7 +240,7 @@ figure{margin:0}
         <div class="sec"><span>이름</span></div>
         <div class="field"><input placeholder="이름을 입력" value="이안"></div>
         <div class="sec"><span>성별</span></div>
-        <div class="seg"><button aria-pressed="true">여</button><button aria-pressed="false">남</button><button aria-pressed="false">직접 입력</button></div>
+        <div class="seg"><button aria-pressed="false">여</button><button aria-pressed="false">남</button><button aria-pressed="true">랜덤</button></div>
         <div class="sec"><span>멸망이 시작되는 때</span><small>하나 고르기</small></div>
         <div class="opts">
           <button class="opt" aria-pressed="false"><b>태어나기 전부터</b><small>이미 무너져 가는 세상에서 태어난다</small>
@@ -248,9 +250,15 @@ figure{margin:0}
           <button class="opt" aria-pressed="false"><b>성인기부터 (18세)</b><small>성인이 될 때까지 성장한 뒤 멸망이 시작된다</small>
             <div class="mini"><span class="pre" style="width:100%"></span><span class="post" style="width:0%"></span></div><div class="ticks"><span>0세</span><span>3세</span><span>18세</span></div></button>
         </div>
-        <div class="sec"><span>태어날 환경</span></div>
-        <div class="seg"><button aria-pressed="true">랜덤</button><button aria-pressed="false">직접 고르기</button></div>
-        <div class="slot2" style="margin-top:8px;border-width:3px"><div class="ph"><span>집</span></div><div class="grow"><b>가난한 집 · 외곽 마을</b><small>부모 2명 · 형제 없음</small><div class="req">시작 허기 20 · 돈 120</div></div><button class="btn small">다시 뽑기</button></div>
+        <div class="sec"><span>태어날 지역</span><small>처음엔 랜덤</small></div>
+        <div class="seg" id="regMode"><button aria-pressed="true">랜덤</button><button aria-pressed="false">지정</button></div>
+        <div class="slot2" style="margin-top:8px;border-width:3px"><div class="ph"><span>집</span></div><div class="grow"><b>외곽 마을 · 가난한 집</b><small>부모 2명 · 형제 없음</small><div class="req">시작 허기 20 · 돈 120</div></div><button class="btn small">다시 뽑기</button></div>
+        <p class="sub" style="margin:8px 0 6px">한 번 다녀간 지역은 <b>사전</b>에 기록돼요. 기록된 지역은 <b>지정</b>해서 확정으로 태어날 수 있어요. (집안은 계속 랜덤)</p>
+        <div class="opts" id="regPick">
+          <button class="opt" aria-pressed="false"><b>지하 대피소</b><small>방문 2회 · 첫 방문 0세</small></button>
+          <button class="opt" aria-pressed="false"><b>외곽 마을</b><small>방문 1회 · 첫 방문 7세</small></button>
+          <button class="opt" disabled><b>???</b><small>아직 가 보지 못한 지역 · 잠김</small></button>
+        </div>
         <div class="sec"><span>타고난 특성</span><small>2개</small></div>
         <div class="bar"><button class="chip" aria-pressed="true">손재주</button><button class="chip" aria-pressed="true">야간 시야</button><button class="chip" aria-pressed="false">튼튼한 위장</button><button class="chip" aria-pressed="false">약한 체질</button><button class="chip" aria-pressed="false">말발</button></div>
         <div class="sec"><span>타고난 몸</span><small>모두 원본으로 시작</small></div>
@@ -262,6 +270,9 @@ figure{margin:0}
           <details><summary><span>팔</span><span class="sub">왼 · 오른</span></summary><div class="part"><span class="grow">왼팔 / 왼손</span><span class="tag">원본</span></div><div class="part"><span class="grow">오른팔 / 오른손</span><span class="tag">원본</span></div></details>
           <details><summary><span>다리</span><span class="sub">왼 · 오른</span></summary><div class="part"><span class="grow">왼다리 / 왼발</span><span class="tag">원본</span></div><div class="part"><span class="grow">오른다리 / 오른발</span><span class="tag">원본</span></div></details>
         </div>
+        <div class="sec"><span>시드</span><small>같은 시드 = 같은 이벤트·분기</small></div>
+        <div class="field"><input value="K7-3F9A" aria-label="시드" placeholder="비우면 랜덤"><button class="btn small" style="min-height:44px">랜덤</button><button class="btn small" style="min-height:44px">복사</button></div>
+        <p class="sub" style="margin:6px 0 0">시드를 넣으면 지역·집안·사건·분기가 정해진 대로 흘러가요. 시드를 공유해 같은 삶을 겪어 볼 수 있어요.</p>
         <div class="lockline" style="margin-top:12px">0세부터 한 달씩 자라요 · 자라면서 몸이 변이·대체될 수 있어요</div>
         <button class="btn primary block" style="margin-top:12px;min-height:52px" data-go="explore">태어나기</button>
       </div>
@@ -276,11 +287,11 @@ figure{margin:0}
       <div class="topbar"><button class="btn small" data-go="home">← 홈</button><h2>이어서 하기</h2></div>
       <div class="scroll">
         <div class="sec"><span>자동 저장</span></div>
-        <div class="slot2" style="border-width:3px"><div class="ph"><span>자</span></div><div class="grow"><b>이안 · 3세 5개월</b><small>지하 대피소 · 오늘 21:04</small><div class="req">변이: 장기 침식 1</div></div><button class="btn small" data-go="explore">불러오기</button></div>
+        <div class="slot2" style="border-width:3px"><div class="ph"><span>자</span></div><div class="grow"><b>이안 · 3세 5개월</b><small>지하 대피소 · 오늘 21:04</small><div class="req">변이: 장기 침식 1 · 시드 K7-3F9A</div></div><button class="btn small" data-go="explore">불러오기</button></div>
         <div class="sec"><span>수동 저장</span><small>3 / 5칸</small></div>
-        <div class="slot2"><div class="ph"><span>1</span></div><div class="grow"><b>이안 · 3세 4개월</b><small>지하 대피소 · 10/30 18:20</small><div class="req">플레이 4시간 12분</div></div><button class="btn small">불러오기</button></div>
-        <div class="slot2" style="margin-top:6px"><div class="ph"><span>2</span></div><div class="grow"><b>이안 · 0세 8개월</b><small>태어난 집 · 10/28 23:40</small><div class="req">플레이 1시간 3분</div></div><button class="btn small">불러오기</button></div>
-        <div class="slot2" style="margin-top:6px"><div class="ph"><span>3</span></div><div class="grow"><b>하린 · 19세 9개월</b><small>침식 지대 · 10/25 02:11</small><div class="req">변이: 감염 2 · 창조 1 · 뼈 대체 1</div></div><button class="btn small">불러오기</button></div>
+        <div class="slot2"><div class="ph"><span>1</span></div><div class="grow"><b>이안 · 3세 4개월</b><small>지하 대피소 · 10/30 18:20</small><div class="req">플레이 4시간 12분 · 시드 K7-3F9A</div></div><button class="btn small">불러오기</button></div>
+        <div class="slot2" style="margin-top:6px"><div class="ph"><span>2</span></div><div class="grow"><b>이안 · 0세 8개월</b><small>태어난 집 · 10/28 23:40</small><div class="req">플레이 1시간 3분 · 시드 K7-3F9A</div></div><button class="btn small">불러오기</button></div>
+        <div class="slot2" style="margin-top:6px"><div class="ph"><span>3</span></div><div class="grow"><b>하린 · 19세 9개월</b><small>침식 지대 · 10/25 02:11</small><div class="req">변이: 감염 2 · 창조 1 · 뼈 대체 1 · 시드 Q2-81BD</div></div><button class="btn small">불러오기</button></div>
         <div class="slot2" style="margin-top:6px;border-style:dashed"><div class="ph"><span>＋</span></div><div class="grow"><b>빈 칸</b><small>탐험 중 메뉴에서 저장</small></div></div>
         <div class="sec"><span>파일</span></div>
         <div class="bar"><button class="btn small">저장 파일 가져오기</button><button class="btn small">전체 내보내기</button></div>
@@ -296,7 +307,7 @@ figure{margin:0}
     <div class="screen">
       <div class="topbar"><button class="btn small" data-go="home">← 홈</button><h2>사전</h2><span class="sub mono">14/120</span></div>
       <div class="scroll">
-        <div class="seg"><button aria-pressed="true">몬스터</button><button aria-pressed="false">장비</button><button aria-pressed="false">변이</button><button aria-pressed="false">기타</button></div>
+        <div class="seg"><button aria-pressed="true">몬스터</button><button aria-pressed="false">장비</button><button aria-pressed="false">변이</button><button aria-pressed="false" data-go="dictr">지역</button></div>
         <div class="field" style="margin-top:8px"><input placeholder="이름 검색"></div>
         <div class="sec"><span>기본</span><small>발견 4 / 6</small></div>
         <div class="row2" data-go="dictd" style="cursor:pointer"><div class="ph" style="width:44px;height:44px"><span>고</span></div><div class="grow"><b>고블린</b><small>처치 12 · 약점 불</small></div><span class="tag">발견</span></div>
@@ -337,6 +348,45 @@ figure{margin:0}
   </div></div></div><figcaption>사전 · 상세</figcaption></figure>
 
   <!-- 6. 설정 -->
+  <figure class="cell" data-screen="dictr"><div class="slot"><div class="phone-scale"><div class="phone">
+    <div class="status"><span>9:41</span><span>100%</span></div>
+    <div class="screen">
+      <div class="topbar"><button class="btn small" data-go="home">← 홈</button><h2>사전</h2><span class="sub mono">지역 3/8</span></div>
+      <div class="scroll">
+        <div class="seg"><button aria-pressed="false" data-go="dict">몬스터</button><button aria-pressed="false">장비</button><button aria-pressed="false">변이</button><button aria-pressed="true">지역</button></div>
+        <div class="lockline" style="margin-top:10px">다녀간 지역이 여기에 기록돼요 · 기록된 곳은 태어날 때 <b>지정</b>해서 확정으로 태어날 수 있어요</div>
+        <div class="sec"><span>다녀간 지역</span><small>3곳</small></div>
+        <div class="slot2" style="margin-bottom:6px"><div class="ph"><span>대</span></div><div class="grow"><b>지하 대피소</b><small>방문 2회 · 첫 방문 0세 · 최근 3세</small><div class="req"><span class="tag">안전</span> <span class="tag">좁음</span> <span class="tag">집안: 가난·보통</span></div></div><button class="btn small" data-go="create">여기서 태어나기</button></div><div class="slot2" style="margin-bottom:6px"><div class="ph"><span>마</span></div><div class="grow"><b>외곽 마을</b><small>방문 1회 · 첫 방문 7세</small><div class="req"><span class="tag">거래</span> <span class="tag w">새로움</span> <span class="tag">집안: 가난</span></div></div><button class="btn small" data-go="create">여기서 태어나기</button></div><div class="slot2" style="margin-bottom:6px"><div class="ph"><span>검</span></div><div class="grow"><b>낡은 검문소</b><small>방문 1회 · 첫 방문 17세</small><div class="req"><span class="tag">단말기</span> <span class="tag">집안: 보통·부유</span></div></div><button class="btn small" data-go="create">여기서 태어나기</button></div>
+        <div class="sec"><span>아직 가 보지 못한 곳</span><small>5곳</small></div>
+        <div class="row2"><div class="ph" style="width:44px;height:44px"><span>?</span></div><div class="grow"><b>???</b><small>다녀가면 기록돼요</small></div><span class="tag">미발견</span></div>
+        <div class="row2"><div class="ph" style="width:44px;height:44px"><span>?</span></div><div class="grow"><b>???</b><small>다녀가면 기록돼요</small></div><span class="tag">미발견</span></div>
+        <div class="row2"><span class="grow sub">… 3곳 더</span></div>
+        <div class="lockline" style="margin-top:12px">지정하면 지역은 확정, 집안은 랜덤이에요 · 사전은 삶이 끝나도 남아요</div>
+      </div>
+    </div>
+    <div class="gesture"><i></i></div>
+  </div></div></div><figcaption>사전 · 지역 (다녀간 곳은 확정 출생 가능)</figcaption></figure>
+
+  <figure class="cell" data-screen="ach"><div class="slot"><div class="phone-scale"><div class="phone">
+    <div class="status"><span>9:41</span><span>100%</span></div>
+    <div class="screen">
+      <div class="topbar"><button class="btn small" data-go="home">← 홈</button><h2>업적</h2><span class="sub mono">6/48</span></div>
+      <div class="scroll">
+        <div class="bar2"><i style="width:12.5%"></i></div>
+        <div class="seg" style="margin-top:8px"><button aria-pressed="true">전체</button><button aria-pressed="false">생존</button><button aria-pressed="false">변이</button><button aria-pressed="false">지역</button><button aria-pressed="false">이야기</button></div>
+        <div class="sec"><span>달성</span><small>6개</small></div>
+        <div class="slot2" style="margin-bottom:6px"><div class="ph"><span>울</span></div><div class="grow"><b>첫 울음</b><small>처음으로 태어났다</small></div><span class="tag k">달성</span></div><div class="slot2" style="margin-bottom:6px"><div class="ph"><span>1</span></div><div class="grow"><b>한 살</b><small>12개월을 넘겼다</small></div><span class="tag k">달성</span></div><div class="slot2" style="margin-bottom:6px;border-width:3px"><div class="ph"><span>침</span></div><div class="grow"><b>침식의 맛</b><small>침식 변이를 처음 겪었다</small></div><span class="tag w">새로움</span></div>
+        <div class="sec"><span>진행 중</span><small>3개</small></div>
+        <div class="slot2" style="margin-bottom:6px"><div class="ph"><span>곳</span></div><div class="grow"><b>다녀간 곳</b><small>서로 다른 지역 5곳에 다녀가기</small><div class="bar2" style="margin-top:4px"><i style="width:60%"></i></div></div><span class="tag mono">3/5</span></div><div class="slot2" style="margin-bottom:6px"><div class="ph"><span>고</span></div><div class="grow"><b>고블린 사냥꾼</b><small>고블린 10마리 처치</small><div class="bar2" style="margin-top:4px"><i style="width:60%"></i></div></div><span class="tag mono">6/10</span></div><div class="slot2" style="margin-bottom:6px"><div class="ph"><span>허</span></div><div class="grow"><b>허기와의 싸움</b><small>허기 90 이상에서 한 달 버티기</small><div class="bar2" style="margin-top:4px"><i style="width:0%"></i></div></div><span class="tag mono">0/1</span></div>
+        <div class="sec"><span>숨김</span><small>2개</small></div>
+        <div class="slot2" style="margin-bottom:6px;border-style:dashed"><div class="ph"><span>?</span></div><div class="grow"><b>???</b><small>조건이 숨겨져 있어요</small></div></div>
+        <div class="slot2" style="margin-bottom:6px;border-style:dashed"><div class="ph"><span>?</span></div><div class="grow"><b>???</b><small>끝에 닿으면 열릴지도 몰라요</small></div></div>
+        <div class="lockline" style="margin-top:12px">업적은 삶이 끝나도 남아요 · 달성한 삶의 나이와 시드가 함께 기록돼요</div>
+      </div>
+    </div>
+    <div class="gesture"><i></i></div>
+  </div></div></div><figcaption>업적 (사전과 설정 사이 메뉴)</figcaption></figure>
+
   <figure class="cell" data-screen="set"><div class="slot"><div class="phone-scale"><div class="phone">
     <div class="status"><span>9:41</span><span>100%</span></div>
     <div class="screen">
@@ -558,7 +608,7 @@ figure{margin:0}
   <p class="note">특별한 사건이 없는 달은 멈추지 않고 자동으로 넘어가요(로그에 "특별한 일 없이 지나감"으로 한 줄 요약). 선택이 필요한 달에서만 멈춰요. 하단 선택창은 탐험에서는 글 선택지, 전투에서는 공격 방식 버튼이 돼요. 위 막대의 왼쪽 정사각 버튼은 탐험에서는 메뉴(☰), 전투에서는 도망(×)으로 바뀌어요. 왼쪽 레일은 급소만 보여 주고 누르면 몸 상태 전체를, 오른쪽 레일은 가방이고 누르면 인벤토리를 열어요.</p>
 </div>
 <script>
-const SCREENS = [['home','홈'],['create','게임 시작'],['load','이어서 하기'],['dict','사전'],['dictd','사전 상세'],['set','설정'],['explore','탐험'],['battle','전투'],['body','몸 상태'],['inv','인벤토리'],['choice','선택 이벤트']];
+const SCREENS = [['home','홈'],['create','게임 시작'],['load','이어서 하기'],['dict','사전'],['dictd','사전 상세'],['dictr','사전 · 지역'],['ach','업적'],['set','설정'],['explore','탐험'],['battle','전투'],['body','몸 상태'],['inv','인벤토리'],['choice','선택 이벤트']];
 const $ = id => document.getElementById(id);
 const cells = [...document.querySelectorAll('.cell')];
 let cur = (location.hash || '#home').slice(1), mode = 'one';
@@ -599,6 +649,12 @@ document.querySelectorAll('.seg,.opts').forEach(g => g.addEventListener('click',
 document.querySelectorAll('.phone .chip').forEach(c => c.addEventListener('click', () => c.setAttribute('aria-pressed', c.getAttribute('aria-pressed') !== 'true')));
 document.querySelectorAll('.toggle').forEach(t => t.addEventListener('click', () => t.classList.toggle('on')));
 
+// 태어날 지역: 랜덤 ↔ 지정 (다녀간 지역을 고르면 자동으로 지정)
+(function () {
+  const mode = $('regMode'), pick = $('regPick'); if (!mode || !pick) return;
+  pick.addEventListener('click', e => { if (e.target.closest('.opt:not([disabled])')) [...mode.children].forEach((b, i) => b.setAttribute('aria-pressed', i === 1)); });
+  mode.addEventListener('click', e => { if (e.target === mode.firstElementChild) pick.querySelectorAll('.opt').forEach(o => o.setAttribute('aria-pressed', 'false')); });
+})();
 window.addEventListener('hashchange', () => { const k = location.hash.slice(1); if (SCREENS.some(s => s[0] === k)) { cur = k; mode = 'one'; render(); } });
 window.addEventListener('resize', fit);
 render();
