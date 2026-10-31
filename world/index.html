@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>세계관 노트 · 끝에 도달하는 이야기</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=JetBrains+Mono:wght@500;800&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#fff;--ink:#000;--warn:#fff3a8;
+  --font-body:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --font-num:"JetBrains Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;color-scheme:light}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{background:var(--paper)}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.6;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 56px}
+a{color:inherit}
+.page{max-width:780px;margin:0 auto;display:grid;gap:14px}
+.head h1{margin:0;font-size:28px;font-weight:900;letter-spacing:-.02em;text-wrap:balance}
+.head p{margin:6px 0 0;max-width:62ch}
+.head .back{display:inline-block;margin-bottom:8px;font-size:13px;font-weight:700;border-bottom:2px solid var(--ink);text-decoration:none}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.chip{font:inherit;font-size:14px;color:var(--ink);background:var(--paper);border:1px solid var(--ink);border-radius:999px;padding:6px 12px;min-height:38px;cursor:pointer}
+.chip[aria-pressed="true"]{border-width:3px;padding:4px 10px;font-weight:700}
+.chip:focus-visible,summary:focus-visible,.search:focus-visible,.ref:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.search{width:100%;min-height:46px;font:inherit;font-size:16px;color:var(--ink);background:var(--paper);border:1.5px solid var(--ink);border-radius:12px;padding:0 14px}
+.legend{display:grid;gap:4px;font-size:13px;border:1.5px dashed var(--ink);border-radius:12px;padding:10px 12px}
+.tag{display:inline-block;border:1px solid var(--ink);border-radius:6px;padding:0 6px;font-size:11px;font-weight:700;white-space:nowrap;line-height:1.7}
+.tag.k{background:var(--ink);color:var(--paper)}
+.tag.w{background:var(--warn)}
+.grp{display:grid;gap:0}
+.grp h2{margin:12px 0 0;font-size:15px;font-weight:900;border-bottom:2px solid var(--ink);padding-bottom:3px;display:flex;justify-content:space-between;align-items:baseline}
+.grp h2 small{font:800 12px var(--font-num)}
+details.line{border-bottom:1px solid var(--ink)}
+details.line summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;min-height:54px;padding:8px 2px}
+details.line summary::-webkit-details-marker{display:none}
+details.line summary::before{content:"▸";font-size:12px;width:12px;flex:none}
+details.line[open] summary::before{content:"▾"}
+details.line[open]{border-bottom-width:3px}
+.ttl{flex:1;min-width:0;font-weight:700}
+.ttl small{display:block;font-weight:400;font-size:12px}
+.body{padding:2px 2px 16px 24px;display:grid;gap:12px}
+.blk h3{margin:0 0 4px;font-size:12px;font-weight:900;letter-spacing:.04em;display:flex;gap:6px;align-items:center}
+.blk.core{border:3px solid var(--ink);border-radius:12px;padding:10px 12px}
+.blk ul{margin:0;padding-left:18px;display:grid;gap:6px}
+.blk.ask{border:1.5px dashed var(--ink);border-radius:12px;padding:10px 12px}
+code{font:800 12px var(--font-num);border:1px solid var(--ink);border-radius:5px;padding:0 4px}
+.refs{display:flex;gap:6px;flex-wrap:wrap}
+.ref{font:inherit;font-size:12px;font-weight:700;background:var(--paper);color:var(--ink);border:1px solid var(--ink);border-radius:999px;padding:2px 10px;cursor:pointer;min-height:30px}
+.empty{text-align:center;padding:36px 0;border:1.5px dashed var(--ink);border-radius:12px}
+.note{font-size:12.5px}
+</style>
+</head>
+<body>
+<div class="page">
+  <header class="head">
+    <a class="back" href="../mock/">← 화면 시안</a>
+    <h1>세계관 노트</h1>
+    <p>말씀해 주신 핵심에 살을 붙여 정리한 곳이에요. 줄을 누르면 열려요. 핵심을 더 던져 주시면 해당 줄에 살을 붙이거나 새 줄을 추가해요.</p>
+  </header>
+
+  <div class="legend">
+    <div><span class="tag k">핵심</span> 사용자가 정해 준 것 · 바꾸지 않아요</div>
+    <div><span class="tag w">살</span> Claude가 붙인 초안 · 마음에 안 들면 바꿔요</div>
+    <div><span class="tag">열린 질문</span> 정해야 할 것</div>
+  </div>
+
+  <input class="search" type="search" id="q" placeholder="검색 (예: 허기, 심장, 몬스터)" autocomplete="off">
+  <div class="bar" id="chips"></div>
+  <div id="list" class="page" style="gap:0"></div>
+  <div class="empty" id="empty" hidden>검색 결과가 없습니다.</div>
+  <p class="note" id="foot"></p>
+</div>
+<script src="data.js"></script>
+<script>
+const W = window.WORLD, $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const md = s => esc(s).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/`(.+?)`/g, '<code>$1</code>');
+const all = W.groups.flatMap(g => g.items.map(i => ({ ...i, group: g.id, gname: g.name })));
+const byId = Object.fromEntries(all.map(i => [i.id, i]));
+const STATUS = { seed: ['핵심만', ''], draft: ['살 붙임', 'w'], ok: ['확정', 'k'] };
+let filter = 'all', q = '';
+
+const chips = $('chips');
+function chip(id, label) {
+  const b = document.createElement('button'); b.className = 'chip'; b.textContent = label; b.dataset.g = id;
+  b.onclick = () => { filter = id; render(); }; chips.append(b);
+}
+chip('all', '전체'); W.groups.forEach(g => chip(g.id, g.name)); chip('ask', '열린 질문 있는 것');
+
+function itemHTML(i) {
+  const [st, cls] = STATUS[i.status] || STATUS.draft;
+  const core = i.core.map(c => `<li>${md(c)}</li>`).join('');
+  const flesh = i.flesh.map(c => `<li>${md(c)}</li>`).join('');
+  const ask = (i.ask || []).map(c => `<li>${md(c)}</li>`).join('');
+  const refs = (i.link || []).filter(id => byId[id]).map(id => `<button class="ref" data-open="${id}">${esc(byId[id].title)}</button>`).join('');
+  return `<details class="line" id="i-${i.id}" data-id="${i.id}"><summary><span class="ttl">${esc(i.title)}<small>핵심 ${i.core.length} · 살 ${i.flesh.length}${ask ? ' · 질문 ' + i.ask.length : ''}</small></span><span class="tag ${cls}">${st}</span></summary>
+    <div class="body">
+      <div class="blk core"><h3><span class="tag k">핵심</span></h3><ul>${core}</ul></div>
+      <div class="blk"><h3><span class="tag w">살</span></h3><ul>${flesh}</ul></div>
+      ${ask ? `<div class="blk ask"><h3><span class="tag">열린 질문</span></h3><ul>${ask}</ul></div>` : ''}
+      ${refs ? `<div class="blk"><h3>이어지는 줄</h3><div class="refs">${refs}</div></div>` : ''}
+    </div></details>`;
+}
+function render() {
+  const k = q.trim().toLowerCase();
+  const openIds = new Set([...document.querySelectorAll('details.line[open]')].map(d => d.dataset.id));
+  chips.querySelectorAll('.chip').forEach(b => b.setAttribute('aria-pressed', b.dataset.g === filter));
+  let n = 0, html = '';
+  W.groups.forEach(g => {
+    const items = all.filter(i => i.group === g.id && (filter === 'all' || filter === 'ask' || filter === g.id)
+      && (filter !== 'ask' || (i.ask && i.ask.length))
+      && (!k || [i.title, ...i.core, ...i.flesh, ...(i.ask || [])].join(' ').toLowerCase().includes(k)));
+    if (!items.length) return;
+    n += items.length;
+    html += `<section class="grp"><h2><span>${esc(g.name)}</span><small>${items.length}</small></h2>${items.map(itemHTML).join('')}</section>`;
+  });
+  $('list').innerHTML = html; $('empty').hidden = n > 0;
+  openIds.forEach(id => { const d = document.querySelector(`details.line[data-id="${id}"]`); if (d) d.open = true; });
+  $('foot').textContent = `${all.length}줄 · 마지막 정리 ${W.updated}`;
+}
+function openItem(id) {
+  if (!byId[id]) return;
+  filter = 'all'; q = ''; $('q').value = ''; render();
+  const d = document.getElementById('i-' + id); d.open = true;
+  d.scrollIntoView({ block: 'start', behavior: 'smooth' });
+  try { history.replaceState(null, '', '#' + id); } catch (e) {}
+}
+$('list').addEventListener('click', e => { const r = e.target.closest('[data-open]'); if (r) openItem(r.dataset.open); });
+$('q').addEventListener('input', e => { q = e.target.value; render(); });
+render();
+if (location.hash && byId[location.hash.slice(1)]) openItem(location.hash.slice(1));
+</script>
+</body>
+</html>
