@@ -27,7 +27,15 @@ body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font-bo
 .bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .chip{font:inherit;color:var(--ink);background:var(--paper);border:1px solid var(--ink);border-radius:999px;padding:6px 12px;min-height:36px;cursor:pointer}
 .chip[aria-pressed="true"]{border-width:3px;padding:4px 10px;font-weight:700}
-.mode{display:flex;gap:8px;margin-left:auto}
+.mode{display:flex;gap:8px;margin-left:auto;flex:none;flex-wrap:wrap;justify-content:flex-end}
+#bar{align-items:flex-start}
+.chipcol{display:grid;gap:8px;flex:1 1 420px;min-width:0}
+.subbar{gap:6px;padding-left:2px}
+.subbar .subl{font-weight:400;font-size:14px;padding:0 2px}
+.subbar .chip{min-height:32px;font-size:13px;padding:4px 10px}
+.subbar .chip[aria-pressed="true"]{padding:2px 8px}
+.ghead{flex-basis:100%;margin:14px 0 0;font-size:15px;font-weight:900;border-bottom:2px solid var(--ink);padding-bottom:3px;display:flex;justify-content:space-between;align-items:baseline}
+.ghead small{font:800 12px var(--font-num)}
 .chip:focus-visible,.btn:focus-visible,.seg button:focus-visible,.menu-btn:focus-visible,.sq:focus-visible,.cell-b:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
 .stage-wrap{display:flex;flex-wrap:wrap;gap:28px;justify-content:center;align-items:flex-start}
 figure{margin:0}
@@ -216,10 +224,13 @@ input[type=range]{width:100%;accent-color:#000;margin:2px 0 6px}
   <div class="head">
     <h1>끝에 도달하는 이야기 · 화면 시안</h1>
     <p style="margin:0"><a href="../world/" style="font-weight:700;border-bottom:2px solid #000;text-decoration:none">세계관 노트 보기 →</a> <span class="sub">(게임 화면과 분리된 별도 페이지)</span></p>
-    <p>텍스트 기반 선택형 아포칼립스 사이버펑크 게임. 흑백 + 예외색 1개(주의). 아래 칩으로 화면을 고르고, 폰 안의 버튼을 눌러 이동해 볼 수 있어요. "구역 표시"를 켜면 와이어프레임의 색 구역(초록 무대 · 주황 왼쪽 레일 · 노랑 오른쪽 레일)이 겹쳐 보여요.</p>
+    <p>텍스트 기반 선택형 아포칼립스 사이버펑크 게임. 흑백 + 예외색 1개(주의). 위쪽 칩으로 화면 그룹(홈 · 게임 시작 · 사전 · 플레이…)을 고르면, 하위 화면(사전 상세 · 지역 · 특성 등)이 그 아래에 나타나요. 폰 안의 버튼을 눌러 이동해 볼 수도 있어요. "구역 표시"를 켜면 와이어프레임의 색 구역(초록 무대 · 주황 왼쪽 레일 · 노랑 오른쪽 레일)이 겹쳐 보여요.</p>
   </div>
   <div class="bar" id="bar">
-    <div class="bar" id="chips"></div>
+    <div class="chipcol">
+      <div class="bar" id="chips"></div>
+      <div class="bar subbar" id="subchips" hidden></div>
+    </div>
     <div class="mode">
       <button class="chip" id="zonesBtn" aria-pressed="false">구역 표시</button>
       <button class="chip" id="oneBtn" aria-pressed="true">한 화면</button>
@@ -695,16 +706,33 @@ input[type=range]{width:100%;accent-color:#000;margin:2px 0 6px}
   <p class="note">특별한 사건이 없는 달은 멈추지 않고 자동으로 넘어가요(로그에 "특별한 일 없이 지나감"으로 한 줄 요약). 선택이 필요한 달에서만 멈춰요. 하단 선택창은 탐험에서는 글 선택지, 전투에서는 공격 방식 버튼이 돼요. 위 막대의 왼쪽 정사각 버튼은 탐험에서는 메뉴(☰), 전투에서는 도망(×)으로 바뀌어요. 왼쪽 레일은 급소만 보여 주고 누르면 몸 상태 전체를, 오른쪽 레일은 가방이고 누르면 인벤토리를 열어요.</p>
 </div>
 <script>
-const SCREENS = [['home','홈'],['create','게임 시작'],['regpick','지역 찾기 (새 창)'],['load','이어서 하기'],['dict','사전'],['dictd','사전 상세'],['dictr','사전 · 지역'],['dictt','사전 · 특성'],['ach','업적'],['set','설정'],['explore','탐험'],['battle','전투'],['body','몸 상태'],['inv','인벤토리'],['choice','선택 이벤트']];
+// 화면 그룹: 위쪽 칩은 그룹 단위, 하위 화면은 그룹을 골랐을 때만 아래에 나타난다.
+const GROUPS = [
+  ['home', '홈', [['home', '홈']]],
+  ['start', '게임 시작', [['create', '태어나기'], ['regpick', '지역 찾기 (새 창)']]],
+  ['load', '이어서 하기', [['load', '이어서 하기']]],
+  ['dict', '사전', [['dict', '목록 (몬스터)'], ['dictd', '상세'], ['dictr', '지역'], ['dictt', '특성']]],
+  ['ach', '업적', [['ach', '업적']]],
+  ['set', '설정', [['set', '설정']]],
+  ['play', '플레이', [['explore', '탐험'], ['battle', '전투'], ['body', '몸 상태'], ['inv', '인벤토리'], ['choice', '선택 이벤트']]]
+];
+const SCREENS = GROUPS.flatMap(g => g[2]);
+const groupOf = k => GROUPS.find(g => g[2].some(x => x[0] === k));
 const $ = id => document.getElementById(id);
 const cells = [...document.querySelectorAll('.cell')];
 let cur = (location.hash || '#home').slice(1), mode = 'one';
 if (!SCREENS.some(s => s[0] === cur)) cur = 'home';
 
-const chips = $('chips');
-SCREENS.forEach(([k, label]) => {
-  const b = document.createElement('button'); b.className = 'chip'; b.textContent = label; b.dataset.k = k;
-  b.onclick = () => go(k); chips.append(b);
+const chips = $('chips'), subchips = $('subchips');
+GROUPS.forEach(g => {
+  const b = document.createElement('button'); b.className = 'chip'; b.textContent = g[1]; b.dataset.g = g[0];
+  b.onclick = () => go(g[2][0][0]); chips.append(b);
+});
+// 전체 보기에서 그룹별 제목
+const heads = GROUPS.map(g => {
+  const h = document.createElement('h3'); h.className = 'ghead'; h.hidden = true;
+  h.innerHTML = g[1] + '<small>' + g[2].length + '화면</small>';
+  $('stage').insertBefore(h, cells.find(c => c.dataset.screen === g[2][0][0])); return h;
 });
 function fit() {
   const stage = $('stage'), avail = Math.min(stage.clientWidth || 390, 1180);
@@ -715,8 +743,19 @@ function fit() {
   });
 }
 function render() {
+  const g = groupOf(cur);
   cells.forEach(c => { c.hidden = mode === 'one' && c.dataset.screen !== cur; });
-  chips.querySelectorAll('.chip').forEach(b => b.setAttribute('aria-pressed', b.dataset.k === cur && mode === 'one'));
+  heads.forEach(h => { h.hidden = mode !== 'all'; });
+  chips.querySelectorAll('.chip').forEach(b => b.setAttribute('aria-pressed', mode === 'one' && b.dataset.g === g[0]));
+  const multi = mode === 'one' && g[2].length > 1;
+  subchips.hidden = !multi; subchips.textContent = '';
+  if (multi) {
+    const l = document.createElement('span'); l.className = 'subl'; l.textContent = 'ㄴ'; subchips.append(l);
+    g[2].forEach(([k, label]) => {
+      const b = document.createElement('button'); b.className = 'chip'; b.textContent = label; b.dataset.k = k;
+      b.setAttribute('aria-pressed', k === cur); b.onclick = () => go(k); subchips.append(b);
+    });
+  }
   $('oneBtn').setAttribute('aria-pressed', mode === 'one'); $('allBtn').setAttribute('aria-pressed', mode === 'all');
   fit();
 }
