@@ -31,6 +31,8 @@ body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font-bo
 #bar{align-items:flex-start}
 .chipcol{display:grid;gap:8px;flex:1 1 420px;min-width:0}
 .subbar{gap:6px;padding-left:2px}
+.sub2{padding-left:22px}
+.slot2[data-go]:hover,.row2[data-go]:hover b{text-decoration:underline}
 .subbar .subl{font-weight:400;font-size:14px;padding:0 2px}
 .subbar .chip{min-height:32px;font-size:13px;padding:4px 10px}
 .subbar .chip[aria-pressed="true"]{padding:2px 8px}
@@ -230,6 +232,7 @@ input[type=range]{width:100%;accent-color:#000;margin:2px 0 6px}
     <div class="chipcol">
       <div class="bar" id="chips"></div>
       <div class="bar subbar" id="subchips" hidden></div>
+      <div class="bar subbar sub2" id="subchips2" hidden></div>
     </div>
     <div class="mode">
       <button class="chip" id="zonesBtn" aria-pressed="false">구역 표시</button>
@@ -369,17 +372,17 @@ input[type=range]{width:100%;accent-color:#000;margin:2px 0 6px}
     <div class="screen">
       <div class="topbar"><button class="btn small" data-go="home">← 홈</button><h2>사전</h2><span class="sub mono">14/120</span></div>
       <div class="scroll">
-        <div class="seg"><button aria-pressed="true">몬스터</button><button aria-pressed="false">장비</button><button aria-pressed="false">변이</button><button aria-pressed="false" data-go="dictr">지역</button><button aria-pressed="false" data-go="dictt">특성</button></div>
+        <div class="seg"><button aria-pressed="true">몬스터</button><button aria-pressed="false" data-go="dictg">장비</button><button aria-pressed="false" data-go="dictm">변이</button><button aria-pressed="false" data-go="dictr">지역</button><button aria-pressed="false" data-go="dictt">특성</button></div>
         <div class="field" style="margin-top:8px"><input placeholder="이름 검색"></div>
         <div class="sec"><span>기본</span><small>발견 4 / 6</small></div>
         <div class="row2" data-go="dictd" style="cursor:pointer"><div class="ph" style="width:44px;height:44px"><span>고</span></div><div class="grow"><b>고블린</b><small>처치 12 · 약점 불</small></div><span class="tag">발견</span></div>
-        <div class="row2"><div class="ph" style="width:44px;height:44px"><span>트</span></div><div class="grow"><b>트롤</b><small>처치 2 · 재생</small></div><span class="tag">발견</span></div>
-        <div class="row2"><div class="ph" style="width:44px;height:44px"><span>오</span></div><div class="grow"><b>오크</b><small>처치 5</small></div><span class="tag">발견</span></div>
-        <div class="row2"><div class="ph" style="width:44px;height:44px"><span>슬</span></div><div class="grow"><b>슬라임</b><small>처치 1</small></div><span class="tag w">새로움</span></div>
+        <div class="row2" data-go="dictd" style="cursor:pointer"><div class="ph" style="width:44px;height:44px"><span>트</span></div><div class="grow"><b>트롤</b><small>처치 2 · 재생</small></div><span class="tag">발견</span></div>
+        <div class="row2" data-go="dictd" style="cursor:pointer"><div class="ph" style="width:44px;height:44px"><span>오</span></div><div class="grow"><b>오크</b><small>처치 5</small></div><span class="tag">발견</span></div>
+        <div class="row2" data-go="dictd" style="cursor:pointer"><div class="ph" style="width:44px;height:44px"><span>슬</span></div><div class="grow"><b>슬라임</b><small>처치 1</small></div><span class="tag w">새로움</span></div>
         <div class="row2"><div class="ph" style="width:44px;height:44px"><span>?</span></div><div class="grow"><b>???</b><small>아직 만나지 못했다</small></div><span class="tag">미발견</span></div>
         <div class="row2"><div class="ph" style="width:44px;height:44px"><span>?</span></div><div class="grow"><b>???</b><small>아직 만나지 못했다</small></div><span class="tag">미발견</span></div>
         <div class="sec"><span>변종 · 신종</span><small>발견 2 / 30</small></div>
-        <div class="row2"><div class="ph" style="width:44px;height:44px"><span>침</span></div><div class="grow"><b>침식된 고블린</b><small>침식 · 처치 3</small></div><span class="tag">발견</span></div>
+        <div class="row2" data-go="dictd" style="cursor:pointer"><div class="ph" style="width:44px;height:44px"><span>침</span></div><div class="grow"><b>침식된 고블린</b><small>침식 · 처치 3</small></div><span class="tag">발견</span></div>
         <div class="lockline" style="margin-top:12px">사전은 기기에 영구 저장돼요 · 백업은 설정 &gt; 저장</div>
       </div>
     </div>
@@ -410,15 +413,92 @@ input[type=range]{width:100%;accent-color:#000;margin:2px 0 6px}
   </div></div></div><figcaption>사전 · 상세</figcaption></figure>
 
   <!-- 6. 설정 -->
+  <figure class="cell" data-screen="dictg"><div class="slot"><div class="phone-scale"><div class="phone">
+    <div class="status"><span>9:41</span><span>100%</span></div>
+    <div class="screen">
+      <div class="topbar"><button class="btn small" data-go="home">← 홈</button><h2>사전</h2><span class="sub mono">장비 9/30</span></div>
+      <div class="scroll">
+        <div class="seg"><button aria-pressed="false" data-go="dict">몬스터</button><button aria-pressed="true">장비</button><button aria-pressed="false" data-go="dictm">변이</button><button aria-pressed="false" data-go="dictr">지역</button><button aria-pressed="false" data-go="dictt">특성</button></div>
+        <div class="field" style="margin-top:8px"><input placeholder="이름 검색"></div>
+        <div class="sec"><span>무기</span><small>발견 3 / 8</small></div><div class="row2" data-go="dictgd" style="cursor:pointer"><div class="ph" style="width:44px;height:44px"><span>파</span></div><div class="grow"><b>쇠파이프</b><small>근접 · 공격 +2</small></div><span class="tag">발견</span></div><div class="row2" data-go="dictgd" style="cursor:pointer"><div class="ph" style="width:44px;height:44px"><span>단</span></div><div class="grow"><b>녹슨 단검</b><small>근접 · 빠름</small></div><span class="tag">발견</span></div><div class="row2" data-go="dictgd" style="cursor:pointer"><div class="ph" style="width:44px;height:44px"><span>석</span></div><div class="grow"><b>석궁</b><small>원거리 · 볼트 필요</small></div><span class="tag w">새로움</span></div><div class="row2"><div class="ph" style="width:44px;height:44px"><span>?</span></div><div class="grow"><b>???</b><small>아직 얻지 못했다</small></div><span class="tag">미발견</span></div>
+        <div class="sec"><span>이식형 무기</span><small>발견 1 / 5</small></div><div class="row2" data-go="dictgd" style="cursor:pointer"><div class="ph" style="width:44px;height:44px"><span>뼈</span></div><div class="grow"><b>뼈 가시 이식체</b><small>이식 수술 필요</small></div><span class="tag">발견</span></div><div class="row2"><div class="ph" style="width:44px;height:44px"><span>?</span></div><div class="grow"><b>???</b><small>아직 얻지 못했다</small></div><span class="tag">미발견</span></div>
+        <div class="sec"><span>대체형 무기</span><small>발견 1 / 5</small></div><div class="row2" data-go="dictgd" style="cursor:pointer"><div class="ph" style="width:44px;height:44px"><span>의</span></div><div class="grow"><b>기계 의수</b><small>오른팔 대체 · 충격</small></div><span class="tag">발견</span></div><div class="row2"><div class="ph" style="width:44px;height:44px"><span>?</span></div><div class="grow"><b>???</b><small>아직 얻지 못했다</small></div><span class="tag">미발견</span></div>
+        <div class="sec"><span>소모 · 재료</span><small>발견 3 / 12</small></div><div class="row2" data-go="dictgd" style="cursor:pointer"><div class="ph" style="width:44px;height:44px"><span>통</span></div><div class="grow"><b>통조림</b><small>허기 −30</small></div><span class="tag">발견</span></div><div class="row2" data-go="dictgd" style="cursor:pointer"><div class="ph" style="width:44px;height:44px"><span>붕</span></div><div class="grow"><b>붕대</b><small>출혈을 멈춘다</small></div><span class="tag">발견</span></div><div class="row2" data-go="dictgd" style="cursor:pointer"><div class="ph" style="width:44px;height:44px"><span>부</span></div><div class="grow"><b>부품</b><small>대체·창조 변이에 쓰는 재료</small></div><span class="tag">발견</span></div>
+        <div class="lockline" style="margin-top:12px">사전은 기기에 영구 저장돼요 · 백업은 설정 &gt; 저장</div>
+      </div>
+    </div>
+    <div class="gesture"><i></i></div>
+  </div></div></div><figcaption>사전 · 장비 목록</figcaption></figure>
+
+  <figure class="cell" data-screen="dictgd"><div class="slot"><div class="phone-scale"><div class="phone">
+    <div class="status"><span>9:41</span><span>100%</span></div>
+    <div class="screen">
+      <div class="topbar"><button class="btn small" data-go="dictg">← 목록</button><h2>쇠파이프</h2><span class="tag k">무기</span></div>
+      <div class="scroll">
+        <div class="ph" style="height:180px"><span>도트 이미지 32×32</span></div>
+        <div class="sec"><span>정보</span></div><div class="row2"><span class="grow">종류</span><span class="mono">무기 · 근접</span></div><div class="row2"><span class="grow">공격</span><span class="mono">+2</span></div><div class="row2"><span class="grow">내구</span><span class="mono">12 / 12</span></div><div class="row2"><span class="grow">속도</span><span class="mono">보통</span></div><div class="row2"><span class="grow">전투 방식</span><span class="mono">근접</span></div>
+        <div class="sec"><span>설명</span></div>
+        <p style="margin:6px 0">폐허의 건물에서 뜯어낸 녹슨 배관. 무겁고 투박하지만 급소를 노리지 않아도 충분히 아프다.</p>
+        <div class="sec"><span>얻는 곳</span></div>
+        <div class="bar"><span class="tag">폐허 건물</span><span class="tag">고철상</span><span class="tag">고블린 드롭</span></div>
+        <div class="sec"><span>기록</span></div><div class="row2"><span class="grow">처음 입수</span><span class="mono">11세 3개월 · 외곽 마을</span></div><div class="row2"><span class="grow">사용 횟수</span><span class="mono">24</span></div><div class="row2"><span class="grow">처치</span><span class="mono">12</span></div>
+        <div class="sec"><span>관련</span></div>
+        <div class="bar"><span class="tag">특성 · 손재주</span><span class="tag">몬스터 · 고블린</span></div>
+        <div class="lockline" style="margin-top:12px">장비 이미지는 make_tool의 픽셀 스튜디오로 그려 넣을 수 있어요</div>
+      </div>
+    </div>
+    <div class="gesture"><i></i></div>
+  </div></div></div><figcaption>사전 · 장비 상세</figcaption></figure>
+
+  <figure class="cell" data-screen="dictm"><div class="slot"><div class="phone-scale"><div class="phone">
+    <div class="status"><span>9:41</span><span>100%</span></div>
+    <div class="screen">
+      <div class="topbar"><button class="btn small" data-go="home">← 홈</button><h2>사전</h2><span class="sub mono">변이 5/40</span></div>
+      <div class="scroll">
+        <div class="seg"><button aria-pressed="false" data-go="dict">몬스터</button><button aria-pressed="false" data-go="dictg">장비</button><button aria-pressed="true">변이</button><button aria-pressed="false" data-go="dictr">지역</button><button aria-pressed="false" data-go="dictt">특성</button></div>
+        <div class="field" style="margin-top:8px"><input placeholder="이름·부위 검색"></div>
+        <div class="sec"><span>침식</span><small>발견 2 / 10</small></div><div class="row2" data-go="dictmd" style="cursor:pointer"><div class="ph" style="width:44px;height:44px"><span>폐</span></div><div class="grow"><b>폐 침식</b><small>숨이 쌕쌕거린다</small></div><span class="tag">장기</span></div><div class="row2" data-go="dictmd" style="cursor:pointer"><div class="ph" style="width:44px;height:44px"><span>갈</span></div><div class="grow"><b>갈비뼈 침식</b><small>쉽게 부러진다</small></div><span class="tag">뼈</span></div>
+        <div class="sec"><span>감염</span><small>발견 1 / 10</small></div><div class="row2" data-go="dictmd" style="cursor:pointer"><div class="ph" style="width:44px;height:44px"><span>눈</span></div><div class="grow"><b>장기 감염 · 밤눈</b><small>어둠이 잘 보인다</small></div><span class="tag">장기</span></div>
+        <div class="sec"><span>대체</span><small>발견 2 / 10</small></div><div class="row2" data-go="dictmd" style="cursor:pointer"><div class="ph" style="width:44px;height:44px"><span>심</span></div><div class="grow"><b>인공 심장</b><small>내구가 생긴다 · 허기 +1</small></div><span class="tag">심장</span></div><div class="row2" data-go="dictmd" style="cursor:pointer"><div class="ph" style="width:44px;height:44px"><span>의</span></div><div class="grow"><b>기계 의수</b><small>오른팔 대체 · 충격</small></div><span class="tag">팔</span></div>
+        <div class="sec"><span>창조</span><small>발견 0 / 10</small></div><div class="row2"><div class="ph" style="width:44px;height:44px"><span>?</span></div><div class="grow"><b>???</b><small>아직 겪지 못했다</small></div><span class="tag">미발견</span></div><div class="row2"><div class="ph" style="width:44px;height:44px"><span>?</span></div><div class="grow"><b>???</b><small>아직 겪지 못했다</small></div><span class="tag">미발견</span></div>
+        <div class="lockline" style="margin-top:12px">변이는 얼굴 · 몸통 · 심장 · 장기 · 뼈 · 팔 · 다리 모든 부위에서 일어나요</div>
+      </div>
+    </div>
+    <div class="gesture"><i></i></div>
+  </div></div></div><figcaption>사전 · 변이 목록</figcaption></figure>
+
+  <figure class="cell" data-screen="dictmd"><div class="slot"><div class="phone-scale"><div class="phone">
+    <div class="status"><span>9:41</span><span>100%</span></div>
+    <div class="screen">
+      <div class="topbar"><button class="btn small" data-go="dictm">← 목록</button><h2>인공 심장</h2><span class="tag k">대체</span></div>
+      <div class="scroll">
+        <div class="ph" style="height:180px"><span>부위 이미지</span></div>
+        <div class="sec"><span>정보</span></div><div class="row2"><span class="grow">변이 종류</span><span class="mono">대체</span></div><div class="row2"><span class="grow">부위</span><span class="mono">심장 (급소)</span></div><div class="row2"><span class="grow">내구</span><span class="mono">9 / 12</span></div><div class="row2"><span class="grow">허기</span><span class="mono">+1 / 달</span></div>
+        <div class="sec"><span>효과</span></div>
+        <div class="row2"><span class="grow">원본보다 오래 버틴다</span><span class="tag">+</span></div>
+        <div class="row2"><span class="grow">정비(부품)가 필요하다</span><span class="tag">−</span></div>
+        <div class="row2"><span class="grow">허기가 더 빨리 찬다</span><span class="tag">−</span></div>
+        <div class="sec"><span>설명</span></div>
+        <p style="margin:6px 0">폐허의 의체 기술로 만든 기계 심장. 몸이 버티는 한계를 늘려 주지만, 멈추면 끝이다. 그래서 정비와 부품이 곧 목숨값이다.</p>
+        <div class="sec"><span>발생 조건</span></div>
+        <div class="bar"><span class="tag">부품 10 이상</span><span class="tag">이식 수술</span><span class="tag">심장 손상</span></div>
+        <div class="sec"><span>기록</span></div><div class="row2"><span class="grow">겪은 횟수</span><span class="mono">1</span></div><div class="row2"><span class="grow">처음 겪은 때</span><span class="mono">14세 6개월 · 폐허 도시 외곽</span></div>
+        <div class="sec"><span>관련</span></div>
+        <div class="bar"><span class="tag">특성 · 튼튼한 위장</span><span class="tag">장비 · 부품</span></div>
+      </div>
+    </div>
+    <div class="gesture"><i></i></div>
+  </div></div></div><figcaption>사전 · 변이 상세</figcaption></figure>
+
   <figure class="cell" data-screen="dictr"><div class="slot"><div class="phone-scale"><div class="phone">
     <div class="status"><span>9:41</span><span>100%</span></div>
     <div class="screen">
       <div class="topbar"><button class="btn small" data-go="home">← 홈</button><h2>사전</h2><span class="sub mono">지역 3/8</span></div>
       <div class="scroll">
-        <div class="seg"><button aria-pressed="false" data-go="dict">몬스터</button><button aria-pressed="false">장비</button><button aria-pressed="false">변이</button><button aria-pressed="true">지역</button><button aria-pressed="false" data-go="dictt">특성</button></div>
+        <div class="seg"><button aria-pressed="false" data-go="dict">몬스터</button><button aria-pressed="false" data-go="dictg">장비</button><button aria-pressed="false" data-go="dictm">변이</button><button aria-pressed="true">지역</button><button aria-pressed="false" data-go="dictt">특성</button></div>
         <div class="lockline" style="margin-top:10px">다녀간 지역이 여기에 기록돼요 · <b>커스텀</b> 탭의 지역 <b>지정</b>에서 새 창으로 검색해 담으면 확정으로 태어날 수 있어요</div>
         <div class="sec"><span>다녀간 지역</span><small>3곳</small></div>
-        <div class="slot2" style="margin-bottom:6px"><div class="ph"><span>대</span></div><div class="grow"><b>지하 대피소</b><small>방문 2회 · 첫 방문 0세 · 최근 3세</small><div class="req"><span class="tag">안전</span> <span class="tag">좁음</span> <span class="tag">집안: 가난·보통</span></div></div><button class="btn small" data-go="create">여기서 태어나기</button></div><div class="slot2" style="margin-bottom:6px"><div class="ph"><span>마</span></div><div class="grow"><b>외곽 마을</b><small>방문 1회 · 첫 방문 7세</small><div class="req"><span class="tag">거래</span> <span class="tag w">새로움</span> <span class="tag">집안: 가난</span></div></div><button class="btn small" data-go="create">여기서 태어나기</button></div><div class="slot2" style="margin-bottom:6px"><div class="ph"><span>검</span></div><div class="grow"><b>낡은 검문소</b><small>방문 1회 · 첫 방문 17세</small><div class="req"><span class="tag">단말기</span> <span class="tag">집안: 보통·부유</span></div></div><button class="btn small" data-go="create">여기서 태어나기</button></div>
+        <div class="slot2" style="margin-bottom:6px"><div class="ph"><span>대</span></div><div class="grow" data-go="dictrd" style="cursor:pointer"><b>지하 대피소</b><small>방문 2회 · 첫 방문 0세 · 최근 3세</small><div class="req"><span class="tag">안전</span> <span class="tag">좁음</span> <span class="tag">집안: 가난·보통</span></div></div><button class="btn small" data-pick="지하 대피소" data-ic="대" data-info="방문 2회 · 첫 방문 0세">여기서 태어나기</button></div><div class="slot2" style="margin-bottom:6px"><div class="ph"><span>마</span></div><div class="grow" data-go="dictrd" style="cursor:pointer"><b>외곽 마을</b><small>방문 1회 · 첫 방문 7세</small><div class="req"><span class="tag">거래</span> <span class="tag w">새로움</span> <span class="tag">집안: 가난</span></div></div><button class="btn small" data-pick="외곽 마을" data-ic="마" data-info="방문 1회 · 첫 방문 7세">여기서 태어나기</button></div><div class="slot2" style="margin-bottom:6px"><div class="ph"><span>검</span></div><div class="grow" data-go="dictrd" style="cursor:pointer"><b>낡은 검문소</b><small>방문 1회 · 첫 방문 17세</small><div class="req"><span class="tag">단말기</span> <span class="tag">집안: 보통·부유</span></div></div><button class="btn small" data-pick="낡은 검문소" data-ic="검" data-info="방문 1회 · 첫 방문 17세">여기서 태어나기</button></div>
         <div class="sec"><span>아직 가 보지 못한 곳</span><small>5곳</small></div>
         <div class="row2"><div class="ph" style="width:44px;height:44px"><span>?</span></div><div class="grow"><b>???</b><small>다녀가면 기록돼요</small></div><span class="tag">미발견</span></div>
         <div class="row2"><div class="ph" style="width:44px;height:44px"><span>?</span></div><div class="grow"><b>???</b><small>다녀가면 기록돼요</small></div><span class="tag">미발견</span></div>
@@ -447,24 +527,67 @@ input[type=range]{width:100%;accent-color:#000;margin:2px 0 6px}
     <div class="gesture"><i></i></div>
   </div></div></div><figcaption>지역 찾기 (새 창 · 사전에서 검색해 담기)</figcaption></figure>
 
+  <figure class="cell" data-screen="dictrd"><div class="slot"><div class="phone-scale"><div class="phone">
+    <div class="status"><span>9:41</span><span>100%</span></div>
+    <div class="screen">
+      <div class="topbar"><button class="btn small" data-go="dictr">← 목록</button><h2>지하 대피소</h2><span class="tag k">지역</span></div>
+      <div class="scroll">
+        <div class="ph" style="height:180px"><span>지역 이미지</span></div>
+        <div class="sec"><span>기록</span></div><div class="row2"><span class="grow">방문</span><span class="mono">2회</span></div><div class="row2"><span class="grow">첫 방문</span><span class="mono">0세</span></div><div class="row2"><span class="grow">최근 방문</span><span class="mono">3세 5개월</span></div>
+        <div class="sec"><span>특징</span></div>
+        <div class="bar"><span class="tag">안전</span><span class="tag">좁음</span><span class="tag">식량 부족</span></div>
+        <p style="margin:8px 0">멸망 전에 만들어 둔 지하 시설. 문이 두껍고 공기가 탁하다. 오래 있을수록 바깥을 모르게 된다.</p>
+        <div class="sec"><span>여기서 태어나면</span><small>집안 분포</small></div>
+        <div class="row2"><span class="grow">가난</span><span class="mono">50%</span></div><div class="bar2"><i style="width:50%"></i></div>
+        <div class="row2"><span class="grow">보통</span><span class="mono">40%</span></div><div class="bar2"><i style="width:40%"></i></div>
+        <div class="row2"><span class="grow">부유</span><span class="mono">10%</span></div><div class="bar2"><i style="width:10%"></i></div>
+        <div class="sec"><span>만날 수 있는 것</span></div>
+        <div class="bar"><span class="tag">몬스터 · 슬라임</span><span class="tag">장비 · 통조림</span><span class="tag">사건 #030</span></div>
+        <button class="btn primary block" style="margin-top:14px;min-height:52px" data-pick="지하 대피소" data-ic="대" data-info="방문 2회 · 첫 방문 0세">커스텀에서 여기서 태어나기</button>
+      </div>
+    </div>
+    <div class="gesture"><i></i></div>
+  </div></div></div><figcaption>사전 · 지역 상세</figcaption></figure>
+
   <figure class="cell" data-screen="dictt"><div class="slot"><div class="phone-scale"><div class="phone">
     <div class="status"><span>9:41</span><span>100%</span></div>
     <div class="screen">
       <div class="topbar"><button class="btn small" data-go="home">← 홈</button><h2>사전</h2><span class="sub mono">특성 8/20</span></div>
       <div class="scroll">
-        <div class="seg"><button aria-pressed="false" data-go="dict">몬스터</button><button aria-pressed="false">장비</button><button aria-pressed="false">변이</button><button aria-pressed="false" data-go="dictr">지역</button><button aria-pressed="true">특성</button></div>
+        <div class="seg"><button aria-pressed="false" data-go="dict">몬스터</button><button aria-pressed="false" data-go="dictg">장비</button><button aria-pressed="false" data-go="dictm">변이</button><button aria-pressed="false" data-go="dictr">지역</button><button aria-pressed="true">특성</button></div>
         <div class="lockline" style="margin-top:10px">기본 특성은 처음부터 쓸 수 있고, 나머지는 <b>랜덤으로 살며 겪어야</b> 여기에 기록돼 <b>커스텀</b>에서 쓸 수 있어요</div>
         <div class="sec"><span>기본 특성</span><small>3개</small></div>
         <div class="slot2" style="margin-bottom:6px"><div class="ph"><span>손</span></div><div class="grow"><b>손재주</b><small>부품·수리 선택지</small></div><span class="tag">기본</span></div><div class="slot2" style="margin-bottom:6px"><div class="ph"><span>눈</span></div><div class="grow"><b>눈썰미</b><small>숨은 물건을 찾기 쉬움</small></div><span class="tag">기본</span></div><div class="slot2" style="margin-bottom:6px"><div class="ph"><span>끈</span></div><div class="grow"><b>끈기</b><small>허기를 조금 더 버팀</small></div><span class="tag">기본</span></div>
         <div class="sec"><span>긍정 +</span><small>3 / 8</small></div>
-        <div class="slot2" style="margin-bottom:6px"><div class="ph"><span>야</span></div><div class="grow"><b>야간 시야</b><small>밤·지하에서 선택지가 열림</small><div class=req>랜덤에서 2번 겪음 · 지하 대피소</div></div><span class="tag k">+1</span></div><div class="slot2" style="margin-bottom:6px"><div class="ph"><span>튼</span></div><div class="grow"><b>튼튼한 위장</b><small>허기가 천천히 참</small><div class=req>랜덤에서 1번 겪음</div></div><span class="tag k">+1</span></div><div class="slot2" style="margin-bottom:6px"><div class="ph"><span>말</span></div><div class="grow"><b>말발</b><small>거래·설득 선택지</small><div class=req>랜덤에서 1번 겪음 · 외곽 마을</div></div><span class="tag k">+1</span> <span class="tag w">새로움</span></div><div class="slot2" style="margin-bottom:6px;border-style:dashed"><div class="ph"><span>?</span></div><div class="grow"><b>???</b><small>랜덤에서 겪으면 기록돼요</small></div><span class="tag">+?</span></div><div class="slot2" style="margin-bottom:6px;border-style:dashed"><div class="ph"><span>?</span></div><div class="grow"><b>???</b><small>랜덤에서 겪으면 기록돼요</small></div><span class="tag">+?</span></div>
+        <div class="slot2" data-go="dicttd" style="margin-bottom:6px"><div class="ph"><span>야</span></div><div class="grow"><b>야간 시야</b><small>밤·지하에서 선택지가 열림</small><div class=req>랜덤에서 2번 겪음 · 지하 대피소</div></div><span class="tag k">+1</span></div><div class="slot2" data-go="dicttd" style="margin-bottom:6px"><div class="ph"><span>튼</span></div><div class="grow"><b>튼튼한 위장</b><small>허기가 천천히 참</small><div class=req>랜덤에서 1번 겪음</div></div><span class="tag k">+1</span></div><div class="slot2" data-go="dicttd" style="margin-bottom:6px"><div class="ph"><span>말</span></div><div class="grow"><b>말발</b><small>거래·설득 선택지</small><div class=req>랜덤에서 1번 겪음 · 외곽 마을</div></div><span class="tag k">+1</span> <span class="tag w">새로움</span></div><div class="slot2" style="margin-bottom:6px;border-style:dashed"><div class="ph"><span>?</span></div><div class="grow"><b>???</b><small>랜덤에서 겪으면 기록돼요</small></div><span class="tag">+?</span></div><div class="slot2" style="margin-bottom:6px;border-style:dashed"><div class="ph"><span>?</span></div><div class="grow"><b>???</b><small>랜덤에서 겪으면 기록돼요</small></div><span class="tag">+?</span></div>
         <div class="sec"><span>부정 −</span><small>2 / 9</small></div>
-        <div class="slot2" style="margin-bottom:6px"><div class="ph"><span>약</span></div><div class="grow"><b>약한 체질</b><small>병·침식에 취약</small><div class=req>랜덤에서 1번 겪음</div></div><span class="tag">−1</span></div><div class="slot2" style="margin-bottom:6px"><div class="ph"><span>겁</span></div><div class="grow"><b>겁쟁이</b><small>전투 선택 시간 −2초</small><div class=req>랜덤에서 1번 겪음</div></div><span class="tag">−1</span></div><div class="slot2" style="margin-bottom:6px;border-style:dashed"><div class="ph"><span>?</span></div><div class="grow"><b>???</b><small>랜덤에서 겪으면 기록돼요</small></div><span class="tag">−?</span></div><div class="slot2" style="margin-bottom:6px;border-style:dashed"><div class="ph"><span>?</span></div><div class="grow"><b>???</b><small>랜덤에서 겪으면 기록돼요</small></div><span class="tag">−?</span></div>
+        <div class="slot2" data-go="dicttd" style="margin-bottom:6px"><div class="ph"><span>약</span></div><div class="grow"><b>약한 체질</b><small>병·침식에 취약</small><div class=req>랜덤에서 1번 겪음</div></div><span class="tag">−1</span></div><div class="slot2" data-go="dicttd" style="margin-bottom:6px"><div class="ph"><span>겁</span></div><div class="grow"><b>겁쟁이</b><small>전투 선택 시간 −2초</small><div class=req>랜덤에서 1번 겪음</div></div><span class="tag">−1</span></div><div class="slot2" style="margin-bottom:6px;border-style:dashed"><div class="ph"><span>?</span></div><div class="grow"><b>???</b><small>랜덤에서 겪으면 기록돼요</small></div><span class="tag">−?</span></div><div class="slot2" style="margin-bottom:6px;border-style:dashed"><div class="ph"><span>?</span></div><div class="grow"><b>???</b><small>랜덤에서 겪으면 기록돼요</small></div><span class="tag">−?</span></div>
         <div class="lockline" style="margin-top:12px">긍정 특성은 커스텀에서 점수를 쓰고(+), 부정 특성은 점수를 돌려줘요(−)</div>
       </div>
     </div>
     <div class="gesture"><i></i></div>
   </div></div></div><figcaption>사전 · 특성 (랜덤에서 겪은 특성만 쓸 수 있음)</figcaption></figure>
+
+  <figure class="cell" data-screen="dicttd"><div class="slot"><div class="phone-scale"><div class="phone">
+    <div class="status"><span>9:41</span><span>100%</span></div>
+    <div class="screen">
+      <div class="topbar"><button class="btn small" data-go="dictt">← 목록</button><h2>야간 시야</h2><span class="tag k">긍정 +1</span></div>
+      <div class="scroll">
+        <div class="ph" style="height:140px"><span>특성 이미지</span></div>
+        <div class="sec"><span>정보</span></div><div class="row2"><span class="grow">분류</span><span class="mono">긍정 특성</span></div><div class="row2"><span class="grow">점수</span><span class="mono">+1 (커스텀에서 쓰면 점수 소모)</span></div><div class="row2"><span class="grow">해금</span><span class="mono">랜덤에서 2번 겪음</span></div>
+        <div class="sec"><span>효과</span></div>
+        <div class="row2"><span class="grow">밤 · 지하에서 열리는 선택지가 생긴다</span><span class="tag">+</span></div>
+        <div class="row2"><span class="grow">어두운 곳 전투에서 명중이 오른다</span><span class="tag">+</span></div>
+        <div class="sec"><span>설명</span></div>
+        <p style="margin:6px 0">빛이 거의 없어도 윤곽을 알아본다. 지하에서 태어나 오래 살았거나, 눈이 어둠에 맞게 변한 사람에게 흔하다.</p>
+        <div class="sec"><span>겪은 기록</span></div><div class="row2"><span class="grow">3세 5개월</span><span class="mono">지하 대피소</span></div><div class="row2"><span class="grow">17세 2개월</span><span class="mono">침식 지대</span></div>
+        <div class="sec"><span>관련</span></div>
+        <div class="bar"><span class="tag">변이 · 장기 감염</span><span class="tag">지역 · 지하 대피소</span><span class="tag">부정 특성 · 약한 체질</span></div>
+        <button class="btn primary block" style="margin-top:14px;min-height:52px" data-go="create" data-open-tab="custom">커스텀에서 고르기</button>
+      </div>
+    </div>
+    <div class="gesture"><i></i></div>
+  </div></div></div><figcaption>사전 · 특성 상세</figcaption></figure>
 
   <figure class="cell" data-screen="ach"><div class="slot"><div class="phone-scale"><div class="phone">
     <div class="status"><span>9:41</span><span>100%</span></div>
@@ -707,34 +830,49 @@ input[type=range]{width:100%;accent-color:#000;margin:2px 0 6px}
   <p class="note">특별한 사건이 없는 달은 멈추지 않고 자동으로 넘어가요(로그에 "특별한 일 없이 지나감"으로 한 줄 요약). 선택이 필요한 달에서만 멈춰요. 하단 선택창은 탐험에서는 글 선택지, 전투에서는 공격 방식 버튼이 돼요. 위 막대의 왼쪽 정사각 버튼은 탐험에서는 메뉴(☰), 전투에서는 도망(×)으로 바뀌어요. 왼쪽 레일은 급소만 보여 주고 누르면 몸 상태 전체를, 오른쪽 레일은 가방이고 누르면 인벤토리를 열어요.</p>
 </div>
 <script>
-// 화면 그룹: 위쪽 칩은 그룹 단위, 하위 화면은 그룹을 골랐을 때만 아래에 나타난다.
+// 화면 그룹: 위쪽 칩은 그룹 → (카테고리) → (목록/상세) 순으로 한 줄씩 내려가며 나타난다.
+const S = (k, l) => ({ label: l, screens: [[k, l]] });
 const GROUPS = [
-  ['home', '홈', [['home', '홈']]],
-  ['start', '게임 시작', [['create', '태어나기'], ['regpick', '지역 찾기 (새 창)']]],
-  ['load', '이어서 하기', [['load', '이어서 하기']]],
-  ['dict', '사전', [['dict', '목록 (몬스터)'], ['dictd', '상세'], ['dictr', '지역'], ['dictt', '특성']]],
-  ['ach', '업적', [['ach', '업적']]],
-  ['set', '설정', [['set', '설정']]],
-  ['play', '플레이', [['explore', '탐험'], ['battle', '전투'], ['body', '몸 상태'], ['inv', '인벤토리'], ['choice', '선택 이벤트']]]
+  { id: 'home', label: '홈', subs: [S('home', '홈')] },
+  { id: 'start', label: '게임 시작', subs: [S('create', '태어나기'), S('regpick', '지역 찾기 (새 창)')] },
+  { id: 'load', label: '이어서 하기', subs: [S('load', '이어서 하기')] },
+  { id: 'dict', label: '사전', subs: [
+    { label: '몬스터', screens: [['dict', '목록'], ['dictd', '상세']] },
+    { label: '장비', screens: [['dictg', '목록'], ['dictgd', '상세']] },
+    { label: '변이', screens: [['dictm', '목록'], ['dictmd', '상세']] },
+    { label: '지역', screens: [['dictr', '목록'], ['dictrd', '상세']] },
+    { label: '특성', screens: [['dictt', '목록'], ['dicttd', '상세']] } ] },
+  { id: 'ach', label: '업적', subs: [S('ach', '업적')] },
+  { id: 'set', label: '설정', subs: [S('set', '설정')] },
+  { id: 'play', label: '플레이', subs: [S('explore', '탐험'), S('battle', '전투'), S('body', '몸 상태'), S('inv', '인벤토리'), S('choice', '선택 이벤트')] }
 ];
-const SCREENS = GROUPS.flatMap(g => g[2]);
-const groupOf = k => GROUPS.find(g => g[2].some(x => x[0] === k));
+const gscreens = g => g.subs.flatMap(x => x.screens);
+const SCREENS = GROUPS.flatMap(gscreens);
+const findScreen = k => { for (const g of GROUPS) for (const x of g.subs) if (x.screens.some(y => y[0] === k)) return [g, x]; };
 const $ = id => document.getElementById(id);
 const cells = [...document.querySelectorAll('.cell')];
 let cur = (location.hash || '#home').slice(1), mode = 'one';
 if (!SCREENS.some(s => s[0] === cur)) cur = 'home';
 
-const chips = $('chips'), subchips = $('subchips');
+const chips = $('chips'), subchips = $('subchips'), subchips2 = $('subchips2');
 GROUPS.forEach(g => {
-  const b = document.createElement('button'); b.className = 'chip'; b.textContent = g[1]; b.dataset.g = g[0];
-  b.onclick = () => go(g[2][0][0]); chips.append(b);
+  const b = document.createElement('button'); b.className = 'chip'; b.textContent = g.label; b.dataset.g = g.id;
+  b.onclick = () => go(gscreens(g)[0][0]); chips.append(b);
 });
 // 전체 보기에서 그룹별 제목
 const heads = GROUPS.map(g => {
   const h = document.createElement('h3'); h.className = 'ghead'; h.hidden = true;
-  h.innerHTML = g[1] + '<small>' + g[2].length + '화면</small>';
-  $('stage').insertBefore(h, cells.find(c => c.dataset.screen === g[2][0][0])); return h;
+  h.innerHTML = g.label + '<small>' + gscreens(g).length + '화면</small>';
+  $('stage').insertBefore(h, cells.find(c => c.dataset.screen === gscreens(g)[0][0])); return h;
 });
+function fillRow(row, items, isOn, onPick) {
+  row.textContent = '';
+  const l = document.createElement('span'); l.className = 'subl'; l.textContent = 'ㄴ'; row.append(l);
+  items.forEach(it => {
+    const b = document.createElement('button'); b.className = 'chip'; b.textContent = it.label;
+    b.setAttribute('aria-pressed', isOn(it)); b.onclick = () => onPick(it); row.append(b);
+  });
+}
 function fit() {
   const stage = $('stage'), avail = Math.min(stage.clientWidth || 390, 1180);
   const s = mode === 'one' ? Math.min(1, avail / 390) : Math.min(.62, avail / 390);
@@ -744,19 +882,14 @@ function fit() {
   });
 }
 function render() {
-  const g = groupOf(cur);
+  const [g, sub] = findScreen(cur);
   cells.forEach(c => { c.hidden = mode === 'one' && c.dataset.screen !== cur; });
   heads.forEach(h => { h.hidden = mode !== 'all'; });
-  chips.querySelectorAll('.chip').forEach(b => b.setAttribute('aria-pressed', mode === 'one' && b.dataset.g === g[0]));
-  const multi = mode === 'one' && g[2].length > 1;
-  subchips.hidden = !multi; subchips.textContent = '';
-  if (multi) {
-    const l = document.createElement('span'); l.className = 'subl'; l.textContent = 'ㄴ'; subchips.append(l);
-    g[2].forEach(([k, label]) => {
-      const b = document.createElement('button'); b.className = 'chip'; b.textContent = label; b.dataset.k = k;
-      b.setAttribute('aria-pressed', k === cur); b.onclick = () => go(k); subchips.append(b);
-    });
-  }
+  chips.querySelectorAll('.chip').forEach(b => b.setAttribute('aria-pressed', mode === 'one' && b.dataset.g === g.id));
+  const row1 = mode === 'one' && g.subs.length > 1, row2 = mode === 'one' && sub.screens.length > 1;
+  subchips.hidden = !row1; subchips2.hidden = !row2;
+  if (row1) fillRow(subchips, g.subs, x => x === sub, x => go(x.screens[0][0]));
+  if (row2) fillRow(subchips2, sub.screens.map(([k, label]) => ({ k, label })), x => x.k === cur, x => go(x.k));
   $('oneBtn').setAttribute('aria-pressed', mode === 'one'); $('allBtn').setAttribute('aria-pressed', mode === 'all');
   fit();
 }
@@ -794,7 +927,8 @@ document.querySelectorAll('.toggle').forEach(t => t.addEventListener('click', ()
   mode.addEventListener('click', e => { const b = e.target.closest('button'); if (b) setMode([...mode.children].indexOf(b)); });
   document.querySelectorAll('[data-pick]').forEach(b => b.addEventListener('click', () => {
     $('regIc').textContent = b.dataset.ic; $('regName').textContent = b.dataset.pick; $('regInfo').textContent = b.dataset.info + ' · 확정';
-    slot.style.borderStyle = 'solid'; $('regFind').textContent = '바꾸기'; setMode(1); go('create');
+    slot.style.borderStyle = 'solid'; $('regFind').textContent = '바꾸기'; setMode(1);
+    const ct = document.querySelector('#ctabs [data-p="custom"]'); if (ct) ct.click(); go('create');
   }));
   const rq = $('rq');
   rq.addEventListener('input', () => {
@@ -821,6 +955,7 @@ document.querySelectorAll('.toggle').forEach(t => t.addEventListener('click', ()
   }));
   const tmode = $('traitMode');
   tmode.addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; const r = b === tmode.firstElementChild; $('traitPick').hidden = r; $('traitRandomNote').hidden = !r; });
+  document.querySelectorAll('[data-open-tab]').forEach(b => b.addEventListener('click', () => { const t = document.querySelector('#ctabs [data-p="' + b.dataset.openTab + '"]'); if (t) t.click(); }));
   // 슬라이더
   $('hunger').addEventListener('input', e => { $('hv').textContent = e.target.value; });
   $('money').addEventListener('input', e => { $('mv').textContent = e.target.value; });
