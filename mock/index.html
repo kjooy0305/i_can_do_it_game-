@@ -213,6 +213,12 @@ figure{margin:0}
 .pts .mono{font-size:30px}
 input[type=range]{width:100%;accent-color:#000;margin:2px 0 6px}
 .empty2{text-align:center;padding:14px 0;border:1.5px dashed var(--ink);border-radius:10px;font-size:13px}
+.sumrow{display:grid;grid-template-columns:64px 1fr;gap:8px;align-items:center;padding:4px 0;border-bottom:1px solid var(--ink);min-height:40px}
+.sumrow b{font-size:13px}
+.pad2{padding:0 16px;flex:none}
+.cfoot .sub{font-size:12px}
+.btn.blocked{border-style:dashed}
+.cfoot .deny{animation:deny .3s}
 .slots{display:grid;gap:6px}
 .slot2{border:1.5px solid var(--ink);border-radius:12px;padding:8px 12px;display:flex;gap:10px;align-items:center}
 .slot2 .ph{width:44px;height:44px;flex:none}
@@ -303,10 +309,12 @@ input[type=range]{width:100%;accent-color:#000;margin:2px 0 6px}
           <div class="sec"><span>부모</span></div>
           <div class="row2"><span class="grow"><b>구성</b></span></div>
           <div class="seg"><button aria-pressed="true">랜덤</button><button aria-pressed="false">두 분</button><button aria-pressed="false">한 분</button><button aria-pressed="false">없음</button></div>
+          <p class="sub" style="margin:6px 0 0">한 분만 남는 경우, <b>어느 분이 남을지는 랜덤</b>이에요.</p>
           <div class="row2"><span class="grow"><b>몸 상태</b></span></div>
           <div class="seg"><button aria-pressed="true">랜덤</button><button aria-pressed="false">건강</button><button aria-pressed="false">병약</button><button aria-pressed="false">변이됨</button></div>
           <div class="row2"><span class="grow"><b>형제</b></span></div>
           <div class="seg"><button aria-pressed="true">랜덤</button><button aria-pressed="false">없음</button><button aria-pressed="false">1명</button><button aria-pressed="false">2명+</button></div>
+          <p class="sub" style="margin:6px 0 0">형제가 있어도 <b>나보다 손위인지 손아래인지, 몇째인지는 모른 채</b> 태어나요 (랜덤).</p>
           <div class="sec"><span>집안</span></div>
           <div class="row2"><span class="grow"><b>형편</b></span></div>
           <div class="seg"><button aria-pressed="true">랜덤</button><button aria-pressed="false">가난</button><button aria-pressed="false">보통</button><button aria-pressed="false">부유</button></div>
@@ -319,16 +327,15 @@ input[type=range]{width:100%;accent-color:#000;margin:2px 0 6px}
           <div class="seg" id="traitMode"><button aria-pressed="false">랜덤</button><button aria-pressed="true">직접 선택</button></div>
           <p class="sub" id="traitRandomNote" style="margin:8px 0 0" hidden>특성이 랜덤으로 붙어요. 이때는 점수를 계산하지 않아요.</p>
           <div id="traitPick">
-            <div class="pts"><div><b>남은 점수</b><small>긍정(+)은 점수를 쓰고, 부정(−)은 돌려줘요</small></div><span class="mono" id="ptsLeft">3</span></div>
-            <div class="sub mono" id="ptsMsg" style="margin:4px 0 0">부정 특성은 최대 2개 · 기본 특성은 최대 2개</div>
-            <div class="sec"><span>기본 특성</span><small>처음부터 사용 가능</small></div>
-            <div class="trs"><button class="tr" data-cost="0" data-kind="basic" aria-pressed="true"><span class="grow"><b>손재주</b><small>부품·수리 선택지</small></span><span class="tag">기본</span></button><button class="tr" data-cost="0" data-kind="basic" aria-pressed="false"><span class="grow"><b>눈썰미</b><small>숨은 물건을 찾기 쉬움</small></span><span class="tag">기본</span></button><button class="tr" data-cost="0" data-kind="basic" aria-pressed="false"><span class="grow"><b>끈기</b><small>허기를 조금 더 버팀</small></span><span class="tag">기본</span></button></div>
-            <div class="sec"><span>긍정 특성 +</span><small>사전에 기록된 것만 · 3/6</small></div>
-            <div class="trs"><button class="tr" data-cost="1" data-kind="pos" aria-pressed="true"><span class="grow"><b>야간 시야</b><small>밤·지하에서 선택지가 열림</small></span><span class="tag k">+1</span></button><button class="tr" data-cost="1" data-kind="pos" aria-pressed="false"><span class="grow"><b>튼튼한 위장</b><small>허기가 천천히 참</small></span><span class="tag k">+1</span></button><button class="tr" data-cost="1" data-kind="pos" aria-pressed="false"><span class="grow"><b>말발</b><small>거래·설득 선택지</small></span><span class="tag k">+1</span></button><button class="tr" disabled><span class="grow"><b>???</b><small>랜덤에서 겪으면 사전에 추가돼요</small></span><span class="tag">+?</span></button><button class="tr" disabled><span class="grow"><b>???</b><small>랜덤에서 겪으면 사전에 추가돼요</small></span><span class="tag">+?</span></button><button class="tr" disabled><span class="grow"><b>???</b><small>랜덤에서 겪으면 사전에 추가돼요</small></span><span class="tag">+?</span></button></div>
-            <div class="sec"><span>부정 특성 −</span><small>사전에 기록된 것만 · 2/5</small></div>
-            <div class="trs"><button class="tr" data-cost="-1" data-kind="neg" aria-pressed="true"><span class="grow"><b>약한 체질</b><small>병·침식에 취약</small></span><span class="tag">−1</span></button><button class="tr" data-cost="-1" data-kind="neg" aria-pressed="false"><span class="grow"><b>겁쟁이</b><small>전투 선택 시간 −2초</small></span><span class="tag">−1</span></button><button class="tr" disabled><span class="grow"><b>???</b><small>랜덤에서 겪으면 사전에 추가돼요</small></span><span class="tag">−?</span></button><button class="tr" disabled><span class="grow"><b>???</b><small>랜덤에서 겪으면 사전에 추가돼요</small></span><span class="tag">−?</span></button><button class="tr" disabled><span class="grow"><b>???</b><small>랜덤에서 겪으면 사전에 추가돼요</small></span><span class="tag">−?</span></button></div>
+            <div class="pts"><div><b>특성 점수</b><small>2점 이하로 맞추면 플레이할 수 있어요</small></div><span class="mono" id="ptsVal">0</span></div>
+            <div class="sub" id="ptsState" style="margin:6px 0 0;font-weight:700">✓ 시작할 수 있어요</div>
+            <div class="sec"><span>선택한 특성</span><small id="selCount">3개</small></div>
+            <div class="sumrow"><b>기본</b><div class="bar" id="sumBasic"></div></div>
+            <div class="sumrow"><b>긍정 +</b><div class="bar" id="sumPos"></div></div>
+            <div class="sumrow"><b>부정 −</b><div class="bar" id="sumNeg"></div></div>
+            <button class="btn block" style="margin-top:10px;min-height:48px" data-go="traitpick">특성 고르기 (새 창)</button>
           </div>
-          <div class="lockline" style="margin-top:12px">기본 특성 외의 특성은 <b>랜덤으로 살아 보며 겪은 것만</b> 사전에 기록되고, 여기서 쓸 수 있어요</div>
+          <div class="lockline" style="margin-top:12px">기본 특성 외의 특성은 <b>랜덤으로 살아 보며 겪은 것만</b> 사전에 기록되고, 새 창에서 고를 수 있어요</div>
           <div class="sec"><span>타고난 몸</span><small>모두 원본으로 시작</small></div>
           <div class="tree">
             <details><summary><span>얼굴</span><span class="sub">5부위</span></summary><div class="part"><span class="grow">왼눈</span><span class="tag">원본</span></div><div class="part"><span class="grow">오른눈</span><span class="tag">원본</span></div><div class="part"><span class="grow">코</span><span class="tag">원본</span></div><div class="part"><span class="grow">입</span><span class="tag">원본</span></div><div class="part"><span class="grow">귀</span><span class="tag">원본</span></div></details>
@@ -340,10 +347,54 @@ input[type=range]{width:100%;accent-color:#000;margin:2px 0 6px}
         </div>
 
       </div>
-      <div class="cfoot"><button class="btn primary block" style="min-height:52px" data-go="explore">태어나기</button></div>
+      <div class="cfoot"><button class="btn primary block" id="startBtn" style="min-height:52px">태어나기</button><div class="sub" id="startMsg" style="text-align:center;margin-top:6px;font-weight:700" hidden></div></div>
     </div>
     <div class="gesture"><i></i></div>
   </div></div></div><figcaption>게임 시작 · 태어나기 (기본 / 커스텀)</figcaption></figure>
+
+  <figure class="cell" data-screen="regpick"><div class="slot"><div class="phone-scale"><div class="phone">
+    <div class="status"><span>9:41</span><span>100%</span></div>
+    <div class="screen">
+      <div class="topbar"><button class="btn small" data-go="create">← 돌아가기</button><h2>지역 찾기</h2><span class="tag">새 창</span></div>
+      <div class="scroll">
+        <div class="field"><input id="rq" type="search" placeholder="지역 이름·특징 검색 (예: 안전, 마을)" autocomplete="off"></div>
+        <p class="sub" style="margin:8px 0 0">사전에 기록된 지역만 나와요. <b>담기</b>를 누르면 태어날 지역이 그곳으로 확정돼요.</p>
+        <div class="sec"><span>다녀간 지역</span><small id="rcount">3곳</small></div>
+        <div id="rlist"><div class="slot2 rrow" data-q="지하 대피소 방문 2회 · 첫 방문 0세  안전   좁음 " style="margin-bottom:6px"><div class="ph"><span>대</span></div><div class="grow"><b>지하 대피소</b><small>방문 2회 · 첫 방문 0세</small><div class="req"><span class="tag">안전</span> <span class="tag">좁음</span></div></div><button class="btn small" data-pick="지하 대피소" data-ic="대" data-info="방문 2회 · 첫 방문 0세">담기</button></div><div class="slot2 rrow" data-q="외곽 마을 방문 1회 · 첫 방문 7세  거래   마을 " style="margin-bottom:6px"><div class="ph"><span>마</span></div><div class="grow"><b>외곽 마을</b><small>방문 1회 · 첫 방문 7세</small><div class="req"><span class="tag">거래</span> <span class="tag">마을</span></div></div><button class="btn small" data-pick="외곽 마을" data-ic="마" data-info="방문 1회 · 첫 방문 7세">담기</button></div><div class="slot2 rrow" data-q="낡은 검문소 방문 1회 · 첫 방문 17세  단말기   거래소 " style="margin-bottom:6px"><div class="ph"><span>검</span></div><div class="grow"><b>낡은 검문소</b><small>방문 1회 · 첫 방문 17세</small><div class="req"><span class="tag">단말기</span> <span class="tag">거래소</span></div></div><button class="btn small" data-pick="낡은 검문소" data-ic="검" data-info="방문 1회 · 첫 방문 17세">담기</button></div></div>
+        <div class="empty2" id="rempty" hidden>검색 결과가 없어요</div>
+        <div class="sec"><span>아직 가 보지 못한 곳</span><small>5곳</small></div>
+        <div class="row2"><div class="ph" style="width:44px;height:44px"><span>?</span></div><div class="grow"><b>???</b><small>랜덤으로 다녀가면 기록돼요</small></div><span class="tag">잠김</span></div>
+        <div class="row2"><div class="ph" style="width:44px;height:44px"><span>?</span></div><div class="grow"><b>???</b><small>랜덤으로 다녀가면 기록돼요</small></div><span class="tag">잠김</span></div>
+      </div>
+    </div>
+    <div class="gesture"><i></i></div>
+  </div></div></div><figcaption>지역 찾기 (새 창 · 사전에서 검색해 담기)</figcaption></figure>
+
+  <figure class="cell" data-screen="traitpick"><div class="slot"><div class="phone-scale"><div class="phone">
+    <div class="status"><span>9:41</span><span>100%</span></div>
+    <div class="screen">
+      <div class="topbar"><button class="btn small" data-go="create">← 돌아가기</button><h2>특성 고르기</h2><span class="tag">새 창</span></div>
+      <div class="pad2"><div class="pts" style="margin-top:0"><div><b>특성 점수</b><small>고르는 데 제한은 없어요 · 2점 이하로 맞추면 플레이할 수 있어요</small></div><span class="mono" id="ptsWin">0</span></div>
+      <div class="sub" id="ptsWinState" style="margin:6px 0 8px;font-weight:700">✓ 시작할 수 있어요</div></div>
+      <div class="seg ctabs" id="ttabs"><button aria-pressed="true" data-tp="basic">기본</button><button aria-pressed="false" data-tp="pos">긍정 +</button><button aria-pressed="false" data-tp="neg">부정 −</button></div>
+      <div class="scroll">
+        <div data-tpanel="basic">
+          <div class="sec"><span>기본 특성</span><small>처음부터 사용 가능</small></div>
+          <div class="trs"><button class="tr" data-cost="0" data-kind="basic" aria-pressed="true"><span class="grow"><b>손재주</b><small>부품·수리 선택지</small></span><span class="tag">기본</span></button><button class="tr" data-cost="0" data-kind="basic" aria-pressed="false"><span class="grow"><b>눈썰미</b><small>숨은 물건을 찾기 쉬움</small></span><span class="tag">기본</span></button><button class="tr" data-cost="0" data-kind="basic" aria-pressed="false"><span class="grow"><b>끈기</b><small>허기를 조금 더 버팀</small></span><span class="tag">기본</span></button></div>
+        </div>
+        <div data-tpanel="pos" hidden>
+          <div class="sec"><span>긍정 목록 +</span><small>사전에 기록된 것만 · 점수가 올라요</small></div>
+          <div class="trs"><button class="tr" data-cost="1" data-kind="pos" aria-pressed="true"><span class="grow"><b>야간 시야</b><small>밤·지하에서 선택지가 열림</small></span><span class="tag k">+1</span></button><button class="tr" data-cost="1" data-kind="pos" aria-pressed="false"><span class="grow"><b>튼튼한 위장</b><small>허기가 천천히 참</small></span><span class="tag k">+1</span></button><button class="tr" data-cost="1" data-kind="pos" aria-pressed="false"><span class="grow"><b>말발</b><small>거래·설득 선택지</small></span><span class="tag k">+1</span></button><button class="tr" disabled><span class="grow"><b>???</b><small>랜덤에서 겪으면 사전에 추가돼요</small></span><span class="tag">+?</span></button><button class="tr" disabled><span class="grow"><b>???</b><small>랜덤에서 겪으면 사전에 추가돼요</small></span><span class="tag">+?</span></button><button class="tr" disabled><span class="grow"><b>???</b><small>랜덤에서 겪으면 사전에 추가돼요</small></span><span class="tag">+?</span></button></div>
+        </div>
+        <div data-tpanel="neg" hidden>
+          <div class="sec"><span>부정 목록 −</span><small>사전에 기록된 것만 · 점수가 내려가요</small></div>
+          <div class="trs"><button class="tr" data-cost="-1" data-kind="neg" aria-pressed="true"><span class="grow"><b>약한 체질</b><small>병·침식에 취약</small></span><span class="tag">−1</span></button><button class="tr" data-cost="-1" data-kind="neg" aria-pressed="false"><span class="grow"><b>겁쟁이</b><small>전투 선택 시간 −2초</small></span><span class="tag">−1</span></button><button class="tr" disabled><span class="grow"><b>???</b><small>랜덤에서 겪으면 사전에 추가돼요</small></span><span class="tag">−?</span></button><button class="tr" disabled><span class="grow"><b>???</b><small>랜덤에서 겪으면 사전에 추가돼요</small></span><span class="tag">−?</span></button><button class="tr" disabled><span class="grow"><b>???</b><small>랜덤에서 겪으면 사전에 추가돼요</small></span><span class="tag">−?</span></button></div>
+        </div>
+      </div>
+      <div class="cfoot"><button class="btn primary block" style="min-height:52px" data-go="create">적용하고 돌아가기</button></div>
+    </div>
+    <div class="gesture"><i></i></div>
+  </div></div></div><figcaption>특성 고르기 (새 창 · 긍정/부정 목록에서 골라 넣기)</figcaption></figure>
 
   <!-- 3. 이어서 하기 -->
   <figure class="cell" data-screen="load"><div class="slot"><div class="phone-scale"><div class="phone">
@@ -509,24 +560,6 @@ input[type=range]{width:100%;accent-color:#000;margin:2px 0 6px}
     <div class="gesture"><i></i></div>
   </div></div></div><figcaption>사전 · 지역 (다녀간 곳은 확정 출생 가능)</figcaption></figure>
 
-  <figure class="cell" data-screen="regpick"><div class="slot"><div class="phone-scale"><div class="phone">
-    <div class="status"><span>9:41</span><span>100%</span></div>
-    <div class="screen">
-      <div class="topbar"><button class="btn small" data-go="create">← 돌아가기</button><h2>지역 찾기</h2><span class="tag">새 창</span></div>
-      <div class="scroll">
-        <div class="field"><input id="rq" type="search" placeholder="지역 이름·특징 검색 (예: 안전, 마을)" autocomplete="off"></div>
-        <p class="sub" style="margin:8px 0 0">사전에 기록된 지역만 나와요. <b>담기</b>를 누르면 태어날 지역이 그곳으로 확정돼요.</p>
-        <div class="sec"><span>다녀간 지역</span><small id="rcount">3곳</small></div>
-        <div id="rlist"><div class="slot2 rrow" data-q="지하 대피소 방문 2회 · 첫 방문 0세  안전   좁음 " style="margin-bottom:6px"><div class="ph"><span>대</span></div><div class="grow"><b>지하 대피소</b><small>방문 2회 · 첫 방문 0세</small><div class="req"><span class="tag">안전</span> <span class="tag">좁음</span></div></div><button class="btn small" data-pick="지하 대피소" data-ic="대" data-info="방문 2회 · 첫 방문 0세">담기</button></div><div class="slot2 rrow" data-q="외곽 마을 방문 1회 · 첫 방문 7세  거래   마을 " style="margin-bottom:6px"><div class="ph"><span>마</span></div><div class="grow"><b>외곽 마을</b><small>방문 1회 · 첫 방문 7세</small><div class="req"><span class="tag">거래</span> <span class="tag">마을</span></div></div><button class="btn small" data-pick="외곽 마을" data-ic="마" data-info="방문 1회 · 첫 방문 7세">담기</button></div><div class="slot2 rrow" data-q="낡은 검문소 방문 1회 · 첫 방문 17세  단말기   거래소 " style="margin-bottom:6px"><div class="ph"><span>검</span></div><div class="grow"><b>낡은 검문소</b><small>방문 1회 · 첫 방문 17세</small><div class="req"><span class="tag">단말기</span> <span class="tag">거래소</span></div></div><button class="btn small" data-pick="낡은 검문소" data-ic="검" data-info="방문 1회 · 첫 방문 17세">담기</button></div></div>
-        <div class="empty2" id="rempty" hidden>검색 결과가 없어요</div>
-        <div class="sec"><span>아직 가 보지 못한 곳</span><small>5곳</small></div>
-        <div class="row2"><div class="ph" style="width:44px;height:44px"><span>?</span></div><div class="grow"><b>???</b><small>랜덤으로 다녀가면 기록돼요</small></div><span class="tag">잠김</span></div>
-        <div class="row2"><div class="ph" style="width:44px;height:44px"><span>?</span></div><div class="grow"><b>???</b><small>랜덤으로 다녀가면 기록돼요</small></div><span class="tag">잠김</span></div>
-      </div>
-    </div>
-    <div class="gesture"><i></i></div>
-  </div></div></div><figcaption>지역 찾기 (새 창 · 사전에서 검색해 담기)</figcaption></figure>
-
   <figure class="cell" data-screen="dictrd"><div class="slot"><div class="phone-scale"><div class="phone">
     <div class="status"><span>9:41</span><span>100%</span></div>
     <div class="screen">
@@ -562,7 +595,7 @@ input[type=range]{width:100%;accent-color:#000;margin:2px 0 6px}
         <div class="slot2" data-go="dicttd" style="margin-bottom:6px"><div class="ph"><span>야</span></div><div class="grow"><b>야간 시야</b><small>밤·지하에서 선택지가 열림</small><div class=req>랜덤에서 2번 겪음 · 지하 대피소</div></div><span class="tag k">+1</span></div><div class="slot2" data-go="dicttd" style="margin-bottom:6px"><div class="ph"><span>튼</span></div><div class="grow"><b>튼튼한 위장</b><small>허기가 천천히 참</small><div class=req>랜덤에서 1번 겪음</div></div><span class="tag k">+1</span></div><div class="slot2" data-go="dicttd" style="margin-bottom:6px"><div class="ph"><span>말</span></div><div class="grow"><b>말발</b><small>거래·설득 선택지</small><div class=req>랜덤에서 1번 겪음 · 외곽 마을</div></div><span class="tag k">+1</span> <span class="tag w">새로움</span></div><div class="slot2" style="margin-bottom:6px;border-style:dashed"><div class="ph"><span>?</span></div><div class="grow"><b>???</b><small>랜덤에서 겪으면 기록돼요</small></div><span class="tag">+?</span></div><div class="slot2" style="margin-bottom:6px;border-style:dashed"><div class="ph"><span>?</span></div><div class="grow"><b>???</b><small>랜덤에서 겪으면 기록돼요</small></div><span class="tag">+?</span></div>
         <div class="sec"><span>부정 −</span><small>2 / 9</small></div>
         <div class="slot2" data-go="dicttd" style="margin-bottom:6px"><div class="ph"><span>약</span></div><div class="grow"><b>약한 체질</b><small>병·침식에 취약</small><div class=req>랜덤에서 1번 겪음</div></div><span class="tag">−1</span></div><div class="slot2" data-go="dicttd" style="margin-bottom:6px"><div class="ph"><span>겁</span></div><div class="grow"><b>겁쟁이</b><small>전투 선택 시간 −2초</small><div class=req>랜덤에서 1번 겪음</div></div><span class="tag">−1</span></div><div class="slot2" style="margin-bottom:6px;border-style:dashed"><div class="ph"><span>?</span></div><div class="grow"><b>???</b><small>랜덤에서 겪으면 기록돼요</small></div><span class="tag">−?</span></div><div class="slot2" style="margin-bottom:6px;border-style:dashed"><div class="ph"><span>?</span></div><div class="grow"><b>???</b><small>랜덤에서 겪으면 기록돼요</small></div><span class="tag">−?</span></div>
-        <div class="lockline" style="margin-top:12px">긍정 특성은 커스텀에서 점수를 쓰고(+), 부정 특성은 점수를 돌려줘요(−)</div>
+        <div class="lockline" style="margin-top:12px">긍정 특성은 점수가 올라가고(+), 부정 특성은 점수가 내려가요(−) · 점수 2 이하로 맞추면 플레이할 수 있어요</div>
       </div>
     </div>
     <div class="gesture"><i></i></div>
@@ -574,7 +607,7 @@ input[type=range]{width:100%;accent-color:#000;margin:2px 0 6px}
       <div class="topbar"><button class="btn small" data-go="dictt">← 목록</button><h2>야간 시야</h2><span class="tag k">긍정 +1</span></div>
       <div class="scroll">
         <div class="ph" style="height:140px"><span>특성 이미지</span></div>
-        <div class="sec"><span>정보</span></div><div class="row2"><span class="grow">분류</span><span class="mono">긍정 특성</span></div><div class="row2"><span class="grow">점수</span><span class="mono">+1 (커스텀에서 쓰면 점수 소모)</span></div><div class="row2"><span class="grow">해금</span><span class="mono">랜덤에서 2번 겪음</span></div>
+        <div class="sec"><span>정보</span></div><div class="row2"><span class="grow">분류</span><span class="mono">긍정 특성</span></div><div class="row2"><span class="grow">점수</span><span class="mono">+1 (고르면 특성 점수가 올라요)</span></div><div class="row2"><span class="grow">해금</span><span class="mono">랜덤에서 2번 겪음</span></div>
         <div class="sec"><span>효과</span></div>
         <div class="row2"><span class="grow">밤 · 지하에서 열리는 선택지가 생긴다</span><span class="tag">+</span></div>
         <div class="row2"><span class="grow">어두운 곳 전투에서 명중이 오른다</span><span class="tag">+</span></div>
@@ -834,7 +867,7 @@ input[type=range]{width:100%;accent-color:#000;margin:2px 0 6px}
 const S = (k, l) => ({ label: l, screens: [[k, l]] });
 const GROUPS = [
   { id: 'home', label: '홈', subs: [S('home', '홈')] },
-  { id: 'start', label: '게임 시작', subs: [S('create', '태어나기'), S('regpick', '지역 찾기 (새 창)')] },
+  { id: 'start', label: '게임 시작', subs: [S('create', '태어나기'), S('regpick', '지역 찾기 (새 창)'), S('traitpick', '특성 고르기 (새 창)')] },
   { id: 'load', label: '이어서 하기', subs: [S('load', '이어서 하기')] },
   { id: 'dict', label: '사전', subs: [
     { label: '몬스터', screens: [['dict', '목록'], ['dictd', '상세']] },
@@ -936,30 +969,41 @@ document.querySelectorAll('.toggle').forEach(t => t.addEventListener('click', ()
     document.querySelectorAll('.rrow').forEach(r => { const show = !k || r.dataset.q.toLowerCase().includes(k); r.hidden = !show; if (show) n++; });
     $('rcount').textContent = n + '곳'; $('rempty').hidden = n > 0;
   });
-  // 특성: 기본 최대 2, 부정 최대 2, 남은 점수 = 3 − Σ(비용)  (부정은 비용이 음수 = 환급)
-  const LIMIT = 3, trs = [...document.querySelectorAll('.tr[data-cost]')];
-  function calc() {
-    const on = trs.filter(t => t.getAttribute('aria-pressed') === 'true');
-    return { left: LIMIT - on.reduce((a, t) => a + +t.dataset.cost, 0), neg: on.filter(t => t.dataset.kind === 'neg').length, basic: on.filter(t => t.dataset.kind === 'basic').length };
+  // 특성: 고르는 데는 제한이 없다. 점수 = Σ(긍정 +, 부정 −). 직접 선택이면 점수가 2 이하일 때만 플레이(태어나기) 가능.
+  const MAXSTART = 2, trs = [...document.querySelectorAll('.tr[data-cost]')], tmode = $('traitMode');
+  const direct = () => tmode.lastElementChild.getAttribute('aria-pressed') === 'true';
+  const pressed = () => trs.filter(t => t.getAttribute('aria-pressed') === 'true');
+  const score = () => pressed().reduce((a, t) => a + +t.dataset.cost, 0);
+  function fill(id, kind) {
+    const row = $(id); row.textContent = '';
+    const on = pressed().filter(t => t.dataset.kind === kind);
+    if (!on.length) { const e = document.createElement('span'); e.className = 'sub'; e.textContent = '없음'; row.append(e); return; }
+    on.forEach(t => { const e = document.createElement('span'); e.className = 'tag' + (kind === 'pos' ? ' k' : ''); e.textContent = t.querySelector('b').textContent + ' ' + (kind === 'pos' ? '+' : kind === 'neg' ? '−' : '') + (kind === 'basic' ? '' : Math.abs(+t.dataset.cost)); row.append(e); });
   }
-  function show() { const c = calc(); $('ptsLeft').textContent = c.left; }
-  trs.forEach(t => t.addEventListener('click', () => {
-    const was = t.getAttribute('aria-pressed') === 'true';
-    t.setAttribute('aria-pressed', !was);
-    const c = calc(); let why = '';
-    if (!was) { if (c.left < 0) why = '점수가 부족해요. 부정 특성을 함께 골라 점수를 얻어요'; else if (c.neg > 2) why = '부정 특성은 최대 2개까지예요'; else if (c.basic > 2) why = '기본 특성은 최대 2개까지예요'; }
-    else if (c.left < 0) why = '이 특성을 빼면 점수가 모자라요';
-    if (why) { t.setAttribute('aria-pressed', was); t.classList.add('deny'); setTimeout(() => t.classList.remove('deny'), 300); $('ptsMsg').textContent = why; }
-    else $('ptsMsg').textContent = '부정 특성은 최대 2개 · 기본 특성은 최대 2개';
-    show();
-  }));
-  const tmode = $('traitMode');
-  tmode.addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; const r = b === tmode.firstElementChild; $('traitPick').hidden = r; $('traitRandomNote').hidden = !r; });
+  function update() {
+    const sc = score(), ok = !direct() || sc <= MAXSTART;
+    $('ptsVal').textContent = sc; $('ptsWin').textContent = sc;
+    const msg = ok ? '✓ 시작할 수 있어요' : '✗ ' + sc + '점이에요 · 2점 이하로 맞춰야 시작할 수 있어요';
+    $('ptsState').textContent = msg; $('ptsWinState').textContent = msg;
+    $('selCount').textContent = pressed().length + '개';
+    fill('sumBasic', 'basic'); fill('sumPos', 'pos'); fill('sumNeg', 'neg');
+    const sb = $('startBtn'); sb.classList.toggle('blocked', !ok); sb.setAttribute('aria-disabled', !ok);
+    const sm = $('startMsg'); sm.hidden = ok; sm.textContent = ok ? '' : '특성 점수 ' + sc + '점 → 2점 이하로 맞추면 시작할 수 있어요';
+  }
+  trs.forEach(t => t.addEventListener('click', () => { t.setAttribute('aria-pressed', t.getAttribute('aria-pressed') !== 'true'); update(); }));
+  tmode.addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; const r = b === tmode.firstElementChild; $('traitPick').hidden = r; $('traitRandomNote').hidden = !r; update(); });
+  $('startBtn').addEventListener('click', () => {
+    if (direct() && score() > MAXSTART) { const t = document.querySelector('#ctabs [data-p="custom"]'); if (t) t.click(); go('create'); const m = $('startMsg'); m.classList.add('deny'); setTimeout(() => m.classList.remove('deny'), 300); return; }
+    go('explore');
+  });
+  // 특성 창 탭
+  const ttabs = $('ttabs');
+  ttabs.addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; document.querySelectorAll('[data-tpanel]').forEach(p => { p.hidden = p.dataset.tpanel !== b.dataset.tp; }); });
   document.querySelectorAll('[data-open-tab]').forEach(b => b.addEventListener('click', () => { const t = document.querySelector('#ctabs [data-p="' + b.dataset.openTab + '"]'); if (t) t.click(); }));
   // 슬라이더
   $('hunger').addEventListener('input', e => { $('hv').textContent = e.target.value; });
   $('money').addEventListener('input', e => { $('mv').textContent = e.target.value; });
-  show();
+  update();
 })();
 window.addEventListener('hashchange', () => { const k = location.hash.slice(1); if (SCREENS.some(s => s[0] === k)) { cur = k; mode = 'one'; render(); } });
 window.addEventListener('resize', fit);
