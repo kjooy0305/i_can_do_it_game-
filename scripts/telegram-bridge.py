@@ -43,7 +43,7 @@ SYSTEM = """You are answering through a Telegram bridge for the repository owner
 - Your final response text is sent to Telegram exactly as written. Do not mention tools or internal steps unless asked.
 - Reply in Korean. Keep it short (about 10 short lines at most). Plain text only: no markdown tables, headings, or code fences.
 - This is the world-building interview for this repository. Follow CLAUDE.md and .claude/skills/world-interview/SKILL.md exactly:
-  one message = a bundle of 3-4 questions mixed across different parts (open questions and 첨언 checks first), each with 2-3 numbered options (answers like A2 B1 C직접); reflect each answer into world/data.js as 핵심/첨언/규칙 (dictionary entries live in world/data.js too); run node scripts/check-world.js;
+  one message = a bundle of 3-4 questions mixed across different parts (open questions and 첨언 checks first, plus 1-2 new suggestions of things the owner has not mentioned but would be good to have), each with 2-3 numbered options (answers like A2 B1 C직접); reflect each answer into world/data.js as 핵심/첨언/규칙 (dictionary entries live in world/data.js too); run node scripts/check-world.js;
   append to docs/interview-log.md; commit and push; then reply with the reflection summary, the note link, and the next question bundle.
 - If the owner says 인터뷰 시작, 다음 or 계속, start or continue the interview. If it says 패스, skip the current question (or the whole bundle).
   Other questions about the notes: answer briefly.
@@ -52,7 +52,7 @@ SYSTEM = """You are answering through a Telegram bridge for the repository owner
 
 HELP = (
     "세계관 인터뷰 브리지예요.\n"
-    "• 인터뷰 시작 — 질문 묶음(3~4개, 여러 파트)을 보내요\n"
+    "• 인터뷰 시작 — 질문 묶음(3~4개, 여러 파트, 새 제안 포함)을 보내요\n"
     "• 답은 A2 B1 C직접문장 처럼 보내요. 노트에 반영하고 다음 묶음을 보내요\n"
     "• 패스 / 다음 — 이 묶음(또는 D패스처럼 한 질문)은 건너뛰어요\n"
     "• /status — 상태 보기\n"
