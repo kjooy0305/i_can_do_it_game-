@@ -279,5 +279,47 @@ window.WORLD = {
         add: ['**부모**: 영아·유아기의 보호자. 선택에 크게 개입하고, 어떻게 사라지는지가 큰 사건이다.', '**고철상 마리**: 의체·부품 상인. 이식 수술을 소개해 준다. (초안)', '**검문소의 목소리**: 거래를 제안하는 정체불명의 존재.', '같은 달에 태어난 몇 명이 곳곳에서 스치며 서로의 삶 이야기를 남긴다.'],
         ask: ['고정 인물을 몇 명으로 할지'], link: ['one-of-8b'] }
     ]}
+  ],
+
+  // ===== 사전 (이야기 작성용) =====
+  // 위의 groups 는 "주제 노트", 아래 entries 는 "낱말 사전"이다. 이야기를 만들 때 이 사전을 기준으로 삼는다.
+  // 새 항목은 entries 맨 아래에 한 개의 객체를 덧붙이면 바로 사전·뷰어에 나타난다. 순서나 번호에 의존하지 않는다 (id 로만 연결).
+  // 새 종류(예: 탈것, 음식)는 types 에 한 줄 덧붙이면 된다.
+  //
+  // types: { id, name, parents? }  parents 가 있으면 그 종류 아래에만 놓을 수 있다 (장소 계층). 없으면 어디에도 속하지 않는 독립 항목.
+  // entries: { id, type, name, parent?, status, core, add, ask, rules, story, link }
+  //   core  = 사용자가 정한 것 (바꾸지 않음)        add   = Claude 첨언 초안
+  //   ask   = 아직 정해야 할 것                      rules = 이야기가 어겨선 안 되는 규칙 (core 에서 뽑은 짧은 단정문만)
+  //   story = 여기서 일어날 수 있는 이야기 씨앗       parent = 위 계층의 id (제국 > 국가 > 도시 > 마을)
+  //   status: blank 이름만 있음 · seed 핵심만 · draft 첨언 있음 · ok 확정
+  types: [
+    { id: 'empire', name: '제국' },
+    { id: 'nation', name: '국가', parents: ['empire'] },
+    { id: 'city', name: '도시', parents: ['nation', 'empire'] },
+    { id: 'village', name: '마을', parents: ['city', 'nation', 'empire'] },
+    { id: 'god', name: '신' },
+    { id: 'weapon', name: '무기' },
+    { id: 'mutation', name: '변이' },
+    { id: 'monster', name: '몬스터' },
+    { id: 'person', name: '인물' },
+    { id: 'event', name: '사건' },
+    { id: 'term', name: '용어' }
+  ],
+  entries: [
+    { id: 'empire-a', type: 'empire', name: '제국 A (이름 미정)', status: 'blank',
+      core: [],
+      add: ['침식을 "벌"로 해석하는 제국 (신앙이 강하다). 신성력이 가장 체계적으로 쓰이지만, 변이를 숨기거나 몰아내는 일이 잦다.'],
+      ask: ['이름과 위치', '이 제국이 믿는 신의 이름과 얼굴', '국가는 몇 개로 나뉘는지', '수도는 어떤 곳인지'],
+      rules: [], story: [], link: ['empires'] },
+    { id: 'empire-b', type: 'empire', name: '제국 B (이름 미정)', status: 'blank',
+      core: [],
+      add: ['침식을 "연구 대상"으로 해석하는 제국. 학자·기술자가 중심이고 폐허의 기술이 가장 많이 남아 있다. 연구하다 망가진 사람들의 이야기가 많다.'],
+      ask: ['이름과 위치', '이 제국이 믿는 신의 이름과 얼굴', '국가는 몇 개로 나뉘는지', '수도는 어떤 곳인지'],
+      rules: [], story: [], link: ['empires', 'cyber'] },
+    { id: 'empire-c', type: 'empire', name: '제국 C (이름 미정)', status: 'blank',
+      core: [],
+      add: ['침식을 "버텨야 할 재난"으로 해석하는 제국. 실용과 생존이 중심이고 변방이 넓다. 마을 단위의 이야기가 많다.'],
+      ask: ['이름과 위치', '이 제국이 믿는 신의 이름과 얼굴', '국가는 몇 개로 나뉘는지', '수도는 어떤 곳인지'],
+      rules: [], story: [], link: ['empires'] }
   ]
 };
