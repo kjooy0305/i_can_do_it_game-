@@ -26,7 +26,9 @@
     <button class="chip" id="tocBtn" aria-expanded="false" aria-controls="toc">☰ 목차</button>
     <nav class="crumb" id="crumb" aria-label="경로"></nav>
     <button class="chip" id="askBtn" aria-pressed="false">열린 질문 있는 것만</button>
+    <button class="chip" id="editBtn" aria-pressed="false">✎ 편집 모드</button>
   </div>
+  <div id="ehost"></div>
   <input class="search" type="search" id="q" placeholder="검색 (예: 허기, 심장, 몬스터, 제국)" autocomplete="off">
 
   <div class="shell">
@@ -40,6 +42,7 @@
 </div>
 <script src="data.js"></script>
 <script src="render.js"></script>
+<script src="edit.js"></script>
 <script>
 const { esc, GROUPS, TYPES, ENTRIES, ALL, byId, eById, tById, gById, childrenOf, isPlace, pathSel, noteBlocks, entryBlocks, statusOf, searchText, W } = WN;
 const $ = id => document.getElementById(id);
@@ -104,11 +107,11 @@ const refBtn = (id, text) => `<button class="ref" data-sel="${id}">${esc(text)}<
 const pageLink = id => `<a class="pg" href="page.html#${id}" onclick="event.stopPropagation()">페이지로 열기 ↗</a>`;
 function lineHTML(i, open) {
   const [st, cls] = statusOf(i);
-  return `<details class="line" id="i-${i.id}" data-id="${i.id}"${open ? ' open' : ''}><summary><span class="ttl">${esc(i.title)}<small>핵심 ${i.core.length} · 첨언 ${i.add.length}${hasAsk(i) ? ' · 질문 ' + i.ask.length : ''}</small></span><span class="tag ${cls}">${st}</span>${pageLink(i.id)}</summary><div class="body">${noteBlocks(i, refBtn)}</div></details>`;
+  return `<details class="line" id="i-${i.id}" data-id="${i.id}"${open ? ' open' : ''}><summary><span class="ttl">${esc(i.title)}<small>핵심 ${i.core.length} · 첨언 ${i.add.length}${hasAsk(i) ? ' · 질문 ' + i.ask.length : ''}</small></span><span class="tag ${cls}">${st}</span>${WN.isChanged(i.id) ? '<span class="tag w">수정됨</span>' : ''}${pageLink(i.id)}</summary><div class="body">${noteBlocks(i, refBtn)}</div></details>`;
 }
 function entryHTML(e, open) {
   const t = tById[e.type], anc = WN.ancestors(e), kids = childrenOf(e), [st, cls] = statusOf(e);
-  return `<details class="line" id="i-${e.id}" data-id="${e.id}"${open ? ' open' : ''}><summary><span class="ttl">${esc(e.name)}<small>${esc(t.name)}${anc.length ? ' · ' + anc.map(a => esc(a.name)).join(' > ') : ''}${hasAsk(e) ? ' · 질문 ' + e.ask.length : ''}${kids.length ? ' · 하위 ' + kids.length : ''}</small></span><span class="tag ${cls}">${st}</span>${pageLink(e.id)}</summary><div class="body">${entryBlocks(e, refBtn)}</div></details>`;
+  return `<details class="line" id="i-${e.id}" data-id="${e.id}"${open ? ' open' : ''}><summary><span class="ttl">${esc(e.name)}<small>${esc(t.name)}${anc.length ? ' · ' + anc.map(a => esc(a.name)).join(' > ') : ''}${hasAsk(e) ? ' · 질문 ' + e.ask.length : ''}${kids.length ? ' · 하위 ' + kids.length : ''}</small></span><span class="tag ${cls}">${st}</span>${WN.isChanged(e.id) ? '<span class="tag w">수정됨</span>' : ''}${pageLink(e.id)}</summary><div class="body">${entryBlocks(e, refBtn)}</div></details>`;
 }
 const card = (s, title, small) => `<button class="cardb" data-sel="${s}"><b>${esc(title)}</b><small>${esc(small)}</small></button>`;
 const section = (title, count, inner) => `<section class="grp"><h2><span>${esc(title)}</span><small>${count}</small></h2>${inner}</section>`;
@@ -142,6 +145,8 @@ function render() {
   renderToc(); renderCrumb();
   const [html, n, openId] = view();
   $('list').innerHTML = html; $('empty').hidden = n > 0;
+  if (WEdit.isOn()) document.querySelectorAll('#list details.line').forEach(d => { const x = WN.objOf(d.dataset.id), body = d.querySelector('.body'); if (x && body) { body.textContent = ''; body.append(WEdit.editorFor(x)); } });
+  $('editBtn').setAttribute('aria-pressed', WEdit.isOn()); WEdit.refresh();
   $('askBtn').setAttribute('aria-pressed', onlyAsk);
   $('foot').textContent = `주제 노트 ${ALL.length}줄 · 사전 ${ENTRIES.length}개 · 마지막 정리 ${W.updated}`;
   if (openId) { const d = document.getElementById('i-' + openId); if (d && d.scrollIntoView) d.scrollIntoView({ block: 'start' }); }
@@ -156,6 +161,8 @@ function go(s) {
 $('list').addEventListener('click', e => { const r = e.target.closest('[data-sel]'); if (r) { e.preventDefault(); go(r.dataset.sel); } });
 $('q').addEventListener('input', e => { q = e.target.value; render(); });
 $('askBtn').onclick = () => { onlyAsk = !onlyAsk; render(); };
+$('editBtn').onclick = () => { WEdit.set(!WEdit.isOn()); render(); };
+WEdit.mount($('ehost'), render);
 $('tocBtn').onclick = () => { const o = $('toc').classList.toggle('open'); $('tocBtn').setAttribute('aria-expanded', o); };
 window.addEventListener('hashchange', () => { const s = decodeURIComponent(location.hash.slice(1)); if (valid(s) && s !== sel) { sel = s; q = ''; $('q').value = ''; render(); } });
 sel = valid(decodeURIComponent(location.hash.slice(1))) ? decodeURIComponent(location.hash.slice(1)) : '';

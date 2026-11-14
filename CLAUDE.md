@@ -6,6 +6,7 @@
 - `mock/index.html` — 폰 화면 시안 (흑백 + 예외색 1개, dayclean 시안 규칙). 위 경로 + 왼쪽 목차 트리로 화면 하나만 표시
 - `world/` — 세계관 노트 (`data.js` 데이터 + `index.html` 뷰어(왼쪽 목차 트리 + 위 경로, 고른 것만 표시) + `page.html` 한 항목 전용 페이지(“페이지로 열기”) + `render.js` 공용 그리기 + `style.css`). 뷰어/페이지 구조를 바꿀 때 `data.js` 는 건드리지 않는다. **주제 노트(groups)** + **사전(types, entries: 제국›국가›도시›마을, 신·무기·변이·몬스터 …)**. 이야기는 사전을 기준으로 만든다
 - `docs/idea.md` — 아이디어 설정 요약, `docs/interview-log.md` — 세계관 인터뷰 기록
+- `scripts/apply-world-edits.js <파일>` — 사이트에서 내보낸 수정 파일(`edits/`)을 `data.js` 에 반영(서식 보존, 겹침 처리 `--prefer hold|mine|data`), `world/edit.js` — 사이트 편집 모드·내보내기
 - `scripts/check-world.js` — 노트·사전 데이터 검사, `scripts/world-context.js <id>` — 사전 항목과 위 계층에서 물려받는 핵심·규칙 보기
 
 ## 규칙

@@ -84,3 +84,26 @@ code{font:800 12px var(--font-num);border:1px solid var(--ink);border-radius:5px
   .toc{display:none;position:static;max-height:60vh}
   .toc.open{display:block}
 }
+
+/* ----- 편집 모드 ----- */
+.ebar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;border:2px solid var(--ink);border-radius:12px;padding:8px 12px;background:var(--warn);position:sticky;top:8px;z-index:5}
+.ebar .cnt{font:700 12px var(--font-num);flex:1 1 160px}
+.eb{font:inherit;font-size:13px;font-weight:700;color:var(--ink);background:var(--paper);border:1.5px solid var(--ink);border-radius:10px;padding:2px 10px;min-height:34px;cursor:pointer}
+.eb:disabled{border-style:dashed;cursor:not-allowed;opacity:.6}
+.eb:focus-visible,.etext:focus-visible,.esel:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.editor{display:grid;gap:10px;border:2px dashed var(--ink);border-radius:12px;padding:10px}
+.erow{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.etext{font:inherit;font-size:14px;color:var(--ink);background:var(--paper);border:1.5px solid var(--ink);border-radius:8px;padding:6px 8px;width:100%;resize:vertical;line-height:1.5}
+input.etext{flex:1 1 200px;width:auto;min-height:38px;font-weight:700}
+.esel{font:inherit;font-size:14px;color:var(--ink);background:var(--paper);border:1.5px solid var(--ink);border-radius:8px;min-height:38px;padding:0 8px}
+.esec{display:grid;gap:6px}
+.eh{display:flex;gap:6px}
+.ebl{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px;align-items:start}
+.ebs{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}
+.panel{position:fixed;inset:0;background:rgba(255,255,255,.88);z-index:20;display:flex;align-items:flex-start;justify-content:center;padding:max(16px,env(safe-area-inset-top,0px)) 16px;overflow:auto}
+.pbox{background:var(--paper);border:3px solid var(--ink);border-radius:16px;padding:16px;width:min(720px,100%);display:grid;gap:10px}
+.pbox h2{margin:0;font-size:20px;font-weight:900}
+.plist{display:grid;gap:8px;max-height:50vh;overflow:auto}
+.pitem{border:1.5px solid var(--ink);border-radius:10px;padding:8px 10px;font-size:13px}
+.pd{margin-top:4px;font-size:12.5px;display:grid;gap:2px}
+.pd del{opacity:.65}.pd ins{text-decoration:none;font-weight:700;background:var(--warn)}

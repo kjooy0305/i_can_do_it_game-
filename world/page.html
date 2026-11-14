@@ -11,12 +11,14 @@
 </head>
 <body>
 <div class="page" style="max-width:900px">
-  <div class="top"><nav class="crumb" id="crumb" aria-label="경로"></nav><a class="pg" id="toList" href="./">목록에서 보기</a></div>
+  <div class="top"><nav class="crumb" id="crumb" aria-label="경로"></nav><a class="pg" id="toList" href="./">목록에서 보기</a><button class="chip" id="editBtn" aria-pressed="false">✎ 편집 모드</button></div>
+  <div id="ehost"></div>
   <article class="article" id="art"></article>
   <p class="note" id="foot"></p>
 </div>
 <script src="data.js"></script>
 <script src="render.js"></script>
+<script src="edit.js"></script>
 <script>
 const { esc, byId, eById, tById, noteBlocks, entryBlocks, statusOf, pathSel, ancestors, childrenOf, W } = WN;
 const id = decodeURIComponent(location.hash.slice(1));
@@ -30,10 +32,18 @@ if (!x) {
   const p = pathSel(id);
   crumb.innerHTML = p.map((c, i) => (i ? '<i>›</i>' : '') + (i === p.length - 1 ? `<b>${esc(c.label)}</b>` : `<a href="./#${c.sel}">${esc(c.label)}</a>`)).join('');
   document.title = (x.title || x.name) + ' · 세계관 노트';
-  const [st, cls] = statusOf(x);
-  const head = `<h1>${esc(x.title || x.name)}</h1><div class="bar"><span class="tag ${cls}">${st}</span>${x.type ? `<span class="tag">${esc(tById[x.type].name)}</span>` : ''}</div>`;
-  art.innerHTML = head + `<div class="body">${x.title ? noteBlocks(x, mk) : entryBlocks(x, mk)}</div>`;
   document.getElementById('toList').href = './#' + id;
+  const draw = () => {
+    const [st, cls] = statusOf(x);
+    const head = `<h1>${esc(x.title || x.name)}</h1><div class="bar"><span class="tag ${cls}">${st}</span>${x.type ? `<span class="tag">${esc(tById[x.type].name)}</span>` : ''}${WN.isChanged(id) ? '<span class="tag w">수정됨</span>' : ''}</div>`;
+    art.innerHTML = head + `<div class="body">${x.title ? noteBlocks(x, mk) : entryBlocks(x, mk)}</div>`;
+    if (WEdit.isOn()) { const body = art.querySelector('.body'); body.textContent = ''; body.append(WEdit.editorFor(x)); }
+    document.getElementById('editBtn').setAttribute('aria-pressed', WEdit.isOn());
+    WEdit.refresh();
+  };
+  document.getElementById('editBtn').onclick = () => { WEdit.set(!WEdit.isOn()); draw(); };
+  WEdit.mount(document.getElementById('ehost'), draw);
+  draw();
 }
 document.getElementById('foot').textContent = `마지막 정리 ${W.updated}`;
 window.addEventListener('hashchange', () => location.reload());
