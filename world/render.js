@@ -10,6 +10,10 @@ window.WN = (function () {
   const eById = Object.fromEntries(ENTRIES.map(e => [e.id, e]));
   const tById = Object.fromEntries(TYPES.map(t => [t.id, t]));
   const gById = Object.fromEntries(GROUPS.map(g => [g.id, g]));
+  const SECTIONS = W.sections || [];
+  const secById = Object.fromEntries(SECTIONS.map(x => [x.id, x]));
+  const secOfGroup = {}, secOfType = {};
+  SECTIONS.forEach(x => { (x.groups || []).forEach(g => { secOfGroup[g] = x; }); (x.types || []).forEach(t => { secOfType[t] = x; }); });
   const STATUS = { seed: ['핵심만', ''], draft: ['첨언 있음', 'w'], ok: ['확정', 'k'], blank: ['이름만', ''] };
   const placeTypes = new Set(TYPES.flatMap(t => t.parents ? [t.id, ...t.parents] : []));
   const childrenOf = e => ENTRIES.filter(x => x.parent === e.id);
@@ -17,20 +21,20 @@ window.WN = (function () {
   const title = id => byId[id] ? byId[id].title : eById[id] ? eById[id].name : null;
   const isPlace = e => placeTypes.has(e.type);
 
-  // 경로: [{label, sel}]  (sel 은 location.hash 로 쓰는 값)
+  // 경로: [{label, sel}]  (sel 은 location.hash 로 쓰는 값). 맨 위는 "노트 › 큰 분류 › ..." 순서다.
   function pathSel(sel) {
     const root = { label: '노트', sel: '' };
     if (!sel) return [root];
-    if (sel === 'x=notes') return [root, { label: '주제 노트', sel: 'x=notes' }];
-    if (sel === 'x=dict') return [root, { label: '사전', sel: 'x=dict' }];
-    if (sel === 'x=places') return [root, { label: '사전', sel: 'x=dict' }, { label: '장소', sel: 'x=places' }];
-    if (sel.startsWith('g=') && gById[sel.slice(2)]) return [root, { label: '주제 노트', sel: 'x=notes' }, { label: gById[sel.slice(2)].name, sel }];
-    if (sel.startsWith('t=') && tById[sel.slice(2)]) return [root, { label: '사전', sel: 'x=dict' }, { label: tById[sel.slice(2)].name, sel }];
-    if (byId[sel]) { const i = byId[sel]; return [root, { label: '주제 노트', sel: 'x=notes' }, { label: i.gname, sel: 'g=' + i.group }, { label: i.title, sel }]; }
+    const sec = x => x ? { label: x.name, sel: 's=' + x.id } : null;
+    const keep = a => a.filter(Boolean);
+    if (sel.startsWith('s=') && secById[sel.slice(2)]) return [root, sec(secById[sel.slice(2)])];
+    if (sel.startsWith('g=') && gById[sel.slice(2)]) { const g = gById[sel.slice(2)]; return keep([root, sec(secOfGroup[g.id]), { label: g.name, sel }]); }
+    if (sel.startsWith('t=') && tById[sel.slice(2)]) { const t = tById[sel.slice(2)]; return keep([root, sec(secOfType[t.id]), { label: t.name, sel }]); }
+    if (byId[sel]) { const i = byId[sel]; return keep([root, sec(secOfGroup[i.group]), { label: i.gname, sel: 'g=' + i.group }, { label: i.title, sel }]); }
     if (eById[sel]) {
       const e = eById[sel];
-      const mid = isPlace(e) ? [{ label: '장소', sel: 'x=places' }, ...ancestors(e).map(a => ({ label: a.name, sel: a.id }))] : [{ label: tById[e.type].name, sel: 't=' + e.type }];
-      return [root, { label: '사전', sel: 'x=dict' }, ...mid, { label: e.name, sel }];
+      const mid = isPlace(e) ? ancestors(e).map(a => ({ label: a.name, sel: a.id })) : [{ label: tById[e.type].name, sel: 't=' + e.type }];
+      return keep([root, sec(secOfType[e.type]), ...mid, { label: e.name, sel }]);
     }
     return [root];
   }
@@ -112,5 +116,5 @@ window.WN = (function () {
   }
   const statusOf = x => STATUS[x.status] || STATUS.draft;
   const searchText = x => (x.title ? [x.title, ...x.core, ...x.add, ...(x.ask || [])] : [x.name, tById[x.type].name, ...(x.core || []), ...(x.add || []), ...(x.ask || []), ...(x.rules || []), ...(x.story || [])]).join(' ').toLowerCase();
-  return { EDITABLE, LISTS, objOf, kindOf, clone, eq, changes, persist, setField, revert, isChanged, isStale, exportObj, W, esc, md, GROUPS, TYPES, ENTRIES, ALL, byId, eById, tById, gById, STATUS, placeTypes, childrenOf, ancestors, title, isPlace, pathSel, noteBlocks, entryBlocks, statusOf, searchText };
+  return { SECTIONS, secById, secOfGroup, secOfType, EDITABLE, LISTS, objOf, kindOf, clone, eq, changes, persist, setField, revert, isChanged, isStale, exportObj, W, esc, md, GROUPS, TYPES, ENTRIES, ALL, byId, eById, tById, gById, STATUS, placeTypes, childrenOf, ancestors, title, isPlace, pathSel, noteBlocks, entryBlocks, statusOf, searchText };
 })();

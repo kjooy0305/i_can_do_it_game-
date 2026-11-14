@@ -46,7 +46,21 @@ entries.forEach(e => { // 순환
   while (c && c.parent) { if (seen.has(c.id)) { errs.push('순환: ' + e.id); break; } seen.add(c.id); c = entById[c.parent]; }
 });
 
+// 큰 분류(sections): 모든 분류(groups)와 종류(types)가 정확히 한 곳에 들어 있어야 한다
+const secs = W.sections || [];
+if (secs.length) {
+  const secIds = new Set(), gOwner = {}, tOwner = {};
+  const gIds = new Set(W.groups.map(g => g.id));
+  secs.forEach(sc => {
+    if (secIds.has(sc.id)) errs.push('중복 section: ' + sc.id); secIds.add(sc.id);
+    if (!sc.name) errs.push('이름 없는 section: ' + sc.id);
+    (sc.groups || []).forEach(g => { if (!gIds.has(g)) errs.push(`section ${sc.id}: 없는 분류 ${g}`); else if (gOwner[g]) errs.push(`분류 ${g} 가 두 section 에 있음 (${gOwner[g]}, ${sc.id})`); else gOwner[g] = sc.id; });
+    (sc.types || []).forEach(t => { if (!typeById[t]) errs.push(`section ${sc.id}: 없는 종류 ${t}`); else if (tOwner[t]) errs.push(`종류 ${t} 가 두 section 에 있음 (${tOwner[t]}, ${sc.id})`); else tOwner[t] = sc.id; });
+  });
+  W.groups.forEach(g => { if (!gOwner[g.id]) errs.push(`어느 section 에도 없는 분류: ${g.id} (${g.name}) — sections 에 덧붙이세요`); });
+  types.forEach(t => { if (!tOwner[t.id]) errs.push(`어느 section 에도 없는 종류: ${t.id} (${t.name}) — sections 에 덧붙이세요`); });
+}
 const asks = items.reduce((n, i) => n + (i.ask ? i.ask.length : 0), 0) + entries.reduce((n, e) => n + (e.ask ? e.ask.length : 0), 0);
-console.log(`줄 ${items.length} · 그룹 ${W.groups.length} · 사전 ${entries.length}개(${types.length}종) · 열린 질문 ${asks} · 확정 ${items.concat(entries).filter(i => i.status === 'ok').length}`);
+console.log(`줄 ${items.length} · 그룹 ${W.groups.length} · 큰 분류 ${secs.length} · 사전 ${entries.length}개(${types.length}종) · 열린 질문 ${asks} · 확정 ${items.concat(entries).filter(i => i.status === 'ok').length}`);
 if (errs.length) { console.error(errs.join('\n')); process.exit(1); }
 console.log('OK');

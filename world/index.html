@@ -14,7 +14,7 @@
   <header class="head">
     <a class="back" href="../mock/">← 화면 시안</a>
     <h1>세계관 노트</h1>
-    <p>핵심에 첨언을 덧붙여 정리한 곳이에요. 왼쪽 <b>목차</b>와 위 <b>경로</b>로 층을 따라가면 고른 것만 나와요. 줄을 누르면 열리고, 긴 글은 <b>페이지로 열기</b>로 한 페이지에서 볼 수 있어요.</p>
+    <p>핵심에 첨언을 덧붙여 정리한 곳이에요. 맨 위의 <b>큰 분류</b>(세계관 · 제국 · 직업 · 변이 · 던전 · 도구 · 전체적인 삶 · 아이디어 노트)를 고르고, 왼쪽 <b>목차</b>와 위 <b>경로</b>로 층을 따라가면 고른 것만 나와요. 줄을 누르면 열리고, 긴 글은 <b>페이지로 열기</b>로 한 페이지에서 볼 수 있어요.</p>
   </header>
   <div class="legend">
     <div><span class="tag k">핵심</span> 사용자가 정해 준 것 · 바꾸지 않아요</div>
@@ -44,7 +44,7 @@
 <script src="render.js"></script>
 <script src="edit.js"></script>
 <script>
-const { esc, GROUPS, TYPES, ENTRIES, ALL, byId, eById, tById, gById, childrenOf, isPlace, pathSel, noteBlocks, entryBlocks, statusOf, searchText, W } = WN;
+const { esc, GROUPS, TYPES, ENTRIES, ALL, byId, eById, tById, gById, SECTIONS, secById, secOfGroup, secOfType, childrenOf, isPlace, pathSel, noteBlocks, entryBlocks, statusOf, searchText, W } = WN;
 const $ = id => document.getElementById(id);
 let sel = '', q = '', onlyAsk = false;
 const hasAsk = x => !!(x.ask && x.ask.length);
@@ -52,19 +52,17 @@ const openKeys = new Set();
 
 // ---------- 목차 트리 ----------
 function entNode(e) { return { key: e.id, label: e.name, sel: e.id, kids: childrenOf(e).map(entNode) }; }
-function tree() {
-  const places = ENTRIES.filter(e => isPlace(e) && !e.parent);
-  const dictKids = [];
-  if (places.length) dictKids.push({ key: 'x=places', label: '장소', sel: 'x=places', kids: places.map(entNode) });
-  TYPES.filter(t => !WN.placeTypes.has(t.id)).forEach(t => {
-    const list = ENTRIES.filter(e => e.type === t.id); if (!list.length) return;
-    dictKids.push({ key: 't=' + t.id, label: t.name, sel: 't=' + t.id, ct: list.length, kids: list.map(e => ({ key: e.id, label: e.name, sel: e.id })) });
-  });
-  return [
-    { key: 'x=notes', label: '주제 노트', sel: 'x=notes', ct: ALL.length, kids: GROUPS.map(g => ({ key: 'g=' + g.id, label: g.name, sel: 'g=' + g.id, ct: g.items.length, kids: g.items.map(i => ({ key: i.id, label: i.title, sel: i.id })) })) },
-    { key: 'x=dict', label: '사전', sel: 'x=dict', ct: ENTRIES.length, kids: dictKids }
-  ];
+function groupNode(g) { return { key: 'g=' + g.id, label: g.name, sel: 'g=' + g.id, ct: g.items.length, kids: g.items.map(i => ({ key: i.id, label: i.title, sel: i.id })) }; }
+function typeNode(ty) { const list = ENTRIES.filter(e => e.type === ty.id); return { key: 't=' + ty.id, label: ty.name, sel: 't=' + ty.id, ct: list.length, kids: list.map(e => ({ key: e.id, label: e.name, sel: e.id })) }; }
+function sectionKids(sc) {
+  const kids = (sc.groups || []).map(id => gById[id]).filter(Boolean).map(groupNode);
+  const places = ENTRIES.filter(e => isPlace(e) && !e.parent && (sc.types || []).includes(e.type));
+  places.forEach(e => kids.push(entNode(e)));                       // 장소는 제국 > 도시 > 마을 계층 그대로
+  (sc.types || []).filter(id => tById[id] && !WN.placeTypes.has(id)).forEach(id => { if (ENTRIES.some(e => e.type === id)) kids.push(typeNode(tById[id])); });
+  return kids;
 }
+function sectionCount(sc) { return (sc.groups || []).reduce((n, id) => n + (gById[id] ? gById[id].items.length : 0), 0) + ENTRIES.filter(e => (sc.types || []).includes(e.type)).length; }
+function tree() { return SECTIONS.map(sc => ({ key: 's=' + sc.id, label: sc.name, sel: 's=' + sc.id, ct: sectionCount(sc), kids: sectionKids(sc) })); }
 function onPath(nodes, target, acc = []) { // 선택된 항목까지의 가지 key 목록
   for (const n of nodes) {
     if (n.sel === target) return [...acc, n.key];
@@ -123,15 +121,16 @@ function view() { // [html, 개수, 열린 항목 id]
     const a = filt(ALL).filter(i => searchText(i).includes(k)), b = filt(ENTRIES).filter(e => searchText(e).includes(k));
     return [(a.length ? section('주제 노트', a.length, a.map(i => lineHTML(i)).join('')) : '') + (b.length ? section('사전', b.length, b.map(e => entryHTML(e)).join('')) : ''), a.length + b.length];
   }
-  if (!sel) return [`<div class="cards">${card('x=notes', '주제 노트', `분류 ${GROUPS.length}개 · 줄 ${ALL.length}개`)}${card('x=dict', '사전', `항목 ${ENTRIES.length}개 · 종류 ${TYPES.length}가지`)}</div>`, 1];
-  if (sel === 'x=notes') return [`<div class="cards">${GROUPS.map(g => card('g=' + g.id, g.name, `${g.items.length}줄`)).join('')}</div>`, GROUPS.length];
-  if (sel === 'x=dict') {
-    const c = [];
-    if (ENTRIES.some(e => isPlace(e))) c.push(card('x=places', '장소', '제국 › 국가 › 도시 › 마을'));
-    TYPES.filter(t => !WN.placeTypes.has(t.id)).forEach(t => { const n = ENTRIES.filter(e => e.type === t.id).length; if (n) c.push(card('t=' + t.id, t.name, n + '개')); });
-    return [`<div class="cards">${c.join('')}</div>`, c.length];
+  if (!sel) return [`<div class="cards">${SECTIONS.map(sc => card('s=' + sc.id, sc.name, `${sc.desc || ''} · ${sectionCount(sc)}개`)).join('')}</div>`, SECTIONS.length];
+  if (sel.startsWith('s=')) {
+    const sc = secById[sel.slice(2)]; if (!sc) return ['', 0];
+    const cards = [];
+    (sc.groups || []).map(id => gById[id]).filter(Boolean).forEach(g => cards.push(card('g=' + g.id, g.name, `주제 노트 ${g.items.length}줄`)));
+    (sc.types || []).filter(id => tById[id] && !WN.placeTypes.has(id)).forEach(id => { const n = ENTRIES.filter(e => e.type === id).length; if (n) cards.push(card('t=' + id, tById[id].name, `사전 ${n}개`)); });
+    const places = filt(ENTRIES.filter(e => isPlace(e) && !e.parent && (sc.types || []).includes(e.type)));
+    const html = `<p class="note">${esc(sc.desc || '')}</p>${cards.length ? `<div class="cards">${cards.join('')}</div>` : ''}${places.length ? section('장소 (제국 › 국가 › 도시 › 마을)', places.length, places.map(e => entryHTML(e)).join('')) : ''}`;
+    return [html, cards.length + places.length];
   }
-  if (sel === 'x=places') { const l = filt(ENTRIES.filter(e => isPlace(e) && !e.parent)); return [l.map(e => entryHTML(e)).join(''), l.length]; }
   if (sel.startsWith('g=')) { const g = gById[sel.slice(2)]; if (!g) return ['', 0]; const l = filt(ALL.filter(i => i.group === g.id)); return [section(g.name, l.length, l.map(i => lineHTML(i)).join('')), l.length]; }
   if (sel.startsWith('t=')) { const l = filt(ENTRIES.filter(e => e.type === sel.slice(2))); return [l.map(e => entryHTML(e)).join(''), l.length]; }
   if (byId[sel]) { const i = byId[sel], l = filt(ALL.filter(x => x.group === i.group)); const list = l.includes(i) ? l : [i, ...l]; return [section(i.gname, list.length, list.map(x => lineHTML(x, x.id === sel)).join('')), list.length, sel]; }
@@ -148,10 +147,10 @@ function render() {
   if (WEdit.isOn()) document.querySelectorAll('#list details.line').forEach(d => { const x = WN.objOf(d.dataset.id), body = d.querySelector('.body'); if (x && body) { body.textContent = ''; body.append(WEdit.editorFor(x)); } });
   $('editBtn').setAttribute('aria-pressed', WEdit.isOn()); WEdit.refresh();
   $('askBtn').setAttribute('aria-pressed', onlyAsk);
-  $('foot').textContent = `주제 노트 ${ALL.length}줄 · 사전 ${ENTRIES.length}개 · 마지막 정리 ${W.updated}`;
+  $('foot').textContent = `큰 분류 ${SECTIONS.length}개 · 주제 노트 ${ALL.length}줄 · 사전 ${ENTRIES.length}개 · 마지막 정리 ${W.updated}`;
   if (openId) { const d = document.getElementById('i-' + openId); if (d && d.scrollIntoView) d.scrollIntoView({ block: 'start' }); }
 }
-function valid(s) { return !s || ['x=notes', 'x=dict', 'x=places'].includes(s) || (s.startsWith('g=') && gById[s.slice(2)]) || (s.startsWith('t=') && tById[s.slice(2)]) || byId[s] || eById[s]; }
+function valid(s) { return !s || (s.startsWith('s=') && secById[s.slice(2)]) || (s.startsWith('g=') && gById[s.slice(2)]) || (s.startsWith('t=') && tById[s.slice(2)]) || byId[s] || eById[s]; }
 function go(s) {
   sel = valid(s) ? s : ''; q = ''; $('q').value = ''; openKeys.clear();
   $('toc').classList.remove('open'); $('tocBtn').setAttribute('aria-expanded', 'false');
