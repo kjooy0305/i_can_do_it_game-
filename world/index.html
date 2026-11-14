@@ -46,6 +46,36 @@
 <script>
 const { esc, GROUPS, TYPES, ENTRIES, ALL, byId, eById, tById, gById, SECTIONS, secById, secOfGroup, secOfType, childrenOf, isPlace, pathSel, noteBlocks, entryBlocks, statusOf, searchText, W } = WN;
 const $ = id => document.getElementById(id);
+// ---------- 편집 모드: 새 줄 / 새 사전 항목 ----------
+function addControls() {
+  const box = document.createElement('div'); box.className = 'addbox';
+  const mkb = (txt, fn) => { const b = document.createElement('button'); b.className = 'eb'; b.type = 'button'; b.textContent = txt; b.onclick = fn; return b; };
+  const gid = sel.startsWith('g=') ? sel.slice(2) : byId[sel] ? byId[sel].group : null;
+  if (gid && gById[gid]) box.append(mkb('＋ 새 줄 추가 (' + gById[gid].name + ')', () => { const id = WN.createNote(gid); if (id) go(id); }));
+  // 사전 항목: 지금 보는 곳에 맞는 종류만 고르게 한다
+  let types = [];
+  if (sel.startsWith('t=') && tById[sel.slice(2)]) types = [sel.slice(2)];
+  else if (eById[sel]) { const e = eById[sel]; types = [e.type, ...TYPES.filter(t => (t.parents || []).includes(e.type)).map(t => t.id)]; }
+  else if (sel.startsWith('s=') && secById[sel.slice(2)]) types = secById[sel.slice(2)].types || [];
+  types = types.filter(id => tById[id]);
+  if (types.length) {
+    const lab = document.createElement('span'); lab.className = 'lbl'; lab.textContent = '사전 항목:';
+    const ts = document.createElement('select'); ts.setAttribute('aria-label', '종류');
+    types.forEach(id => { const o = document.createElement('option'); o.value = id; o.textContent = tById[id].name; ts.append(o); });
+    const ps = document.createElement('select'); ps.setAttribute('aria-label', '상위 항목');
+    const fill = () => {
+      const t = tById[ts.value], c = WN.allowedParents(ts.value); ps.innerHTML = ''; ps.hidden = !t.parents;
+      c.forEach(e => { const o = document.createElement('option'); o.value = e.id; o.textContent = WN.pathSel(e.id).slice(2).map(x => x.label).join(' › ') || e.name; ps.append(o); });
+      const want = eById[sel] ? (eById[sel].type === ts.value ? eById[sel].parent : sel) : null; if (want) ps.value = want;
+    };
+    ts.onchange = fill; fill();
+    box.append(lab, ts, ps, mkb('＋ 추가', () => {
+      const t = tById[ts.value]; if (t.parents && !ps.value) { alert('상위 항목을 먼저 만들어 주세요 (예: 도시는 제국 아래에).'); return; }
+      const id = WN.createEntry(ts.value, ps.value || null); if (id) go(id); else alert('이 위치에는 추가할 수 없어요.');
+    }));
+  }
+  return box.children.length ? box : null;
+}
 let sel = '', q = '', onlyAsk = false;
 const hasAsk = x => !!(x.ask && x.ask.length);
 const openKeys = new Set();
@@ -145,6 +175,7 @@ function render() {
   const [html, n, openId] = view();
   $('list').innerHTML = html; $('empty').hidden = n > 0;
   if (WEdit.isOn()) document.querySelectorAll('#list details.line').forEach(d => { const x = WN.objOf(d.dataset.id), body = d.querySelector('.body'); if (x && body) { body.textContent = ''; body.append(WEdit.editorFor(x)); } });
+  if (WEdit.isOn()) { const ab = addControls(); if (ab) $('list').append(ab); }
   $('editBtn').setAttribute('aria-pressed', WEdit.isOn()); WEdit.refresh();
   $('askBtn').setAttribute('aria-pressed', onlyAsk);
   $('foot').textContent = `큰 분류 ${SECTIONS.length}개 · 주제 노트 ${ALL.length}줄 · 사전 ${ENTRIES.length}개 · 마지막 정리 ${W.updated}`;
@@ -162,6 +193,7 @@ $('q').addEventListener('input', e => { q = e.target.value; render(); });
 $('askBtn').onclick = () => { onlyAsk = !onlyAsk; render(); };
 $('editBtn').onclick = () => { WEdit.set(!WEdit.isOn()); render(); };
 WEdit.mount($('ehost'), render);
+WEdit.hooks.deleted = back => go(back || '');
 $('tocBtn').onclick = () => { const o = $('toc').classList.toggle('open'); $('tocBtn').setAttribute('aria-expanded', o); };
 window.addEventListener('hashchange', () => { const s = decodeURIComponent(location.hash.slice(1)); if (valid(s) && s !== sel) { sel = s; q = ''; $('q').value = ''; render(); } });
 sel = valid(decodeURIComponent(location.hash.slice(1))) ? decodeURIComponent(location.hash.slice(1)) : '';

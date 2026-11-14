@@ -21,6 +21,7 @@
 import json
 import os
 import pathlib
+import re
 import signal
 import subprocess
 import sys
@@ -56,7 +57,8 @@ HELP = (
     "• 답은 A2 B1 C직접문장 처럼 보내요. 노트에 반영하고 다음 묶음을 보내요\n"
     "• 패스 / 다음 — 이 묶음(또는 D패스처럼 한 질문)은 건너뛰어요\n"
     "• /status — 상태 보기\n"
-    "• /reset — 대화 맥락을 새로 시작"
+    "• /reset — 대화 맥락을 새로 시작\n"
+    "• 노트 사이트에서 '텔레그램용 나눠 복사'한 #WE 조각을 차례로 보내고, 미리보기 뒤에 '반영'"
 )
 
 TOKEN = None
@@ -65,6 +67,7 @@ _busy = threading.Event()
 _pending = []
 _cond = threading.Condition()
 _log_lock = threading.Lock()
+_repo_lock = threading.Lock()   # 같은 저장소를 Claude 와 수정 반영이 동시에 만지지 않게 한다
 
 
 # ---------- 유틸 ----------
@@ -261,7 +264,8 @@ def worker():
         typing.start()
         started = time.time()
         try:
-            reply, ok = run_claude(text)
+            with _repo_lock:
+                reply, ok = run_claude(text)
         finally:
             typing.stop_ev.set()
             _busy.clear()
@@ -270,6 +274,128 @@ def worker():
 
 
 # ---------- 메시지 수신 ----------
+# ---------- 사이트 편집 파일(#WE 조각) 받기 ----------
+# 노트 사이트에서 "텔레그램용 나눠 복사"로 만든 조각(#WE 1/3 …)을 모아서 edits/ 에 파일로 저장하고,
+# 미리보기를 보여 준 뒤 "반영"이라고 답하면 scripts/apply-world-edits.js 로 반영·검사·커밋·푸시한다.
+# 긴 JSON을 Claude 가 베껴 쓰다 틀리지 않도록 Claude 를 거치지 않고 브리지가 직접 처리한다.
+WE_RE = re.compile(r"^#WE\s+(\d+)\s*/\s*(\d+)[ \t]*\r?\n?")
+WE_PREFER = os.environ.get("BRIDGE_WE_PREFER", "hold")
+WE_APPLY = {"반영", "반영해", "반영해줘", "반영해 줘", "반영해주세요"}
+WE_CANCEL = {"취소", "반영 취소", "수정 취소"}
+
+
+def _jload(name):
+    try:
+        return json.loads((STATE / name).read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+
+
+def _jsave(name, obj):
+    STATE.mkdir(parents=True, exist_ok=True)
+    if obj is None:
+        try:
+            (STATE / name).unlink()
+        except OSError:
+            pass
+        return
+    (STATE / name).write_text(json.dumps(obj, ensure_ascii=False), encoding="utf-8")
+
+
+def _sh(cmd, timeout=180):
+    p = subprocess.run(cmd, cwd=REPO, capture_output=True, text=True, timeout=timeout)
+    return p.returncode, ((p.stdout or "") + (p.stderr or "")).strip()
+
+
+def _short(t, n=1500):
+    return t if len(t) <= n else t[:n] + "\n… (이하 생략)"
+
+
+def we_handle(chat_id, text):
+    """처리했으면 True. 아니면 False (평소처럼 Claude 로 보낸다)."""
+    m = WE_RE.match(text)
+    low = text.strip().lower()
+    if m:
+        i, n = int(m.group(1)), int(m.group(2))
+        if n < 1 or i < 1 or i > n or n > 60:
+            send(chat_id, "조각 번호가 올바르지 않아요. 노트 사이트의 '텔레그램용 나눠 복사'로 다시 만들어 주세요.")
+            return True
+        st = _jload("we-parts.json")
+        if not st or st.get("n") != n or time.time() - st.get("ts", 0) > 3600:
+            st = {"n": n, "parts": {}, "ts": time.time()}
+        st["parts"][str(i)] = text[m.end():].strip("\r\n")
+        st["ts"] = time.time()
+        _jsave("we-parts.json", st)
+        got = len(st["parts"])
+        if got < n:
+            missing = [str(k) for k in range(1, n + 1) if str(k) not in st["parts"]]
+            send(chat_id, f"조각 {i}/{n} 받았어요 ({got}/{n}). 남은 조각: {', '.join(missing)}")
+            return True
+        raw = "".join(st["parts"][str(k)] for k in range(1, n + 1))
+        _jsave("we-parts.json", None)
+        try:
+            obj = json.loads(raw)
+            assert obj.get("format") == "world-edits" and isinstance(obj.get("changes"), list)
+        except Exception:
+            send(chat_id, "조각을 이어 붙였는데 수정 파일 형식이 아니에요. 조각이 잘렸거나 순서가 바뀌었을 수 있어요. 처음부터 다시 보내 주세요.")
+            return True
+        edits_dir = REPO / "edits"
+        edits_dir.mkdir(exist_ok=True)
+        fname = f"world-edits-tg-{time.strftime('%Y%m%d-%H%M%S')}.json"
+        (edits_dir / fname).write_text(json.dumps(obj, ensure_ascii=False, indent=1), encoding="utf-8")
+        with _repo_lock:
+            code, out = _sh(["node", "scripts/apply-world-edits.js", f"edits/{fname}", "--dry-run", "--prefer", WE_PREFER])
+        _jsave("we-pending.json", {"file": f"edits/{fname}", "ts": time.time()})
+        log(f"수정 파일 조립: {fname} 변경 {len(obj['changes'])}개 dry-run code={code}")
+        send(chat_id, f"수정 파일을 받았어요 ({len(obj['changes'])}개 묶음).\n미리보기:\n{_short(out)}\n\n'반영'이라고 보내면 노트에 반영하고 푸시해요. '취소'면 버려요.")
+        return True
+
+    pend = _jload("we-pending.json")
+    if pend and low in WE_CANCEL:
+        try:
+            (REPO / pend["file"]).unlink()
+        except OSError:
+            pass
+        _jsave("we-pending.json", None)
+        send(chat_id, "수정 파일을 버렸어요.")
+        return True
+    if pend and low in WE_APPLY:
+        _jsave("we-pending.json", None)
+        rel = pend["file"]
+        if not (REPO / rel).exists():
+            send(chat_id, "수정 파일이 없어요. 다시 보내 주세요.")
+            return True
+        send(chat_id, "반영 중이에요…")
+        with _repo_lock:
+            code, out = _sh(["node", "scripts/apply-world-edits.js", rel, "--prefer", WE_PREFER])
+            if code not in (0, 3):
+                send(chat_id, f"반영하지 못했어요.\n{_short(out)}")
+                return True
+            ccode, cout = _sh(["node", "scripts/check-world.js"])
+            if ccode != 0:
+                _sh(["git", "checkout", "--", "world/data.js", "docs/edit-log.md"])
+                send(chat_id, f"반영 결과가 노트 검사를 통과하지 못해서 되돌렸어요.\n{_short(cout)}")
+                return True
+            n_applied = re.search(r"반영 (\d+)개", out)
+            applied = int(n_applied.group(1)) if n_applied else 0
+            if applied == 0:
+                send(chat_id, f"새로 반영된 것이 없어요.\n{_short(out)}")
+                return True
+            _sh(["git", "add", "world/data.js", "docs/edit-log.md", "edits"])
+            c2, o2 = _sh(["git", "commit", "-m", f"세계관: 텔레그램으로 보낸 사이트 편집 반영 — {applied}개"])
+            if c2 != 0:
+                send(chat_id, f"커밋하지 못했어요.\n{_short(o2)}")
+                return True
+            p1, po = _sh(["git", "push", "origin", "main"])
+            if p1 != 0:
+                _sh(["git", "pull", "--rebase", "origin", "main"])
+                p1, po = _sh(["git", "push", "origin", "main"])
+        note = "" if p1 == 0 else f"\n(푸시는 실패했어요: {_short(po, 300)})"
+        send(chat_id, f"반영했어요 ({applied}개)." + (" 푸시까지 끝났어요." if p1 == 0 else "") + f"\n{_short(out, 1200)}{note}\nhttps://kjooy0305.github.io/i_can_do_it_game-/world/")
+        return True
+    return False
+
+
 def handle_message(msg, counters):
     sender = str((msg.get("from") or {}).get("id", ""))
     chat = msg.get("chat") or {}
@@ -282,6 +408,8 @@ def handle_message(msg, counters):
         return
     text = text.strip()[:MAX_INPUT]
     low = text.lower()
+    if we_handle(chat["id"], text):
+        return
     if low in ("/start", "/help"):
         send(chat["id"], HELP)
     elif low in ("/reset", "초기화"):

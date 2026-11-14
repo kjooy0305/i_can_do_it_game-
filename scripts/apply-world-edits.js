@@ -20,8 +20,22 @@ const DATA = path.resolve(opt('--data', path.join(__dirname, '..', 'world', 'dat
 const DRY = flag('--dry-run');
 
 // ---------- 입력 검사 ----------
+// JSON 이거나, 텔레그램용으로 나눈 조각("#WE 1/3" 으로 시작하는 덩어리 여러 개를 이어 붙인 텍스트)
+function readEdits(f) {
+  const raw = fs.readFileSync(f, 'utf8');
+  try { return JSON.parse(raw); } catch (e) { /* 조각 형식 확인 */ }
+  const re = /#WE\s+(\d+)\/(\d+)[ \t]*\r?\n/g, marks = []; let m;
+  while ((m = re.exec(raw))) marks.push({ i: +m[1], n: +m[2], end: re.lastIndex, start: m.index });
+  if (!marks.length) throw new Error('JSON 도 #WE 조각 형식도 아니에요');
+  const n = marks[0].n;
+  if (marks.some(x => x.n !== n)) throw new Error('조각의 전체 개수가 서로 달라요');
+  const got = {}; marks.forEach((x, k) => { const end = k + 1 < marks.length ? marks[k + 1].start : raw.length; got[x.i] = raw.slice(x.end, end).replace(/^[\r\n]+|[\r\n]+$/g, ''); });
+  const miss = []; for (let i = 1; i <= n; i++) if (got[i] === undefined) miss.push(i);
+  if (miss.length) throw new Error('빠진 조각이 있어요: ' + miss.join(', ') + ' (전체 ' + n + ')');
+  return JSON.parse(Array.from({ length: n }, (_, i) => got[i + 1]).join(''));
+}
 let edits;
-try { edits = JSON.parse(fs.readFileSync(file, 'utf8')); } catch (e) { console.error('파일을 읽을 수 없어요: ' + e.message); process.exit(2); }
+try { edits = readEdits(file); } catch (e) { console.error('파일을 읽을 수 없어요: ' + e.message); process.exit(2); }
 if (edits.format !== 'world-edits' || !Array.isArray(edits.changes)) { console.error('world-edits 형식이 아니에요.'); process.exit(2); }
 const LISTS = ['core', 'add', 'ask', 'rules', 'story'];
 const NOTE_F = ['title', 'status', 'core', 'add', 'ask'], ENTRY_F = ['name', 'status', 'core', 'add', 'ask', 'rules', 'story'];
@@ -143,11 +157,95 @@ function setField(id, name, value) {
   return true;
 }
 
+// ---------- 추가·삭제용 ----------
+const q2 = q;
+const arr1 = a => '[' + (a || []).map(q2).join(', ') + ']';
+function noteJS(o) {
+  return `      { id: ${q2(o.id)}, title: ${q2(o.title)}, status: ${q2(o.status)},\n        core: ${serialize(o.core, 8)},\n        add: ${serialize(o.add, 8)},\n        ask: ${arr1(o.ask)}, link: ${arr1(o.link)} }`;
+}
+function entryJS(o) {
+  return `    { id: ${q2(o.id)}, type: ${q2(o.type)}, name: ${q2(o.name)}${o.parent ? ', parent: ' + q2(o.parent) : ''}, status: ${q2(o.status)},\n      core: ${serialize(o.core, 6)},\n      add: ${serialize(o.add, 6)},\n      ask: ${arr1(o.ask)},\n      rules: ${arr1(o.rules)}, story: ${serialize(o.story || [], 6)}, link: ${arr1(o.link)} }`;
+}
+function insertInArray(arrStart, arrEndExcl, text) { // [ ... ] 의 끝에 항목을 덧붙인다
+  const close = arrEndExcl - 1; let j = close - 1; while (/\s/.test(src[j])) j--;
+  const empty = src[j] === '[';
+  src = src.slice(0, j + 1) + (empty ? '\n' : ',\n') + text + src.slice(j + 1);
+}
+function worldObjectText() { const st = src.indexOf('{', src.indexOf('window.WORLD')); const en = matchClose(src, st); return { st, text: src.slice(st, en + 1) }; }
+function addToGroup(groupId, o) {
+  const span = objectSpan(src, groupId); if (!span) return false;
+  const text = src.slice(span.start, span.end + 1), f = fieldSpan(null, text, 'items'); if (!f) return false;
+  insertInArray(span.start + f[0], span.start + f[1], noteJS(o)); return true;
+}
+function addToEntries(o) {
+  const w = worldObjectText(), f = fieldSpan(null, w.text, 'entries'); if (!f) return false;
+  insertInArray(w.st + f[0], w.st + f[1], entryJS(o)); return true;
+}
+function removeObject(id) {
+  const span = objectSpan(src, id); if (!span) return false;
+  let a = span.start, b = span.end + 1, k = b; while (/\s/.test(src[k])) k++;
+  if (src[k] === ',') { b = k + 1; let l = a; while (l > 0 && (src[l - 1] === ' ' || src[l - 1] === '\t')) l--; if (src[l - 1] === '\n') a = l - 1; }
+  else { let l = a - 1; while (/\s/.test(src[l])) l--; if (src[l] === ',') a = l; }
+  src = src.slice(0, a) + src.slice(b); return true;
+}
+const cleanList = a => (Array.isArray(a) ? a : []).map(x => String(x).trim()).filter(Boolean);
+const ID_OK = /^[A-Za-z0-9][\w-]*$/;
+
 // ---------- 적용 ----------
 const applied = [], held = [], skipped = [];
+const removeIds = new Set(edits.changes.filter(c => c.op === 'remove').map(c => c.id));
+const FL = { core: '핵심', add: '첨언', ask: '열린 질문', rules: '규칙', story: '이야기 씨앗', title: '제목', name: '이름', status: '상태' };
+const hold = (c, what, detail, extra) => held.push({ id: c.id, label: c.label || c.id, field: c.field || c.op, what, detail, ...(extra || {}) });
+
 for (const c of edits.changes) {
+  const op = c.op || 'set', label = c.label || c.id;
+  if (op === 'add') {
+    const o = c.after || {}, isNote = c.kind === 'note';
+    if (!c.id || !ID_OK.test(c.id)) { hold(c, '새 항목', 'id 형식이 올바르지 않아요'); continue; }
+    if (notes[c.id] || entries[c.id]) { const ex = notes[c.id] || entries[c.id]; if ((ex.title || ex.name) === (o.title || o.name)) skipped.push(`${label} (이미 있는 항목)`); else hold(c, '새 항목', '같은 id 의 다른 항목이 이미 있어요'); continue; }
+    const status = o.status;
+    if (isNote) {
+      const g = W.groups.find(x => x.id === (c.group || o.group));
+      const core = cleanList(o.core), add = cleanList(o.add), title = String(o.title || '').trim();
+      if (!g) { hold(c, '새 줄', '분류(' + (c.group || o.group) + ')가 없어요'); continue; }
+      if (!title || !core.length || !add.length) { hold(c, '새 줄', '제목 · 핵심 · 첨언이 모두 있어야 해요 (핵심 1개 이상, 첨언 1개 이상)'); continue; }
+      if (!['seed', 'draft', 'ok'].includes(status)) { hold(c, '새 줄', '상태가 올바르지 않아요: ' + status); continue; }
+      const link = cleanList(o.link).filter(id => notes[id] || entries[id]);
+      const obj = { id: c.id, title, status, core, add, ask: cleanList(o.ask), link };
+      if (!addToGroup(g.id, obj)) { hold(c, '쓰기 실패', 'data.js 에서 분류 ' + g.id + ' 를 찾지 못했어요'); continue; }
+      g.items.push(obj); notes[c.id] = obj; applied.push({ id: c.id, label, field: '새 줄' });
+    } else {
+      const t = (W.types || []).find(x => x.id === (c.type || o.type)), name = String(o.name || '').trim();
+      if (!t) { hold(c, '새 사전 항목', '종류(' + (c.type || o.type) + ')가 없어요'); continue; }
+      if (!name) { hold(c, '새 사전 항목', '이름이 비어 있어요'); continue; }
+      const parent = c.parent || o.parent;
+      if (t.parents) { const p = entries[parent]; if (!p || !t.parents.includes(p.type)) { hold(c, '새 사전 항목', `${t.name} 의 상위 항목이 없거나 종류가 맞지 않아요 (${parent || '없음'})`); continue; } }
+      else if (parent) { hold(c, '새 사전 항목', `${t.name} 는 상위 항목을 둘 수 없어요`); continue; }
+      const core = cleanList(o.core); let st2 = ['blank', 'seed', 'draft', 'ok'].includes(status) ? status : 'blank';
+      if (st2 !== 'blank' && !core.length) st2 = 'blank';              // 핵심이 없으면 "이름만"으로 둔다 (규칙)
+      const obj = { id: c.id, type: t.id, name, ...(t.parents ? { parent } : {}), status: st2, core, add: cleanList(o.add), ask: cleanList(o.ask), rules: cleanList(o.rules), story: cleanList(o.story), link: cleanList(o.link).filter(id => notes[id] || entries[id]) };
+      if (!addToEntries(obj)) { hold(c, '쓰기 실패', 'data.js 에서 entries 를 찾지 못했어요'); continue; }
+      (W.entries = W.entries || []).push(obj); entries[c.id] = obj; applied.push({ id: c.id, label, field: '새 사전 항목' });
+    }
+    continue;
+  }
+  if (op === 'remove') {
+    const obj = notes[c.id] || entries[c.id];
+    if (!obj) { skipped.push(`${label} (이미 없는 항목)`); continue; }
+    const kids = (W.entries || []).filter(e => e.parent === c.id && !removeIds.has(e.id));
+    if (kids.length) { hold(c, '삭제', '하위 항목이 남아 있어요: ' + kids.map(k => k.name).join(', ')); continue; }
+    const diffs = Object.keys(c.before || {}).filter(f => (NOTE_F.includes(f) || ENTRY_F.includes(f)) && !eq(obj[f], c.before[f]));
+    if (diffs.length && PREFER === 'hold') { hold(c, '삭제', '지우려던 항목이 그 사이에 바뀌었어요 (' + diffs.map(f => FL[f] || f).join(', ') + ')'); continue; }
+    if (diffs.length && PREFER === 'data') continue;
+    if (!removeObject(c.id)) { hold(c, '쓰기 실패', 'data.js 에서 항목을 찾지 못했어요'); continue; }
+    if (notes[c.id]) { const g = W.groups.find(x => x.id === obj.group || x.items.includes(obj)); if (g) g.items.splice(g.items.indexOf(obj), 1); delete notes[c.id]; }
+    else { W.entries.splice(W.entries.indexOf(obj), 1); delete entries[c.id]; }
+    // 다른 항목이 이 항목을 가리키던 연결(link)을 정리한다
+    [...Object.values(notes), ...Object.values(entries)].forEach(x => { if ((x.link || []).includes(c.id)) { const nl = x.link.filter(i => i !== c.id); if (setField(x.id, 'link', nl)) x.link = nl; } });
+    applied.push({ id: c.id, label, field: '삭제' }); continue;
+  }
+  // ----- op: set (글·제목·상태 수정) -----
   const kind = notes[c.id] ? 'note' : entries[c.id] ? 'entry' : null;
-  const label = c.label || c.id;
   if (!kind) { held.push({ id: c.id, label, field: c.field, what: '항목 없음', detail: '이 항목이 data.js 에 없어요 (지워졌거나 id가 바뀜)' }); continue; }
   if (!(kind === 'note' ? NOTE_F : ENTRY_F).includes(c.field)) { skipped.push(`${label}.${c.field} (편집할 수 없는 필드)`); continue; }
   const obj = kind === 'note' ? notes[c.id] : entries[c.id], cur = obj[c.field];
@@ -162,15 +260,13 @@ for (const c of edits.changes) {
   else { next = cur; conflicts = [{ what: '값이 겹침', detail: `현재 “${String(cur).slice(0, 30)}” / 수정 “${String(c.after).slice(0, 30)}”` }]; }
   conflicts.forEach(x => held.push({ id: c.id, label, field: c.field, ...x }));
   if (eq(next, cur)) { if (!conflicts.length) skipped.push(`${label}.${c.field} (이미 반영됨)`); continue; }
-  if (DRY) { applied.push({ id: c.id, label, field: c.field }); continue; }
   if (setField(c.id, c.field, next)) { applied.push({ id: c.id, label, field: c.field }); obj[c.field] = next; }
   else held.push({ id: c.id, label, field: c.field, what: '쓰기 실패', detail: 'data.js 에서 이 필드를 찾지 못했어요 (필드가 없거나 서식이 달라요)' });
 }
-const FL = { core: '핵심', add: '첨언', ask: '열린 질문', rules: '규칙', story: '이야기 씨앗', title: '제목', name: '이름', status: '상태' };
 console.log(`${DRY ? '[미리보기] ' : ''}수정 파일: ${edits.changes.length}개 묶음 (기준 ${edits.baseUpdated || '?'}) · 방식 ${PREFER}`);
 console.log(`반영${DRY ? ' 예정' : ''} ${applied.length}개`);
 applied.forEach(a => console.log(`  ✓ ${a.label} · ${FL[a.field] || a.field}`));
-if (skipped.length) { console.log(`건너뜀 ${skipped.length}개`); skipped.forEach(s => console.log('  - ' + s)); }
+if (skipped.length) { console.log(`건너뜀 ${skipped.length}개`); skipped.forEach(x => console.log('  - ' + x)); }
 if (held.length) { console.log(`보류(겹침·오류) ${held.length}개`); held.forEach(h => console.log(`  ! ${h.label} · ${FL[h.field] || h.field} — ${h.what}: ${h.detail}${h.ins && h.ins.length ? ' / 수정 내용: ' + h.ins.map(x => '“' + x.slice(0, 40) + '”').join(', ') : ''}`)); }
 if (DRY || !applied.length) process.exit(held.length ? 3 : 0);
 

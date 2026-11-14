@@ -43,6 +43,7 @@ if (!x) {
   };
   document.getElementById('editBtn').onclick = () => { WEdit.set(!WEdit.isOn()); draw(); };
   WEdit.mount(document.getElementById('ehost'), draw);
+  WEdit.hooks.deleted = back => { location.href = './#' + (back || ''); };
   draw();
 }
 document.getElementById('foot').textContent = `마지막 정리 ${W.updated}`;

@@ -11,3 +11,9 @@ node scripts/apply-world-edits.js edits/<파일> --prefer mine # 겹치면 수�
 node scripts/apply-world-edits.js edits/<파일> --prefer data # 겹치면 data.js 현재 내용 우선
 ```
 처리한 파일은 `edits/applied/` 로 옮겨지고 `docs/edit-log.md` 에 기록된다.
+
+## 전달 방법 (세 가지 모두 쓸 수 있다)
+- **A. 이 폴더에 올리기**: 사이트에서 "파일로 저장" → GitHub 웹에서 이 폴더에 업로드. Claude 가 가져와 반영한다.
+- **B. 텔레그램**: "텔레그램용 나눠 복사"한 `#WE` 조각을 순서대로 보내고 미리보기 뒤에 `반영`. (브리지가 직접 처리)
+- **C. 작업 대화창**: JSON 을 붙여 넣거나 파일 경로를 알려 준다.
+
