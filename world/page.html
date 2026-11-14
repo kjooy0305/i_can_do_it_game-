@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>세계관 노트 · 페이지</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=JetBrains+Mono:wght@500;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="page" style="max-width:900px">
+  <div class="top"><nav class="crumb" id="crumb" aria-label="경로"></nav><a class="pg" id="toList" href="./">목록에서 보기</a></div>
+  <article class="article" id="art"></article>
+  <p class="note" id="foot"></p>
+</div>
+<script src="data.js"></script>
+<script src="render.js"></script>
+<script>
+const { esc, byId, eById, tById, noteBlocks, entryBlocks, statusOf, pathSel, ancestors, childrenOf, W } = WN;
+const id = decodeURIComponent(location.hash.slice(1));
+const mk = (i, text) => `<a class="ref" href="page.html#${i}" onclick="setTimeout(()=>location.reload(),0)">${esc(text)}</a>`;
+const crumb = document.getElementById('crumb'), art = document.getElementById('art');
+const x = byId[id] || eById[id];
+if (!x) {
+  crumb.innerHTML = '<a href="./">노트</a>';
+  art.innerHTML = '<div class="empty">찾는 항목이 없어요. <a href="./">목록으로</a></div>';
+} else {
+  const p = pathSel(id);
+  crumb.innerHTML = p.map((c, i) => (i ? '<i>›</i>' : '') + (i === p.length - 1 ? `<b>${esc(c.label)}</b>` : `<a href="./#${c.sel}">${esc(c.label)}</a>`)).join('');
+  document.title = (x.title || x.name) + ' · 세계관 노트';
+  const [st, cls] = statusOf(x);
+  const head = `<h1>${esc(x.title || x.name)}</h1><div class="bar"><span class="tag ${cls}">${st}</span>${x.type ? `<span class="tag">${esc(tById[x.type].name)}</span>` : ''}</div>`;
+  art.innerHTML = head + `<div class="body">${x.title ? noteBlocks(x, mk) : entryBlocks(x, mk)}</div>`;
+  document.getElementById('toList').href = './#' + id;
+}
+document.getElementById('foot').textContent = `마지막 정리 ${W.updated}`;
+window.addEventListener('hashchange', () => location.reload());
+</script>
+</body>
+</html>

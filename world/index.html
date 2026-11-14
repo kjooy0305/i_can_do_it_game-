@@ -7,198 +7,159 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=JetBrains+Mono:wght@500;800&display=swap" rel="stylesheet">
-<style>
-:root{--paper:#fff;--ink:#000;--warn:#fff3a8;
-  --font-body:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
-  --font-num:"JetBrains Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;color-scheme:light}
-*{box-sizing:border-box}
-[hidden]{display:none!important}
-html{background:var(--paper)}
-body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.6;
-  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 56px}
-a{color:inherit}
-.page{max-width:780px;margin:0 auto;display:grid;gap:14px}
-.head h1{margin:0;font-size:28px;font-weight:900;letter-spacing:-.02em;text-wrap:balance}
-.head p{margin:6px 0 0;max-width:62ch}
-.head .back{display:inline-block;margin-bottom:8px;font-size:13px;font-weight:700;border-bottom:2px solid var(--ink);text-decoration:none}
-.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-.chip{font:inherit;font-size:14px;color:var(--ink);background:var(--paper);border:1px solid var(--ink);border-radius:999px;padding:6px 12px;min-height:38px;cursor:pointer}
-.chip[aria-pressed="true"]{border-width:3px;padding:4px 10px;font-weight:700}
-.chip:focus-visible,summary:focus-visible,.search:focus-visible,.ref:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
-.search{width:100%;min-height:46px;font:inherit;font-size:16px;color:var(--ink);background:var(--paper);border:1.5px solid var(--ink);border-radius:12px;padding:0 14px}
-.legend{display:grid;gap:4px;font-size:13px;border:1.5px dashed var(--ink);border-radius:12px;padding:10px 12px}
-.tag{display:inline-block;border:1px solid var(--ink);border-radius:6px;padding:0 6px;font-size:11px;font-weight:700;white-space:nowrap;line-height:1.7}
-.tag.k{background:var(--ink);color:var(--paper)}
-.tag.w{background:var(--warn)}
-.grp{display:grid;gap:0}
-.grp h2{margin:12px 0 0;font-size:15px;font-weight:900;border-bottom:2px solid var(--ink);padding-bottom:3px;display:flex;justify-content:space-between;align-items:baseline}
-.grp h2 small{font:800 12px var(--font-num)}
-details.line{border-bottom:1px solid var(--ink)}
-details.line summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;min-height:54px;padding:8px 2px}
-details.line summary::-webkit-details-marker{display:none}
-details.line summary::before{content:"▸";font-size:12px;width:12px;flex:none}
-details.line[open] summary::before{content:"▾"}
-details.line[open]{border-bottom-width:3px}
-.ttl{flex:1;min-width:0;font-weight:700}
-.ttl small{display:block;font-weight:400;font-size:12px}
-.body{padding:2px 2px 16px 24px;display:grid;gap:12px}
-.blk h3{margin:0 0 4px;font-size:12px;font-weight:900;letter-spacing:.04em;display:flex;gap:6px;align-items:center}
-.blk.core{border:3px solid var(--ink);border-radius:12px;padding:10px 12px}
-.blk ul{margin:0;padding-left:18px;display:grid;gap:6px}
-.blk.ask{border:1.5px dashed var(--ink);border-radius:12px;padding:10px 12px}
-code{font:800 12px var(--font-num);border:1px solid var(--ink);border-radius:5px;padding:0 4px}
-.refs{display:flex;gap:6px;flex-wrap:wrap}
-.ref{font:inherit;font-size:12px;font-weight:700;background:var(--paper);color:var(--ink);border:1px solid var(--ink);border-radius:999px;padding:2px 10px;cursor:pointer;min-height:30px}
-.empty{text-align:center;padding:36px 0;border:1.5px dashed var(--ink);border-radius:12px}
-.note{font-size:12.5px}
-.tree{margin-left:14px;border-left:2px solid var(--ink);padding-left:10px}
-.crumb{font-size:12px;font-weight:700;display:flex;gap:4px;flex-wrap:wrap;align-items:center}
-.crumb button{font:inherit;font-size:12px;font-weight:700;background:none;border:0;border-bottom:1.5px solid var(--ink);padding:0;cursor:pointer;color:var(--ink)}
-.blk.rule{border:3px double var(--ink);border-radius:12px;padding:10px 12px}
-.blk.inh{background:var(--warn);border-radius:12px;padding:8px 12px}
-.ty{font:800 11px var(--font-num);border:1px solid var(--ink);border-radius:6px;padding:0 6px;white-space:nowrap}
-</style>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 <div class="page">
   <header class="head">
     <a class="back" href="../mock/">← 화면 시안</a>
     <h1>세계관 노트</h1>
-    <p>말씀해 주신 핵심에 첨언을 덧붙여 정리한 곳이에요. 줄을 누르면 열려요. <b>주제 노트</b>는 큰 설정, <b>사전</b>은 제국·국가·도시·마을과 신·무기·변이처럼 개수가 늘어나는 낱말을 모아 둔 곳이에요. 이야기를 만들 때는 사전을 기준으로 해요.</p>
+    <p>핵심에 첨언을 덧붙여 정리한 곳이에요. 왼쪽 <b>목차</b>와 위 <b>경로</b>로 층을 따라가면 고른 것만 나와요. 줄을 누르면 열리고, 긴 글은 <b>페이지로 열기</b>로 한 페이지에서 볼 수 있어요.</p>
   </header>
-
   <div class="legend">
     <div><span class="tag k">핵심</span> 사용자가 정해 준 것 · 바꾸지 않아요</div>
     <div><span class="tag w">첨언</span> Claude가 덧붙인 아이디어 초안 · 마음에 안 들면 바꿔요</div>
     <div><span class="tag">열린 질문</span> 정해야 할 것</div>
   </div>
 
-  <div class="bar" id="modes"><button class="chip" data-m="note">주제 노트</button><button class="chip" data-m="dict">사전</button></div>
+  <div class="top">
+    <button class="chip" id="tocBtn" aria-expanded="false" aria-controls="toc">☰ 목차</button>
+    <nav class="crumb" id="crumb" aria-label="경로"></nav>
+    <button class="chip" id="askBtn" aria-pressed="false">열린 질문 있는 것만</button>
+  </div>
   <input class="search" type="search" id="q" placeholder="검색 (예: 허기, 심장, 몬스터, 제국)" autocomplete="off">
-  <div class="bar" id="chips"></div>
-  <div id="list" class="page" style="gap:0"></div>
-  <div class="empty" id="empty" hidden>검색 결과가 없습니다.</div>
-  <p class="note" id="foot"></p>
+
+  <div class="shell">
+    <nav class="toc" id="toc" aria-label="목차"></nav>
+    <div class="main">
+      <div id="list" class="main"></div>
+      <div class="empty" id="empty" hidden>해당하는 항목이 없습니다.</div>
+      <p class="note" id="foot"></p>
+    </div>
+  </div>
 </div>
 <script src="data.js"></script>
+<script src="render.js"></script>
 <script>
-const W = window.WORLD, $ = id => document.getElementById(id);
-const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-const md = s => esc(s).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/`(.+?)`/g, '<code>$1</code>');
-const all = W.groups.flatMap(g => g.items.map(i => ({ ...i, group: g.id, gname: g.name })));
-const byId = Object.fromEntries(all.map(i => [i.id, i]));
-const STATUS = { seed: ['핵심만', ''], draft: ['첨언 있음', 'w'], ok: ['확정', 'k'] };
-const TYPES = W.types || [], ENTRIES = W.entries || [];
-const eById = Object.fromEntries(ENTRIES.map(e => [e.id, e]));
-const tById = Object.fromEntries(TYPES.map(t => [t.id, t]));
-const lookup = id => byId[id] ? { title: byId[id].title, dict: false } : eById[id] ? { title: eById[id].name, dict: true } : null;
-let filter = 'all', q = '', mode = (location.hash && eById[location.hash.slice(1)]) ? 'dict' : 'note';
+const { esc, GROUPS, TYPES, ENTRIES, ALL, byId, eById, tById, gById, childrenOf, isPlace, pathSel, noteBlocks, entryBlocks, statusOf, searchText, W } = WN;
+const $ = id => document.getElementById(id);
+let sel = '', q = '', onlyAsk = false;
+const hasAsk = x => !!(x.ask && x.ask.length);
+const openKeys = new Set();
 
-const chips = $('chips');
-function chip(id, label) {
-  const b = document.createElement('button'); b.className = 'chip'; b.textContent = label; b.dataset.g = id;
-  b.onclick = () => { filter = id; render(); }; chips.append(b);
-}
-function buildChips() {
-  chips.innerHTML = ''; chip('all', '전체');
-  if (mode === 'note') W.groups.forEach(g => chip(g.id, g.name)); else TYPES.forEach(t => chip(t.id, `${t.name} ${ENTRIES.filter(e => e.type === t.id).length}`));
-  chip('ask', '열린 질문 있는 것');
-}
-document.getElementById('modes').addEventListener('click', e => { const b = e.target.closest('[data-m]'); if (!b) return; mode = b.dataset.m; filter = 'all'; buildChips(); render(); });
-
-function itemHTML(i) {
-  const [st, cls] = STATUS[i.status] || STATUS.draft;
-  const core = i.core.map(c => `<li>${md(c)}</li>`).join('');
-  const flesh = i.add.map(c => `<li>${md(c)}</li>`).join('');
-  const ask = (i.ask || []).map(c => `<li>${md(c)}</li>`).join('');
-  const refs = (i.link || []).filter(id => byId[id]).map(id => `<button class="ref" data-open="${id}">${esc(byId[id].title)}</button>`).join('');
-  return `<details class="line" id="i-${i.id}" data-id="${i.id}"><summary><span class="ttl">${esc(i.title)}<small>핵심 ${i.core.length} · 첨언 ${i.add.length}${ask ? ' · 질문 ' + i.ask.length : ''}</small></span><span class="tag ${cls}">${st}</span></summary>
-    <div class="body">
-      <div class="blk core"><h3><span class="tag k">핵심</span></h3><ul>${core}</ul></div>
-      <div class="blk"><h3><span class="tag w">첨언</span></h3><ul>${flesh}</ul></div>
-      ${ask ? `<div class="blk ask"><h3><span class="tag">열린 질문</span></h3><ul>${ask}</ul></div>` : ''}
-      ${refs ? `<div class="blk"><h3>이어지는 줄</h3><div class="refs">${refs}</div></div>` : ''}
-    </div></details>`;
-}
-function ancestors(e) { const r = []; for (let c = eById[e.parent]; c; c = eById[c.parent]) r.unshift(c); return r; }
-function entryHTML(e, depth) {
-  const t = tById[e.type], anc = ancestors(e), kids = ENTRIES.filter(x => x.parent === e.id);
-  const [st, cls] = e.status === 'blank' ? ['이름만', ''] : (STATUS[e.status] || STATUS.draft);
-  const li = a => (a || []).map(c => `<li>${md(c)}</li>`).join('');
-  const inh = anc.flatMap(a => [...(a.rules || []).map(r => [a, '규칙', r]), ...(a.core || []).map(r => [a, '핵심', r])]);
-  const refs = (e.link || []).map(id => ({ id, o: lookup(id) })).filter(r => r.o).map(r => `<button class="ref" data-open="${r.id}">${esc(r.o.title)}</button>`).join('');
-  const kidRefs = kids.map(k => `<button class="ref" data-open="${k.id}">${esc(tById[k.type].name)} · ${esc(k.name)}</button>`).join('');
-  return `<details class="line" id="i-${e.id}" data-id="${e.id}"><summary><span class="ttl">${esc(e.name)}<small>${esc(t.name)}${anc.length ? ' · ' + anc.map(a => esc(a.name)).join(' > ') : ''}${(e.ask || []).length ? ' · 질문 ' + e.ask.length : ''}${kids.length ? ' · 하위 ' + kids.length : ''}</small></span><span class="tag ${cls}">${st}</span></summary>
-    <div class="body">
-      ${anc.length ? `<div class="crumb">${anc.map(a => `<button data-open="${a.id}">${esc(a.name)}</button>`).join(' › ')} › <b>${esc(e.name)}</b></div>` : ''}
-      ${(e.core || []).length ? `<div class="blk core"><h3><span class="tag k">핵심</span></h3><ul>${li(e.core)}</ul></div>` : ''}
-      ${(e.rules || []).length ? `<div class="blk rule"><h3><span class="tag k">규칙</span> 이야기가 어기면 안 돼요</h3><ul>${li(e.rules)}</ul></div>` : ''}
-      ${inh.length ? `<div class="blk inh"><h3>위에서 물려받는 규칙·핵심</h3><ul>${inh.map(([a, k, r]) => `<li><b>${esc(a.name)}</b> (${k}) ${md(r)}</li>`).join('')}</ul></div>` : ''}
-      ${(e.add || []).length ? `<div class="blk"><h3><span class="tag w">첨언</span></h3><ul>${li(e.add)}</ul></div>` : ''}
-      ${(e.story || []).length ? `<div class="blk"><h3>이야기 씨앗</h3><ul>${li(e.story)}</ul></div>` : ''}
-      ${(e.ask || []).length ? `<div class="blk ask"><h3><span class="tag">열린 질문</span></h3><ul>${li(e.ask)}</ul></div>` : ''}
-      ${kidRefs ? `<div class="blk"><h3>하위 항목</h3><div class="refs">${kidRefs}</div></div>` : ''}
-      ${refs ? `<div class="blk"><h3>이어지는 줄</h3><div class="refs">${refs}</div></div>` : ''}
-    </div></details>`;
-}
-function renderDict(k) {
-  const match = e => (filter === 'all' || filter === 'ask' || filter === e.type) && (filter !== 'ask' || (e.ask && e.ask.length))
-    && (!k || [e.name, tById[e.type].name, ...(e.core || []), ...(e.add || []), ...(e.ask || []), ...(e.rules || []), ...(e.story || [])].join(' ').toLowerCase().includes(k));
-  let html = '', n = 0;
-  const placeTypes = new Set(TYPES.flatMap(t => t.parents ? [t.id, ...t.parents] : []));
-  const tree = (e, d) => { // 장소 계층을 들여써서 보여 준다 (자신이나 후손이 조건에 맞으면 표시)
-    const kids = ENTRIES.filter(x => x.parent === e.id), sub = kids.map(c => tree(c, d + 1)).join('');
-    if (!match(e) && !sub) return '';
-    if (match(e)) n++;
-    return entryHTML(e, d) + (sub ? `<div class="tree">${sub}</div>` : '');
-  };
-  const roots = ENTRIES.filter(e => placeTypes.has(e.type) && !e.parent);
-  if (roots.length) { const body = roots.map(e => tree(e, 0)).join(''); if (body) html += `<section class="grp"><h2><span>장소 (제국 › 국가 › 도시 › 마을)</span></h2>${body}</section>`; }
-  TYPES.filter(t => !placeTypes.has(t.id)).forEach(t => {
-    const list = ENTRIES.filter(e => e.type === t.id && match(e));
-    if (!list.length) return; n += list.length;
-    html += `<section class="grp"><h2><span>${esc(t.name)}</span><small>${list.length}</small></h2>${list.map(e => entryHTML(e, 0)).join('')}</section>`;
+// ---------- 목차 트리 ----------
+function entNode(e) { return { key: e.id, label: e.name, sel: e.id, kids: childrenOf(e).map(entNode) }; }
+function tree() {
+  const places = ENTRIES.filter(e => isPlace(e) && !e.parent);
+  const dictKids = [];
+  if (places.length) dictKids.push({ key: 'x=places', label: '장소', sel: 'x=places', kids: places.map(entNode) });
+  TYPES.filter(t => !WN.placeTypes.has(t.id)).forEach(t => {
+    const list = ENTRIES.filter(e => e.type === t.id); if (!list.length) return;
+    dictKids.push({ key: 't=' + t.id, label: t.name, sel: 't=' + t.id, ct: list.length, kids: list.map(e => ({ key: e.id, label: e.name, sel: e.id })) });
   });
-  return { html, n };
+  return [
+    { key: 'x=notes', label: '주제 노트', sel: 'x=notes', ct: ALL.length, kids: GROUPS.map(g => ({ key: 'g=' + g.id, label: g.name, sel: 'g=' + g.id, ct: g.items.length, kids: g.items.map(i => ({ key: i.id, label: i.title, sel: i.id })) })) },
+    { key: 'x=dict', label: '사전', sel: 'x=dict', ct: ENTRIES.length, kids: dictKids }
+  ];
+}
+function onPath(nodes, target, acc = []) { // 선택된 항목까지의 가지 key 목록
+  for (const n of nodes) {
+    if (n.sel === target) return [...acc, n.key];
+    const r = onPath(n.kids || [], target, [...acc, n.key]); if (r) return r;
+  }
+  return null;
+}
+function btn(cls, text, fn) { const b = document.createElement('button'); b.className = cls; b.type = 'button'; b.textContent = text; b.onclick = fn; return b; }
+function nodeEl(n, path) {
+  const li = document.createElement('li'), row = document.createElement('div'); row.className = 'row';
+  const isCur = n.sel === sel, kids = n.kids && n.kids.length;
+  const open = path.includes(n.key) || openKeys.has(n.key);
+  if (kids) {
+    const f = btn('fold', open ? '▾' : '▸', () => { open ? openKeys.delete(n.key) : openKeys.add(n.key); renderToc(); });
+    f.setAttribute('aria-label', n.label + (open ? ' 접기' : ' 펼치기')); row.append(f); li.className = 'grp';
+  } else { const sp = document.createElement('span'); sp.style.cssText = 'width:22px;flex:none'; row.append(sp); }
+  const t = btn('t', n.label, () => go(n.sel)); if (isCur) t.setAttribute('aria-current', 'page');
+  row.append(t);
+  if (n.ct) { const c = document.createElement('span'); c.className = 'ct'; c.textContent = n.ct; row.append(c); }
+  li.append(row);
+  if (kids && open) { const ul = document.createElement('ul'); n.kids.forEach(k => ul.append(nodeEl(k, path))); li.append(ul); }
+  return li;
+}
+function renderToc() {
+  const nodes = tree(), path = onPath(nodes, sel) || [], ul = document.createElement('ul');
+  nodes.forEach(n => ul.append(nodeEl(n, path)));
+  $('toc').textContent = ''; $('toc').append(ul);
+}
+function renderCrumb() {
+  const p = pathSel(sel), c = $('crumb'); c.textContent = '';
+  p.forEach((x, i) => {
+    if (i) { const s = document.createElement('i'); s.textContent = '›'; c.append(s); }
+    if (i === p.length - 1) { const b = document.createElement('b'); b.textContent = x.label; c.append(b); }
+    else c.append(btn('', x.label, () => go(x.sel)));
+  });
+}
+
+// ---------- 본문 ----------
+const refBtn = (id, text) => `<button class="ref" data-sel="${id}">${esc(text)}</button>`;
+const pageLink = id => `<a class="pg" href="page.html#${id}" onclick="event.stopPropagation()">페이지로 열기 ↗</a>`;
+function lineHTML(i, open) {
+  const [st, cls] = statusOf(i);
+  return `<details class="line" id="i-${i.id}" data-id="${i.id}"${open ? ' open' : ''}><summary><span class="ttl">${esc(i.title)}<small>핵심 ${i.core.length} · 첨언 ${i.add.length}${hasAsk(i) ? ' · 질문 ' + i.ask.length : ''}</small></span><span class="tag ${cls}">${st}</span>${pageLink(i.id)}</summary><div class="body">${noteBlocks(i, refBtn)}</div></details>`;
+}
+function entryHTML(e, open) {
+  const t = tById[e.type], anc = WN.ancestors(e), kids = childrenOf(e), [st, cls] = statusOf(e);
+  return `<details class="line" id="i-${e.id}" data-id="${e.id}"${open ? ' open' : ''}><summary><span class="ttl">${esc(e.name)}<small>${esc(t.name)}${anc.length ? ' · ' + anc.map(a => esc(a.name)).join(' > ') : ''}${hasAsk(e) ? ' · 질문 ' + e.ask.length : ''}${kids.length ? ' · 하위 ' + kids.length : ''}</small></span><span class="tag ${cls}">${st}</span>${pageLink(e.id)}</summary><div class="body">${entryBlocks(e, refBtn)}</div></details>`;
+}
+const card = (s, title, small) => `<button class="cardb" data-sel="${s}"><b>${esc(title)}</b><small>${esc(small)}</small></button>`;
+const section = (title, count, inner) => `<section class="grp"><h2><span>${esc(title)}</span><small>${count}</small></h2>${inner}</section>`;
+const filt = l => onlyAsk ? l.filter(hasAsk) : l;
+
+function view() { // [html, 개수, 열린 항목 id]
+  const k = q.trim().toLowerCase();
+  if (k) {
+    const a = filt(ALL).filter(i => searchText(i).includes(k)), b = filt(ENTRIES).filter(e => searchText(e).includes(k));
+    return [(a.length ? section('주제 노트', a.length, a.map(i => lineHTML(i)).join('')) : '') + (b.length ? section('사전', b.length, b.map(e => entryHTML(e)).join('')) : ''), a.length + b.length];
+  }
+  if (!sel) return [`<div class="cards">${card('x=notes', '주제 노트', `분류 ${GROUPS.length}개 · 줄 ${ALL.length}개`)}${card('x=dict', '사전', `항목 ${ENTRIES.length}개 · 종류 ${TYPES.length}가지`)}</div>`, 1];
+  if (sel === 'x=notes') return [`<div class="cards">${GROUPS.map(g => card('g=' + g.id, g.name, `${g.items.length}줄`)).join('')}</div>`, GROUPS.length];
+  if (sel === 'x=dict') {
+    const c = [];
+    if (ENTRIES.some(e => isPlace(e))) c.push(card('x=places', '장소', '제국 › 국가 › 도시 › 마을'));
+    TYPES.filter(t => !WN.placeTypes.has(t.id)).forEach(t => { const n = ENTRIES.filter(e => e.type === t.id).length; if (n) c.push(card('t=' + t.id, t.name, n + '개')); });
+    return [`<div class="cards">${c.join('')}</div>`, c.length];
+  }
+  if (sel === 'x=places') { const l = filt(ENTRIES.filter(e => isPlace(e) && !e.parent)); return [l.map(e => entryHTML(e)).join(''), l.length]; }
+  if (sel.startsWith('g=')) { const g = gById[sel.slice(2)]; if (!g) return ['', 0]; const l = filt(ALL.filter(i => i.group === g.id)); return [section(g.name, l.length, l.map(i => lineHTML(i)).join('')), l.length]; }
+  if (sel.startsWith('t=')) { const l = filt(ENTRIES.filter(e => e.type === sel.slice(2))); return [l.map(e => entryHTML(e)).join(''), l.length]; }
+  if (byId[sel]) { const i = byId[sel], l = filt(ALL.filter(x => x.group === i.group)); const list = l.includes(i) ? l : [i, ...l]; return [section(i.gname, list.length, list.map(x => lineHTML(x, x.id === sel)).join('')), list.length, sel]; }
+  if (eById[sel]) {
+    const e = eById[sel], kids = filt(childrenOf(e));
+    return [entryHTML(e, true) + (kids.length ? section('하위 항목', kids.length, kids.map(x => entryHTML(x)).join('')) : ''), 1 + kids.length, sel];
+  }
+  return ['', 0];
 }
 function render() {
-  const k = q.trim().toLowerCase();
-  document.querySelectorAll('#modes .chip').forEach(b => b.setAttribute('aria-pressed', b.dataset.m === mode));
-  if (mode === 'dict') {
-    const openD = new Set([...document.querySelectorAll('details.line[open]')].map(d => d.dataset.id));
-    chips.querySelectorAll('.chip').forEach(b => b.setAttribute('aria-pressed', b.dataset.g === filter));
-    const r = renderDict(k);
-    $('list').innerHTML = r.html; $('empty').hidden = r.n > 0;
-    openD.forEach(id => { const d = document.querySelector(`details.line[data-id="${id}"]`); if (d) d.open = true; });
-    $('foot').textContent = `사전 ${ENTRIES.length}개 · ${TYPES.length}종 · 마지막 정리 ${W.updated}`;
-    return;
-  }
-  const openIds = new Set([...document.querySelectorAll('details.line[open]')].map(d => d.dataset.id));
-  chips.querySelectorAll('.chip').forEach(b => b.setAttribute('aria-pressed', b.dataset.g === filter));
-  let n = 0, html = '';
-  W.groups.forEach(g => {
-    const items = all.filter(i => i.group === g.id && (filter === 'all' || filter === 'ask' || filter === g.id)
-      && (filter !== 'ask' || (i.ask && i.ask.length))
-      && (!k || [i.title, ...i.core, ...i.add, ...(i.ask || [])].join(' ').toLowerCase().includes(k)));
-    if (!items.length) return;
-    n += items.length;
-    html += `<section class="grp"><h2><span>${esc(g.name)}</span><small>${items.length}</small></h2>${items.map(itemHTML).join('')}</section>`;
-  });
+  renderToc(); renderCrumb();
+  const [html, n, openId] = view();
   $('list').innerHTML = html; $('empty').hidden = n > 0;
-  openIds.forEach(id => { const d = document.querySelector(`details.line[data-id="${id}"]`); if (d) d.open = true; });
-  $('foot').textContent = `${all.length}줄 · 마지막 정리 ${W.updated}`;
+  $('askBtn').setAttribute('aria-pressed', onlyAsk);
+  $('foot').textContent = `주제 노트 ${ALL.length}줄 · 사전 ${ENTRIES.length}개 · 마지막 정리 ${W.updated}`;
+  if (openId) { const d = document.getElementById('i-' + openId); if (d && d.scrollIntoView) d.scrollIntoView({ block: 'start' }); }
 }
-function openItem(id) {
-  const o = lookup(id); if (!o) return;
-  mode = o.dict ? 'dict' : 'note'; filter = 'all'; q = ''; $('q').value = ''; buildChips(); render();
-  const d = document.getElementById('i-' + id); d.open = true;
-  d.scrollIntoView({ block: 'start', behavior: 'smooth' });
-  try { history.replaceState(null, '', '#' + id); } catch (e) {}
+function valid(s) { return !s || ['x=notes', 'x=dict', 'x=places'].includes(s) || (s.startsWith('g=') && gById[s.slice(2)]) || (s.startsWith('t=') && tById[s.slice(2)]) || byId[s] || eById[s]; }
+function go(s) {
+  sel = valid(s) ? s : ''; q = ''; $('q').value = ''; openKeys.clear();
+  $('toc').classList.remove('open'); $('tocBtn').setAttribute('aria-expanded', 'false');
+  try { history.replaceState(null, '', sel ? '#' + sel : location.pathname + location.search); } catch (e) {}
+  render(); if (!document.querySelector('details[open]')) window.scrollTo({ top: 0 });
 }
-$('list').addEventListener('click', e => { const r = e.target.closest('[data-open]'); if (r) { e.preventDefault(); openItem(r.dataset.open); } });
+$('list').addEventListener('click', e => { const r = e.target.closest('[data-sel]'); if (r) { e.preventDefault(); go(r.dataset.sel); } });
 $('q').addEventListener('input', e => { q = e.target.value; render(); });
-buildChips(); render();
-if (location.hash && lookup(location.hash.slice(1))) openItem(location.hash.slice(1));
+$('askBtn').onclick = () => { onlyAsk = !onlyAsk; render(); };
+$('tocBtn').onclick = () => { const o = $('toc').classList.toggle('open'); $('tocBtn').setAttribute('aria-expanded', o); };
+window.addEventListener('hashchange', () => { const s = decodeURIComponent(location.hash.slice(1)); if (valid(s) && s !== sel) { sel = s; q = ''; $('q').value = ''; render(); } });
+sel = valid(decodeURIComponent(location.hash.slice(1))) ? decodeURIComponent(location.hash.slice(1)) : '';
+render();
 </script>
 </body>
 </html>
