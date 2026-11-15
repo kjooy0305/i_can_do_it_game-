@@ -10,194 +10,167 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="page">
+<div class="page wiki">
   <header class="head">
-    <a class="back" href="../mock/">← 화면 시안</a> <a class="back" href="wiki.html" style="margin-left:12px">한 페이지 정리본 ↗</a>
-    <h1>세계관 노트</h1>
-    <p>핵심에 첨언을 덧붙여 정리한 곳이에요. 맨 위의 <b>큰 분류</b>(세계관 · 제국 · 직업 · 변이 · 던전 · 도구 · 전체적인 삶 · 아이디어 노트)를 고르고, 왼쪽 <b>목차</b>와 위 <b>경로</b>로 층을 따라가면 고른 것만 나와요. 줄을 누르면 열리고, 긴 글은 <b>페이지로 열기</b>로 한 페이지에서 볼 수 있어요.</p>
+    <a class="back" href="../mock/">← 화면 시안</a> <a class="back" href="wiki.html" style="margin-left:12px">읽기용 정리본 ↗</a>
+    <h1>세계관 노트 · 끝에 도달하는 이야기</h1>
+    <p class="subt" id="sub"></p>
   </header>
-  <div class="legend">
-    <div><span class="tag k">핵심</span> 사용자가 정해 준 것 · 바꾸지 않아요</div>
-    <div><span class="tag w">첨언</span> Claude가 덧붙인 아이디어 초안 · 마음에 안 들면 바꿔요</div>
-    <div><span class="tag">열린 질문</span> 정해야 할 것</div>
+  <div class="wtop">
+    <div>
+      <p class="lead" id="lead"></p>
+      <div class="legend">
+        <div><span class="tag k">핵심</span> 사용자가 정해 준 것 · 바꾸지 않아요</div>
+        <div><span class="tag w">첨언</span> Claude가 덧붙인 아이디어 초안 · 마음에 안 들면 바꿔요</div>
+        <div><span class="tag">열린 질문</span> 정해야 할 것</div>
+      </div>
+    </div>
+    <aside class="info" id="info" aria-label="한눈에 보기"></aside>
   </div>
-
+  <div id="ehost"></div>
   <div class="top">
-    <button class="chip" id="tocBtn" aria-expanded="false" aria-controls="toc">☰ 목차</button>
-    <nav class="crumb" id="crumb" aria-label="경로"></nav>
+    <button class="chip" id="openAll">모두 펴기</button>
+    <button class="chip" id="foldLines">줄 접기</button>
+    <button class="chip" id="closeAll">모두 접기</button>
     <button class="chip" id="askBtn" aria-pressed="false">열린 질문 있는 것만</button>
     <button class="chip" id="editBtn" aria-pressed="false">✎ 편집 모드</button>
   </div>
-  <div id="ehost"></div>
   <input class="search" type="search" id="q" placeholder="검색 (예: 허기, 심장, 몬스터, 제국)" autocomplete="off">
-
-  <div class="shell">
-    <nav class="toc" id="toc" aria-label="목차"></nav>
-    <div class="main">
-      <div id="list" class="main"></div>
-      <div class="empty" id="empty" hidden>해당하는 항목이 없습니다.</div>
-      <p class="note" id="foot"></p>
-    </div>
-  </div>
+  <nav class="wtoc" id="toc" aria-label="목차"></nav>
+  <div id="list" class="main"></div>
+  <div class="empty" id="empty" hidden>해당하는 항목이 없습니다.</div>
+  <p class="note" id="foot"></p>
 </div>
 <script src="data.js"></script>
 <script src="render.js"></script>
 <script src="edit.js"></script>
 <script>
-const { esc, GROUPS, TYPES, ENTRIES, ALL, byId, eById, tById, gById, SECTIONS, secById, secOfGroup, secOfType, childrenOf, isPlace, pathSel, noteBlocks, entryBlocks, statusOf, searchText, W } = WN;
+const { esc, GROUPS, TYPES, ENTRIES, ALL, byId, eById, tById, gById, SECTIONS, secById, secOfGroup, secOfType, childrenOf, isPlace, noteBlocks, entryBlocks, statusOf, searchText, W } = WN;
 const $ = id => document.getElementById(id);
-// ---------- 편집 모드: 새 줄 / 새 사전 항목 ----------
+let q = '', onlyAsk = false;
+const chapClosed = new Set(), lineOpen = new Set(), subOpen = new Set();
+const hasAsk = x => !!(x.ask && x.ask.length);
+const filt = l => onlyAsk ? l.filter(hasAsk) : l;
+
+// ---------- 새 줄 / 새 사전 항목 (편집 모드) ----------
 function addControls() {
   const box = document.createElement('div'); box.className = 'addbox';
   const mkb = (txt, fn) => { const b = document.createElement('button'); b.className = 'eb'; b.type = 'button'; b.textContent = txt; b.onclick = fn; return b; };
-  const gid = sel.startsWith('g=') ? sel.slice(2) : byId[sel] ? byId[sel].group : null;
-  if (gid && gById[gid]) box.append(mkb('＋ 새 줄 추가 (' + gById[gid].name + ')', () => { const id = WN.createNote(gid); if (id) go(id); }));
-  // 사전 항목: 지금 보는 곳에 맞는 종류만 고르게 한다
-  let types = [];
-  if (sel.startsWith('t=') && tById[sel.slice(2)]) types = [sel.slice(2)];
-  else if (eById[sel]) { const e = eById[sel]; types = [e.type, ...TYPES.filter(t => (t.parents || []).includes(e.type)).map(t => t.id)]; }
-  else if (sel.startsWith('s=') && secById[sel.slice(2)]) types = secById[sel.slice(2)].types || [];
-  types = types.filter(id => tById[id]);
-  if (types.length) {
-    const lab = document.createElement('span'); lab.className = 'lbl'; lab.textContent = '사전 항목:';
-    const ts = document.createElement('select'); ts.setAttribute('aria-label', '종류');
-    types.forEach(id => { const o = document.createElement('option'); o.value = id; o.textContent = tById[id].name; ts.append(o); });
-    const ps = document.createElement('select'); ps.setAttribute('aria-label', '상위 항목');
-    const fill = () => {
-      const t = tById[ts.value], c = WN.allowedParents(ts.value); ps.innerHTML = ''; ps.hidden = !t.parents;
-      c.forEach(e => { const o = document.createElement('option'); o.value = e.id; o.textContent = WN.pathSel(e.id).slice(2).map(x => x.label).join(' › ') || e.name; ps.append(o); });
-      const want = eById[sel] ? (eById[sel].type === ts.value ? eById[sel].parent : sel) : null; if (want) ps.value = want;
-    };
-    ts.onchange = fill; fill();
-    box.append(lab, ts, ps, mkb('＋ 추가', () => {
-      const t = tById[ts.value]; if (t.parents && !ps.value) { alert('상위 항목을 먼저 만들어 주세요 (예: 도시는 제국 아래에).'); return; }
-      const id = WN.createEntry(ts.value, ps.value || null); if (id) go(id); else alert('이 위치에는 추가할 수 없어요.');
-    }));
-  }
-  return box.children.length ? box : null;
-}
-let sel = '', q = '', onlyAsk = false;
-const hasAsk = x => !!(x.ask && x.ask.length);
-const openKeys = new Set();
-
-// ---------- 목차 트리 ----------
-function entNode(e) { return { key: e.id, label: e.name, sel: e.id, kids: childrenOf(e).map(entNode) }; }
-function groupNode(g) { return { key: 'g=' + g.id, label: g.name, sel: 'g=' + g.id, ct: g.items.length, kids: g.items.map(i => ({ key: i.id, label: i.title, sel: i.id })) }; }
-function typeNode(ty) { const list = ENTRIES.filter(e => e.type === ty.id); return { key: 't=' + ty.id, label: ty.name, sel: 't=' + ty.id, ct: list.length, kids: list.map(e => ({ key: e.id, label: e.name, sel: e.id })) }; }
-function sectionKids(sc) {
-  const kids = (sc.groups || []).map(id => gById[id]).filter(Boolean).map(groupNode);
-  const places = ENTRIES.filter(e => isPlace(e) && !e.parent && (sc.types || []).includes(e.type));
-  places.forEach(e => kids.push(entNode(e)));                       // 장소는 제국 > 도시 > 마을 계층 그대로
-  (sc.types || []).filter(id => tById[id] && !WN.placeTypes.has(id)).forEach(id => { if (ENTRIES.some(e => e.type === id)) kids.push(typeNode(tById[id])); });
-  return kids;
-}
-function sectionCount(sc) { return (sc.groups || []).reduce((n, id) => n + (gById[id] ? gById[id].items.length : 0), 0) + ENTRIES.filter(e => (sc.types || []).includes(e.type)).length; }
-function tree() { return SECTIONS.map(sc => ({ key: 's=' + sc.id, label: sc.name, sel: 's=' + sc.id, ct: sectionCount(sc), kids: sectionKids(sc) })); }
-function onPath(nodes, target, acc = []) { // 선택된 항목까지의 가지 key 목록
-  for (const n of nodes) {
-    if (n.sel === target) return [...acc, n.key];
-    const r = onPath(n.kids || [], target, [...acc, n.key]); if (r) return r;
-  }
-  return null;
-}
-function btn(cls, text, fn) { const b = document.createElement('button'); b.className = cls; b.type = 'button'; b.textContent = text; b.onclick = fn; return b; }
-function nodeEl(n, path) {
-  const li = document.createElement('li'), row = document.createElement('div'); row.className = 'row';
-  const isCur = n.sel === sel, kids = n.kids && n.kids.length;
-  const open = path.includes(n.key) || openKeys.has(n.key);
-  if (kids) {
-    const f = btn('fold', open ? '▾' : '▸', () => { open ? openKeys.delete(n.key) : openKeys.add(n.key); renderToc(); });
-    f.setAttribute('aria-label', n.label + (open ? ' 접기' : ' 펼치기')); row.append(f); li.className = 'grp';
-  } else { const sp = document.createElement('span'); sp.style.cssText = 'width:22px;flex:none'; row.append(sp); }
-  const t = btn('t', n.label, () => go(n.sel)); if (isCur) t.setAttribute('aria-current', 'page');
-  row.append(t);
-  if (n.ct) { const c = document.createElement('span'); c.className = 'ct'; c.textContent = n.ct; row.append(c); }
-  li.append(row);
-  if (kids && open) { const ul = document.createElement('ul'); n.kids.forEach(k => ul.append(nodeEl(k, path))); li.append(ul); }
-  return li;
-}
-function renderToc() {
-  const nodes = tree(), path = onPath(nodes, sel) || [], ul = document.createElement('ul');
-  nodes.forEach(n => ul.append(nodeEl(n, path)));
-  $('toc').textContent = ''; $('toc').append(ul);
-}
-function renderCrumb() {
-  const p = pathSel(sel), c = $('crumb'); c.textContent = '';
-  p.forEach((x, i) => {
-    if (i) { const s = document.createElement('i'); s.textContent = '›'; c.append(s); }
-    if (i === p.length - 1) { const b = document.createElement('b'); b.textContent = x.label; c.append(b); }
-    else c.append(btn('', x.label, () => go(x.sel)));
-  });
+  const lab = t => { const s = document.createElement('span'); s.className = 'lbl'; s.textContent = t; return s; };
+  const gs = document.createElement('select'); gs.setAttribute('aria-label', '분류');
+  GROUPS.forEach(g => { const o = document.createElement('option'); o.value = g.id; o.textContent = g.name; gs.append(o); });
+  box.append(lab('새 줄:'), gs, mkb('＋ 새 줄 추가', () => { const id = WN.createNote(gs.value); if (id) go(id); }));
+  const ts = document.createElement('select'); ts.setAttribute('aria-label', '종류');
+  TYPES.forEach(t => { const o = document.createElement('option'); o.value = t.id; o.textContent = t.name; ts.append(o); });
+  const ps = document.createElement('select'); ps.setAttribute('aria-label', '상위 항목');
+  const fill = () => {
+    const t = tById[ts.value], c = WN.allowedParents(ts.value); ps.innerHTML = ''; ps.hidden = !t.parents;
+    c.forEach(e => { const o = document.createElement('option'); o.value = e.id; o.textContent = WN.pathSel(e.id).slice(2).map(x => x.label).join(' › ') || e.name; ps.append(o); });
+  };
+  ts.onchange = fill; fill();
+  box.append(lab('사전 항목:'), ts, ps, mkb('＋ 추가', () => {
+    const t = tById[ts.value]; if (t.parents && !ps.value) { alert('상위 항목을 먼저 만들어 주세요 (예: 도시는 제국 아래에).'); return; }
+    const id = WN.createEntry(ts.value, ps.value || null); if (id) go(id); else alert('이 위치에는 추가할 수 없어요.');
+  }));
+  return box;
 }
 
-// ---------- 본문 ----------
+// ---------- 본문 조각 ----------
 const refBtn = (id, text) => `<button class="ref" data-sel="${id}">${esc(text)}</button>`;
 const pageLink = id => `<a class="pg" href="page.html#${id}" onclick="event.stopPropagation()">페이지로 열기 ↗</a>`;
-function lineHTML(i, open) {
+function lineHTML(i) {
   const [st, cls] = statusOf(i);
-  return `<details class="line" id="i-${i.id}" data-id="${i.id}"${open ? ' open' : ''}><summary><span class="ttl">${esc(i.title)}<small>핵심 ${i.core.length} · 첨언 ${i.add.length}${hasAsk(i) ? ' · 질문 ' + i.ask.length : ''}</small></span><span class="tag ${cls}">${st}</span>${WN.isChanged(i.id) ? '<span class="tag w">수정됨</span>' : ''}${pageLink(i.id)}</summary><div class="body">${noteBlocks(i, refBtn)}</div></details>`;
+  return `<details class="line" id="i-${i.id}" data-id="${i.id}"${lineOpen.has(i.id) ? ' open' : ''}><summary><span class="ttl">${esc(i.title)}<small>핵심 ${i.core.length} · 첨언 ${i.add.length}${hasAsk(i) ? ' · 질문 ' + i.ask.length : ''}</small></span><span class="tag ${cls}">${st}</span>${WN.isChanged(i.id) ? '<span class="tag w">수정됨</span>' : ''}${pageLink(i.id)}</summary><div class="body">${noteBlocks(i, refBtn)}</div></details>`;
 }
-function entryHTML(e, open) {
+function entryHTML(e) {
   const t = tById[e.type], anc = WN.ancestors(e), kids = childrenOf(e), [st, cls] = statusOf(e);
-  return `<details class="line" id="i-${e.id}" data-id="${e.id}"${open ? ' open' : ''}><summary><span class="ttl">${esc(e.name)}<small>${esc(t.name)}${anc.length ? ' · ' + anc.map(a => esc(a.name)).join(' > ') : ''}${hasAsk(e) ? ' · 질문 ' + e.ask.length : ''}${kids.length ? ' · 하위 ' + kids.length : ''}</small></span><span class="tag ${cls}">${st}</span>${WN.isChanged(e.id) ? '<span class="tag w">수정됨</span>' : ''}${pageLink(e.id)}</summary><div class="body">${entryBlocks(e, refBtn)}</div></details>`;
+  return `<details class="line" id="i-${e.id}" data-id="${e.id}"${lineOpen.has(e.id) ? ' open' : ''}><summary><span class="ttl">${esc(e.name)}<small>${esc(t.name)}${anc.length ? ' · ' + anc.map(a => esc(a.name)).join(' > ') : ''}${hasAsk(e) ? ' · 질문 ' + e.ask.length : ''}${kids.length ? ' · 하위 ' + kids.length : ''}</small></span><span class="tag ${cls}">${st}</span>${WN.isChanged(e.id) ? '<span class="tag w">수정됨</span>' : ''}${pageLink(e.id)}</summary><div class="body">${entryBlocks(e, refBtn)}</div></details>`;
 }
-const card = (s, title, small) => `<button class="cardb" data-sel="${s}"><b>${esc(title)}</b><small>${esc(small)}</small></button>`;
 const section = (title, count, inner) => `<section class="grp"><h2><span>${esc(title)}</span><small>${count}</small></h2>${inner}</section>`;
-const filt = l => onlyAsk ? l.filter(hasAsk) : l;
-
-function view() { // [html, 개수, 열린 항목 id]
-  const k = q.trim().toLowerCase();
-  if (k) {
-    const a = filt(ALL).filter(i => searchText(i).includes(k)), b = filt(ENTRIES).filter(e => searchText(e).includes(k));
-    return [(a.length ? section('주제 노트', a.length, a.map(i => lineHTML(i)).join('')) : '') + (b.length ? section('사전', b.length, b.map(e => entryHTML(e)).join('')) : ''), a.length + b.length];
+const ov = byId['ov-summary'];
+const sectionCount = sc => (sc.groups || []).reduce((n, id) => n + (gById[id] ? gById[id].items.length : 0), 0) + ENTRIES.filter(e => (sc.types || []).includes(e.type)).length;
+function dfs(e, out) { out.push(e); childrenOf(e).forEach(k => dfs(k, out)); return out; }
+function chapterParts(sc) { // [{key, title, items:[{kind,obj}]}]
+  const parts = [];
+  const lines = (sc.groups || []).flatMap(id => gById[id] ? gById[id].items : []).filter(i => WEdit.isOn() || i !== ov);
+  const shown = filt(lines);
+  const places = (sc.types || []).some(t => WN.placeTypes.has(t)) ? filt(ENTRIES.filter(e => isPlace(e) && !e.parent && (sc.types || []).includes(e.type)).flatMap(e => dfs(e, []))) : [];
+  const others = (sc.types || []).filter(id => tById[id] && !WN.placeTypes.has(id)).map(id => ({ id, list: filt(ENTRIES.filter(e => e.type === id)) })).filter(x => x.list.length);
+  return { shown, places, others };
+}
+function chapterHTML(sc) {
+  const { shown, places, others } = chapterParts(sc);
+  const n = shown.length + places.length + others.reduce((a, x) => a + x.list.length, 0);
+  if (!n && onlyAsk) return '';
+  const sub = (key, title, list) => `<details class="dsub" data-sub="${key}"${subOpen.has(key) ? ' open' : ''}><summary>사전 · ${esc(title)} <small>${list.length}</small></summary><div class="subbody">${list.map(entryHTML).join('')}</div></details>`;
+  const inner = shown.map(lineHTML).join('')
+    + (places.length ? sub('places', '장소 (제국 › 도시 › 마을)', places) : '')
+    + others.map(x => sub('t=' + x.id, tById[x.id].name, x.list)).join('');
+  return `<details class="chap" id="c-${sc.id}" data-chap="${sc.id}"${chapClosed.has(sc.id) ? '' : ' open'}><summary><h2>${esc(sc.name)}</h2><small>${esc(sc.desc || '')} · ${sectionCount(sc)}개</small></summary><div class="cbody">${inner}</div></details>`;
+}
+function renderTop() {
+  $('sub').textContent = `큰 분류 ${SECTIONS.length}개 · 주제 노트 ${ALL.length}줄 · 사전 ${ENTRIES.length}개 · 마지막 정리 ${W.updated}`;
+  if (ov) {
+    $('lead').textContent = ov.core.map(c => /[.!?]$/.test(c) ? c : c + '.').join(' ');
+    $('info').innerHTML = '<h2>한눈에 보기</h2><div class="ibody">' + noteBlocks(ov, refBtn).replace(/<div class="blk core">[\s\S]*?<\/div>/, '') + '</div>';
   }
-  if (!sel) return [`<div class="cards">${SECTIONS.map(sc => card('s=' + sc.id, sc.name, `${sc.desc || ''} · ${sectionCount(sc)}개`)).join('')}</div>`, SECTIONS.length];
-  if (sel.startsWith('s=')) {
-    const sc = secById[sel.slice(2)]; if (!sc) return ['', 0];
-    const cards = [];
-    (sc.groups || []).map(id => gById[id]).filter(Boolean).forEach(g => cards.push(card('g=' + g.id, g.name, `주제 노트 ${g.items.length}줄`)));
-    (sc.types || []).filter(id => tById[id] && !WN.placeTypes.has(id)).forEach(id => { const n = ENTRIES.filter(e => e.type === id).length; if (n) cards.push(card('t=' + id, tById[id].name, `사전 ${n}개`)); });
-    const places = filt(ENTRIES.filter(e => isPlace(e) && !e.parent && (sc.types || []).includes(e.type)));
-    const html = `<p class="note">${esc(sc.desc || '')}</p>${cards.length ? `<div class="cards">${cards.join('')}</div>` : ''}${places.length ? section('장소 (제국 › 국가 › 도시 › 마을)', places.length, places.map(e => entryHTML(e)).join('')) : ''}`;
-    return [html, cards.length + places.length];
-  }
-  if (sel.startsWith('g=')) { const g = gById[sel.slice(2)]; if (!g) return ['', 0]; const l = filt(ALL.filter(i => i.group === g.id)); return [section(g.name, l.length, l.map(i => lineHTML(i)).join('')), l.length]; }
-  if (sel.startsWith('t=')) { const l = filt(ENTRIES.filter(e => e.type === sel.slice(2))); return [l.map(e => entryHTML(e)).join(''), l.length]; }
-  if (byId[sel]) { const i = byId[sel], l = filt(ALL.filter(x => x.group === i.group)); const list = l.includes(i) ? l : [i, ...l]; return [section(i.gname, list.length, list.map(x => lineHTML(x, x.id === sel)).join('')), list.length, sel]; }
-  if (eById[sel]) {
-    const e = eById[sel], kids = filt(childrenOf(e));
-    return [entryHTML(e, true) + (kids.length ? section('하위 항목', kids.length, kids.map(x => entryHTML(x)).join('')) : ''), 1 + kids.length, sel];
-  }
-  return ['', 0];
+}
+function renderToc() {
+  $('toc').innerHTML = '<b>목차</b><ol>' + SECTIONS.map(sc => `<li><button data-sel="s=${sc.id}">${esc(sc.name)}</button> <small>${sectionCount(sc)}</small></li>`).join('') + '</ol>';
+}
+function fillEditor(d) {
+  if (!WEdit.isOn() || !d.classList.contains('line') || !d.open || d.dataset.ed) return;
+  const x = WN.objOf(d.dataset.id), body = d.querySelector('.body');
+  if (x && body) { body.textContent = ''; body.append(WEdit.editorFor(x)); d.dataset.ed = '1'; }
 }
 function render() {
-  renderToc(); renderCrumb();
-  const [html, n, openId] = view();
+  renderTop(); renderToc();
+  const k = q.trim().toLowerCase();
+  let html = '', n = 0;
+  $('toc').hidden = !!k;
+  if (k) {
+    const a = filt(ALL).filter(i => searchText(i).includes(k)), b = filt(ENTRIES).filter(e => searchText(e).includes(k));
+    html = (a.length ? section('주제 노트', a.length, a.map(lineHTML).join('')) : '') + (b.length ? section('사전', b.length, b.map(entryHTML).join('')) : ''); n = a.length + b.length;
+  } else { html = SECTIONS.map(chapterHTML).join(''); n = html ? 1 : 0; }
   $('list').innerHTML = html; $('empty').hidden = n > 0;
-  if (WEdit.isOn()) document.querySelectorAll('#list details.line').forEach(d => { const x = WN.objOf(d.dataset.id), body = d.querySelector('.body'); if (x && body) { body.textContent = ''; body.append(WEdit.editorFor(x)); } });
-  if (WEdit.isOn()) { const ab = addControls(); if (ab) $('list').append(ab); }
+  if (WEdit.isOn()) { document.querySelectorAll('#list details.line[open]').forEach(fillEditor); $('list').append(addControls()); }
   $('editBtn').setAttribute('aria-pressed', WEdit.isOn()); WEdit.refresh();
   $('askBtn').setAttribute('aria-pressed', onlyAsk);
-  $('foot').textContent = `큰 분류 ${SECTIONS.length}개 · 주제 노트 ${ALL.length}줄 · 사전 ${ENTRIES.length}개 · 마지막 정리 ${W.updated}`;
-  if (openId) { const d = document.getElementById('i-' + openId); if (d && d.scrollIntoView) d.scrollIntoView({ block: 'start' }); }
 }
+$('list').addEventListener('toggle', e => {
+  const d = e.target; if (!(d instanceof HTMLDetailsElement)) return;
+  if (d.classList.contains('chap')) d.open ? chapClosed.delete(d.dataset.chap) : chapClosed.add(d.dataset.chap);
+  else if (d.classList.contains("dsub")) d.open ? subOpen.add(d.dataset.sub) : subOpen.delete(d.dataset.sub);
+  else if (d.classList.contains('line')) { d.open ? lineOpen.add(d.dataset.id) : lineOpen.delete(d.dataset.id); fillEditor(d); }
+}, true);
+
+// ---------- 바로가기 (#id) ----------
 function valid(s) { return !s || (s.startsWith('s=') && secById[s.slice(2)]) || (s.startsWith('g=') && gById[s.slice(2)]) || (s.startsWith('t=') && tById[s.slice(2)]) || byId[s] || eById[s]; }
 function go(s) {
-  sel = valid(s) ? s : ''; q = ''; $('q').value = ''; openKeys.clear();
-  $('toc').classList.remove('open'); $('tocBtn').setAttribute('aria-expanded', 'false');
-  try { history.replaceState(null, '', sel ? '#' + sel : location.pathname + location.search); } catch (e) {}
-  render(); if (!document.querySelector('details[open]')) window.scrollTo({ top: 0 });
+  if (!valid(s)) s = ''; q = ''; $('q').value = '';
+  let secId = null, scrollId = null;
+  if (s.startsWith('s=')) secId = s.slice(2);
+  else if (s.startsWith('g=')) secId = secOfGroup[s.slice(2)] && secOfGroup[s.slice(2)].id;
+  else if (s.startsWith('t=')) { const t = s.slice(2); secId = secOfType[t] && secOfType[t].id; subOpen.add(WN.placeTypes.has(t) ? 'places' : s); }
+  else if (byId[s]) { secId = secOfGroup[byId[s].group] && secOfGroup[byId[s].group].id; lineOpen.add(s); scrollId = 'i-' + s; }
+  else if (eById[s]) { const e = eById[s]; secId = secOfType[e.type] && secOfType[e.type].id; subOpen.add(isPlace(e) ? 'places' : 't=' + e.type); lineOpen.add(s); scrollId = 'i-' + s; }
+  if (secId) chapClosed.delete(secId);
+  try { history.replaceState(null, '', s ? '#' + s : location.pathname + location.search); } catch (e) {}
+  render();
+  const el = document.getElementById(scrollId || (secId ? 'c-' + secId : '')); if (el && el.scrollIntoView) el.scrollIntoView({ block: 'start' }); else window.scrollTo({ top: 0 });
 }
-$('list').addEventListener('click', e => { const r = e.target.closest('[data-sel]'); if (r) { e.preventDefault(); go(r.dataset.sel); } });
+document.addEventListener('click', e => { const r = e.target.closest('[data-sel]'); if (r) { e.preventDefault(); go(r.dataset.sel); } });
 $('q').addEventListener('input', e => { q = e.target.value; render(); });
 $('askBtn').onclick = () => { onlyAsk = !onlyAsk; render(); };
 $('editBtn').onclick = () => { WEdit.set(!WEdit.isOn()); render(); };
+$('openAll').onclick = () => { chapClosed.clear(); ALL.forEach(i => lineOpen.add(i.id)); ENTRIES.forEach(e => lineOpen.add(e.id)); subOpen.add('places'); TYPES.forEach(t => subOpen.add('t=' + t.id)); render(); };
+$('foldLines').onclick = () => { chapClosed.clear(); lineOpen.clear(); subOpen.clear(); render(); };
+$('closeAll').onclick = () => { SECTIONS.forEach(sc => chapClosed.add(sc.id)); lineOpen.clear(); subOpen.clear(); render(); };
 WEdit.mount($('ehost'), render);
 WEdit.hooks.deleted = back => go(back || '');
-$('tocBtn').onclick = () => { const o = $('toc').classList.toggle('open'); $('tocBtn').setAttribute('aria-expanded', o); };
-window.addEventListener('hashchange', () => { const s = decodeURIComponent(location.hash.slice(1)); if (valid(s) && s !== sel) { sel = s; q = ''; $('q').value = ''; render(); } });
-sel = valid(decodeURIComponent(location.hash.slice(1))) ? decodeURIComponent(location.hash.slice(1)) : '';
-render();
+window.addEventListener('hashchange', () => { const s = decodeURIComponent(location.hash.slice(1)); if (valid(s)) go(s); });
+const first = decodeURIComponent(location.hash.slice(1));
+valid(first) && first ? go(first) : render();
 </script>
 </body>
 </html>
