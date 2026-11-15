@@ -148,3 +148,5 @@ details.dsub[open]>summary::before{content:"▾"}
 details.dsub>summary small{font:700 11px var(--font-num)}
 .subbody{padding:0 10px}
 details.line summary h3{margin:0}
+.kids{margin:0 0 12px 18px;padding-left:12px;border-left:2px solid var(--ink)}
+.kids details.line{border-bottom-width:1px}
