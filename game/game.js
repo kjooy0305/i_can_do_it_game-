@@ -90,11 +90,56 @@
     play() {
       const run = store.get('run', null); if (!run) { go('start'); return; }
       const lv = LEVELS.find(l => l.id === run.level) || LEVELS[1];
-      app.innerHTML = `<section class="stub" aria-label="게임 플레이"><div class="topbar"><button class="back" id="back">← 게임 시작</button></div><h2>게임 플레이</h2>
-        <dl class="sum"><div><dt>모드</dt><dd>기본 모드</dd></div><div><dt>난이도</dt><dd>${lv.name} (${lv.sub})</dd></div><div><dt>시드</dt><dd class="mono">${run.seed}${run.auto ? ' (자동)' : ''}</dd></div></dl>
-        <div class="box"><b>게임 화면은 아직 만들지 않았어요</b>태어나기부터 이어서 만들 예정이에요.</div></section>`;
-      document.getElementById('back').onclick = () => go('start');
-      document.getElementById('back').focus();
+      // 몸 상태: 지금은 모두 원본. 왼쪽 막대는 급소 5곳, 누르면 세부 부위를 연다.
+      const ST = '원본';
+      const VITALS = [
+        { id: 'head', name: '머리', parts: [['왼쪽 눈', '시야 · 조준'], ['오른쪽 눈', '시야 · 조준'], ['코', '냄새 · 침식 감지'], ['입', '말 · 먹기'], ['왼쪽 귀', '소리 · 경계'], ['오른쪽 귀', '소리 · 경계']] },
+        { id: 'neck', name: '목', parts: [['목', '급소 · 손상되면 큰 후유증']] },
+        { id: 'spine', name: '척추', parts: [['척추', '급소 · 이동과 자세 전체에 영향']] },
+        { id: 'heart', name: '심장', parts: [['심장', '생존 한계를 정한다']] },
+        { id: 'legs', name: '다리', parts: [['왼쪽 다리', '회피'], ['왼쪽 발', '회피'], ['오른쪽 다리', '회피'], ['오른쪽 발', '회피']] }
+      ];
+      app.classList.add('wide');
+      app.innerHTML = `<div class="gframe" aria-label="게임 화면">
+        <header class="gtop">
+          <button class="sq" id="menuBtn" aria-label="메뉴" aria-haspopup="true" aria-expanded="false">☰</button>
+          <div class="gmid"><b>태아기 · 0세 0개월</b><small>${lv.name}(${lv.sub}) · 시드 <span class="mono">${run.seed}</span></small></div>
+        </header>
+        <div class="gline"></div>
+        <div class="gmain">
+          <aside class="rail l" aria-label="주요 신체 상태"><h4>급소</h4>${VITALS.map(v => `<button class="rb" data-v="${v.id}"><span>${v.name}</span><em>${ST}</em></button>`).join('')}</aside>
+          <section class="gstage" aria-label="이야기">
+            <div class="head2"><span>이번 달</span><span class="mono">#000</span></div>
+            <div class="art"><span>장면</span></div>
+            <div class="log"><p class="sys">▸ 시작 · 시드 ${run.seed}${run.auto ? ' (자동)' : ''} · ${lv.name}</p><p>이야기가 여기에 나옵니다.</p></div>
+          </section>
+          <aside class="rail r" aria-label="스텟"><h4>스텟</h4>
+            <div class="stat"><div class="sl"><span>허기</span><b>0</b></div><div class="bar2"><i style="width:0%"></i></div></div>
+            <div class="stat"><div class="sl"><span>돈</span><b>0</b></div><small>하무</small></div>
+            <div class="stat"><div class="sl"><span>변이도</span><b>0</b></div><div class="bar2"><i style="width:0%"></i></div></div>
+          </aside>
+        </div>
+        <footer class="gbot"><div class="q"><span>이번 달 어떻게 할까?</span><span class="mono">- / -</span></div><div class="box">선택지가 여기에 나옵니다.</div></footer>
+      </div>
+      <div class="pop" id="pop" hidden></div>`;
+      const pop = document.getElementById('pop'), menuBtn = document.getElementById('menuBtn');
+      let opener = null;
+      const close = () => { pop.hidden = true; pop.innerHTML = ''; menuBtn.setAttribute('aria-expanded', 'false'); if (opener) { opener.focus(); opener = null; } };
+      const show = (html, from) => { opener = from; pop.innerHTML = `<div class="sheet" role="dialog" aria-modal="true">${html}</div>`; pop.hidden = false; const f = pop.querySelector('[data-first]'); if (f) f.focus(); pop.querySelectorAll('[data-close]').forEach(x => x.onclick = close); };
+      pop.onclick = e => { if (e.target === pop) close(); };
+      app.querySelectorAll('.rb').forEach(b => b.onclick = () => {
+        const v = VITALS.find(x => x.id === b.dataset.v);
+        show(`<div class="shead"><h3>${v.name}</h3><button class="back" data-close data-first>닫기</button></div>
+          <ul class="plist">${v.parts.map(p => `<li><div><b>${p[0]}</b><small>${p[1]}</small></div><span class="st">${ST}</span><div class="bar2" title="손상도 0"><i style="width:0%"></i></div></li>`).join('')}</ul>
+          <small class="foot">상태 · ${ST} / 침식 / 감염 / 대체 / 창조 &nbsp;·&nbsp; 손상도 0</small>`, b);
+      });
+      menuBtn.onclick = () => {
+        menuBtn.setAttribute('aria-expanded', 'true');
+        show(`<div class="shead"><h3>메뉴</h3><button class="back" data-close data-first>계속하기</button></div>
+          <div class="mlist"><button class="menu-btn" id="m-start"><span><b>게임 시작 화면으로</b><small>난이도와 시드를 다시 고른다</small></span></button><button class="menu-btn" id="m-home"><span><b>홈으로</b></span></button></div>`, menuBtn);
+        document.getElementById('m-start').onclick = () => go('start'); document.getElementById('m-home').onclick = () => go('home');
+      };
+      window.__closePop = () => { if (!pop.hidden) { close(); return true; } return false; };
     },
     stub(id) {
       app.innerHTML = `<section class="stub" aria-label="${NAMES[id]}"><div class="topbar"><button class="back" id="back">← 홈</button></div><h2>${NAMES[id]}</h2><div class="box"><b>아직 만들지 않았어요</b>${NOTES[id]}</div></section>`;
@@ -109,7 +154,7 @@
   }
   function focusSel() { const b = app.querySelector('.menu-btn.sel'); if (b && document.activeElement !== b) b.focus({ preventScroll: true }); }
   function go(id) {
-    cur = id; try { history.replaceState(null, '', id === 'home' ? location.pathname + location.search : '#' + id); } catch (e) {}
+    cur = id; app.classList.remove('wide'); window.__closePop = null; try { history.replaceState(null, '', id === 'home' ? location.pathname + location.search : '#' + id); } catch (e) {}
     (SCREENS[id] || SCREENS.stub)(id);
   }
   function open(id) { sel = Math.max(0, MENU.findIndex(m => m.id === id)); go(id); }
@@ -121,7 +166,8 @@
       else if (e.key === 'ArrowUp') { e.preventDefault(); mark(sel - 1, true); }
       else if (/^[1-9]$/.test(e.key) && MENU[+e.key - 1]) { e.preventDefault(); open(MENU[+e.key - 1].id); }
       // Enter / Space 는 포커스된 버튼이 알아서 누른다
-    } else if (e.key === 'Escape' || (e.key === 'Backspace' && !/^(INPUT|TEXTAREA)$/.test((e.target || {}).tagName))) { e.preventDefault(); go(cur === 'play' ? 'start' : cur === 'start' ? 'home' : 'home'); }
+    } else if (e.key === 'Escape' && cur === 'play' && window.__closePop && window.__closePop()) { e.preventDefault(); }
+    else if (e.key === 'Escape' || (e.key === 'Backspace' && !/^(INPUT|TEXTAREA)$/.test((e.target || {}).tagName))) { e.preventDefault(); go(cur === 'play' ? 'start' : cur === 'start' ? 'home' : 'home'); }
   });
   window.addEventListener('hashchange', () => { const h = location.hash.slice(1); if (NAMES[h] && h !== 'play' && h !== cur) open(h); else if (!h && cur !== 'home') go('home'); });
   window.CEG = { go, toast, store }; // 다음 화면들이 쓸 문
