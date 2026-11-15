@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>끝에 도달하는 이야기 세계관 문서</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+/* 레이아웃: 위키 한 페이지. 왼쪽 본문 + 오른쪽 정보 상자, 위쪽 목차. 흰색/검정/가는 선, 포인트는 노랑 하나 */
+:root{
+  --bg:#ffffff; --ink:#15151a; --mute:#6b6b73; --line:#dcdce0; --soft:#f5f5f2;
+  --accent:#f2c200; --accent-ink:#15151a; --link:#15151a;
+  --sans:'Noto Sans KR',system-ui,-apple-system,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#121214; --ink:#ececee; --mute:#9a9aa3; --line:#34343a; --soft:#1b1b1e;
+  --accent:#f2c200; --accent-ink:#121214; --link:#ececee; color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --bg:#121214; --ink:#ececee; --mute:#9a9aa3; --line:#34343a; --soft:#1b1b1e;
+  --accent:#f2c200; --accent-ink:#121214; --link:#ececee; color-scheme:dark;}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.75;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:980px;margin:0 auto;padding-block:36px 72px}
+a{color:var(--link);text-decoration-color:var(--accent);text-decoration-thickness:2px;text-underline-offset:3px}
+a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+h1{font-size:2rem;line-height:1.25;margin:0 0 6px;font-weight:900;letter-spacing:-.01em;text-wrap:balance}
+.sub{color:var(--mute);font-size:.88rem;margin:0 0 22px}
+.lead{border-top:1px solid var(--line);padding-top:16px;max-width:68ch}
+.lead b{background:linear-gradient(transparent 60%,color-mix(in srgb,var(--accent) 55%,transparent) 60%)}
+
+.top{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:28px;align-items:start}
+@media (max-width:760px){.top{grid-template-columns:1fr}}
+.info{border:1px solid var(--ink);font-size:.86rem;line-height:1.55}
+.info h2{margin:0;padding:8px 12px;background:var(--accent);color:var(--accent-ink);font-size:.9rem;border:0;text-align:center}
+.info dl{margin:0;display:grid;grid-template-columns:5.2em 1fr}
+.info dt,.info dd{margin:0;padding:7px 10px;border-top:1px solid var(--line)}
+.info dt{color:var(--mute);font-weight:500}
+.info dd{font-weight:500}
+
+.toc{border:1px solid var(--line);background:var(--soft);padding:14px 18px;margin:26px 0 8px;display:inline-block;min-width:min(100%,320px)}
+.toc b{display:block;margin-bottom:6px;font-size:.9rem}
+.toc ol{margin:0;padding-left:1.3em;columns:2;column-gap:36px}
+@media (max-width:560px){.toc ol{columns:1}}
+.toc li{break-inside:avoid;font-size:.9rem}
+.toc ol ol{columns:1;font-size:.84rem;color:var(--mute)}
+
+section{margin-top:40px}
+h2.s{font-size:1.4rem;margin:0 0 14px;padding-bottom:6px;border-bottom:2px solid var(--ink);font-weight:900;text-wrap:balance}
+h3{font-size:1.05rem;margin:26px 0 8px;font-weight:700;display:flex;align-items:center;gap:8px}
+h3::before{content:"";width:8px;height:8px;background:var(--accent);flex:none}
+p{margin:0 0 10px;max-width:70ch}
+ul{margin:0 0 12px;padding-left:1.2em;max-width:70ch}
+li{margin-bottom:3px}
+li::marker{color:var(--mute)}
+.tag{display:inline-block;font-family:var(--mono);font-size:.68rem;font-weight:700;padding:0 6px;border:1px solid var(--ink);margin-left:6px;vertical-align:.1em;letter-spacing:.02em}
+.tag.sug{border-color:var(--mute);color:var(--mute)}
+.tag.tbd{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.tw{overflow-x:auto;margin:6px 0 14px;border:1px solid var(--line)}
+table{border-collapse:collapse;width:100%;font-size:.88rem;line-height:1.55}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--soft);font-weight:700;white-space:nowrap}
+tr:last-child td{border-bottom:0}
+td.n,.num{font-variant-numeric:tabular-nums}
+.note{border-left:3px solid var(--accent);background:var(--soft);padding:10px 14px;margin:10px 0 14px;max-width:70ch;font-size:.92rem}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.8rem;color:var(--mute);margin-top:6px}
+code{font-family:var(--mono);font-size:.85em;background:var(--soft);padding:1px 5px}
+footer{margin-top:56px;padding-top:14px;border-top:1px solid var(--line);color:var(--mute);font-size:.8rem}
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+<p style="margin:0 0 14px;font-size:.85rem"><a href="./">← 세계관 노트</a></p>
+<div class="top">
+<div>
+  <h1>끝에 도달하는 이야기</h1>
+  <p class="sub">세계관 문서 · 2026-11-15 기준 · 노트 62줄과 사전 94개를 읽고 다시 쓴 한 페이지 요약</p>
+  <p class="lead"><b>끝에 도달하는 이야기</b>는 멸망해 가는 이세계에서 태어나 한 달씩 자라며 선택하는 텍스트 게임이다. 몸은 침식과 변이로 바뀌고, 제국과 직업과 시대에 따라 같은 사건도 다르게 흐른다. 정해진 것은 "끝에 도달한다"는 사실뿐이고, 어떤 끝인지는 그 삶의 몸과 선택이 정한다.</p>
+  <div class="legend"><span>표시가 없는 문장은 사용자가 정한 내용</span><span><span class="tag sug">제안</span> Claude가 덧붙인 안</span><span><span class="tag tbd">미정</span> 아직 정해지지 않음</span></div>
+</div>
+<aside class="info" aria-label="정보 상자">
+  <h2>한눈에 보기</h2>
+  <dl>
+    <dt>장르</dt><dd>텍스트 기반 선택 게임 · 아포칼립스</dd>
+    <dt>무대</dt><dd>완전히 새로운 차원의 이세계</dd>
+    <dt>세력</dt><dd>소루안 · 케르진 · 부란돔 (3제국)</dd>
+    <dt>핵심 수치</dt><dd>허기 · 돈 · 변이도</dd>
+    <dt>시간</dt><dd>한 번 진행 = 1주기 (약 50일)</dd>
+    <dt>돈</dt><dd>동화 → 은화 ×100 → 금화 ×100</dd>
+    <dt>시작</dt><dd>태아기부터. 멸망 시기와 진행도를 고름</dd>
+    <dt>전투</dt><dd>타이머가 있는 실시간 턴제</dd>
+    <dt>재플레이</dt><dd>80억분의 1. 매번 다른 사람으로 태어남</dd>
+    <dt>상태</dt><dd>전부 초안 (확정 0)</dd>
+  </dl>
+</aside>
+</div>
+
+<nav class="toc" aria-label="목차">
+  <b>목차</b>
+  <ol>
+    <li><a href="#s1">세계: 멸망과 침식</a></li>
+    <li><a href="#s2">이세계: 신과 3제국</a>
+      <ol><li><a href="#s2a">신과 신성력</a></li><li><a href="#s2b">3제국</a></li><li><a href="#s2c">용어와 단위</a></li></ol></li>
+    <li><a href="#s3">삶의 흐름</a></li>
+    <li><a href="#s4">몸과 변이</a></li>
+    <li><a href="#s5">도구와 몬스터</a></li>
+    <li><a href="#s6">전투</a></li>
+    <li><a href="#s7">직업과 던전</a></li>
+    <li><a href="#s8">선택과 특성</a></li>
+    <li><a href="#s9">태어나기와 기록</a></li>
+    <li><a href="#s10">이야기 뼈대</a></li>
+    <li><a href="#s11">표현 원칙</a></li>
+    <li><a href="#s12">풀어야 할 것</a></li>
+  </ol>
+</nav>
+
+<section id="s1">
+  <h2 class="s">1. 세계: 멸망과 침식</h2>
+  <p>이 세계는 아포칼립스다. 한 번에 터지는 대재앙이 아니라 <b>멸망해 가는 중</b>이고, 속도는 지역마다 다르다. 사람들은 이것을 그저 <b>침식</b>이라 부른다. 공기, 땅, 물건, 몸이 서서히 다른 것으로 바뀌는 현상이며 어디서 시작됐는지는 모른다.</p>
+  <h3>멸망의 형태</h3>
+  <p>형태는 정하지 않는다. 지금 후보는 바이러스와 몬스터 변이화 등이다. 플레이어는 형태 대신 변이로 멸망을 체감한다. <span class="tag tbd">미정</span></p>
+  <h3>진실을 숨기는 3겹</h3>
+  <ul>
+    <li>① 자연 현상처럼 보인다 → ② 누군가 만든 것이다 → ③ 그 "누군가"는 이미 끝에 도달해 있다. (제목과 연결) <span class="tag sug">제안</span></li>
+  </ul>
+  <h3>플레이 방식에 따라 다르게 드러나는 정체</h3>
+  <div class="tw"><table>
+    <tr><th>연구 · 탐구 계열</th><td>단서를 일찍 발견하고 연구할 수 있다. 그러나 자신도 모르게 노출되어 결국 몸이 망가진다.</td></tr>
+    <tr><th>전투 계열</th><td>아무것도 모르다가 노출되고, 나중에야 후회한다.</td></tr>
+  </table></div>
+  <h3>단서 사슬: 손톱 예시</h3>
+  <p>단서는 처음에는 티가 안 나고, 어느 정도 진행된 뒤 사소한 변화로 나타난다. 게임은 직접 설명하지 않는다.</p>
+  <ul>
+    <li>손톱이 유난히 검은 몬스터에게 긁힌다. 신성력이나 스킬 없이 지혈이나 버티기를 택한다.</li>
+    <li>몇 달 뒤 손톱이 빨리 자란다 → 다친 손에 털이 난다 → 그 팔만 크기가 변한다 → 그 부위부터 퍼져 변이가 된다.</li>
+    <li>단계마다 몇 달 간격이 있고, 각 단계에서 개입하면 막을 수 있다. 마지막 수단은 팔을 자르는 것이다. 변이도는 낮아지지만 없어지지는 않는다.</li>
+  </ul>
+  <h3>고인 플레이어</h3>
+  <p>세계 안의 캐릭터는 아무것도 모르지만, 많이 플레이해 본 실제 플레이어(<b>고인 플레이어</b>)는 정보를 알고 고른다. 사전이 그 정보를 쌓는다. 같은 사건도 몸과 특성에 따라 힌트가 보이거나 안 보인다.</p>
+  <h3>멸망 시작 시기와 진행도</h3>
+  <div class="tw"><table>
+    <tr><th>태어나기 전부터</th><td>처음부터 낡고 무너진 세상. 태어나자마자 멸망이 일어날 수도, 이미 진행 중일 수도 있다. 이때 <b>초반 · 중반 · 후반</b> 중 단계를 고른다. 난이도가 가장 거칠다.</td></tr>
+    <tr><th>유아기부터 (3세)</th><td>부모는 평화를 기억한다. 부모의 기억과 물건이 뿌리가 되고, 어릴 때 겪은 첫 침식이 특성으로 남는다.</td></tr>
+    <tr><th>성인기부터 (18세)</th><td>평범한 18년 뒤에 무너진다. 잃는 이야기가 중심이고 선택지가 가장 풍부하다.</td></tr>
+  </table></div>
+  <ul>
+    <li>멸망 전에 태어나면 어린이집, 초등학교 이벤트가 나오고, 학교를 다니다 멸망이 시작되면 그 이벤트가 이어진다. 학교는 설정에 따라 "평화로운 학교" 또는 "무너지는 학교"가 된다.</li>
+    <li>멸망 이후 경과는 주기 단위로 센다. 경과가 길수록 몬스터와 변이가 흔해진다.</li>
+  </ul>
+</section>
+
+<section id="s2">
+  <h2 class="s">2. 이세계: 신과 3제국</h2>
+  <p>지구식 요소(지명, 요일, 단위, 속담, 종교 용어, 음식 이름)는 쓰지 않는다. 기존의 사이버펑크 요소는 이세계식 이름의 "고대 문명 폐허 기술"로 다시 읽는 안이 있다. <span class="tag sug">제안</span> 우리가 보는 글은 한국어, 영어, 일본어로 보이지만 이세계의 실제 언어는 다르다. 이 차이는 훗날 기초 상식 퀴즈 이벤트의 함정으로 쓸 수 있다.</p>
+
+  <h3 id="s2a">신과 신성력</h3>
+  <ul>
+    <li>신이 있고, 이름은 뜻을 붙여 지은 조어다. 신은 제국마다 다른 이름과 얼굴로 믿어질 수 있다.</li>
+    <li><b>신성력</b>은 신을 믿는 사람이 쓰는 힘이다. 신마다 주로 맡는 파트가 다르고, 믿는 데에도 적성이 필요하다. 적성이 안 맞으면 효율이 나쁘다.</li>
+    <li><b>악신</b>은 인신공양을 요구하는 순간 판정되고, 존재 자체를 말살하려 한다.</li>
+    <li>신의 이름, 수, 맡은 파트는 아직 없다. <span class="tag tbd">미정</span></li>
+  </ul>
+
+  <h3 id="s2b">3제국</h3>
+  <p>세 제국은 침식에 대처하는 방식이 다르다. 이 차이는 사전에서 처음에는 모르고, 플레이하며 알아낸다. 이름은 모두 임시 지정이며, 제국마다 도시 3개(수도 · 교역 · 변경)와 마을 3개(식량 · 자원 · 피난)의 뼈대가 있다.</p>
+  <div class="tw"><table>
+    <tr><th></th><th>소루안 (a)</th><th>케르진 (b)</th><th>부란돔 (c)</th></tr>
+    <tr><th>성격</th><td>공격적이고 정복적인 전투 민족. 도시와 마을도 전투 민족이다.</td><td>신을 믿는 신권 국가. 주신 아래 신들을 서열로 묶는다. 사실상 1위 제국.</td><td>인구와 땅의 제국. 2위지만 실질 영향력은 1위. 어느 제국에도 얽매이지 않는다.</td></tr>
+    <tr><th>침식 대처</th><td>"새로운 상대다" 하며 그냥 날뛴다.</td><td>신성력을 뿌려 "위험하다" 하며 열심히 지킨다.</td><td>일단 잡아서 연구한다.</td></tr>
+    <tr><th>특징</th><td>몇몇 도시는 전투 민족인 척하며 은근히 모략을 쓰고, 그 덕에 제국이 유지된다.</td><td>광신도, 괴담 같은 능력을 쓰는 이, 외신 신도까지 별의별 신이 몰린다.</td><td>낳는 것을 우선하고 낙태는 금지, 다태아엔 지원금을 준다. 풍토는 "최소한 근친은 하지 말자"와 "낳을 수 있으면 낳자" 두 파. 아카데미와 지식 수준이 높고 농사짓기 좋은 땅이다.</td></tr>
+    <tr><th>출세 길</th><td>—</td><td>—</td><td>망명, 아기 공장(농사 병행), 또는 남의 자리를 뺏기.</td></tr>
+    <tr><th>도시 / 마을 (임시)</th><td>하이모르 · 누와엔 · 마솔라 / 이루모 · 하나우 · 오루세</td><td>젝슬로 · 즈크란 · 팔케트 / 키츠르 · 토크벨 · 제르푸</td><td>무르감 · 도벅 · 가르둔 / 부옹 · 돔나르 · 엠바르</td></tr>
+  </table></div>
+  <div class="note"><b>제국 사이의 갈등.</b> 소루안은 케르진이 소루안의 국교 신을 하위 신으로 묶어 버려 자주 전쟁을 벌인다. 악신이 나타나면 소루안도 사리고 토벌이 우선이지만, 그 뒤에 케르진을 크게 친다. 케르진은 인신공양을 요구하는 순간 악신으로 판정하고 말살하려 한다.</div>
+  <ul>
+    <li>초기에는 기록된 순서로만 보이다가, 자신의 소속 제국을 확인할 수 있게 되면 다녀온 장소의 제국을 알 수 있다. 이후 경계 도시와 마을이 아니면 제국은 고정된다.</li>
+    <li>컨셉이 확정되면 그 컨셉으로 각 도시와 마을의 이야기를 채운다. 이름도 그때 확정한다.</li>
+  </ul>
+
+  <h3 id="s2c">용어와 단위</h3>
+  <div class="tw"><table>
+    <tr><th>침식</th><td>세상과 몸을 서서히 바꾸는 현상.</td></tr>
+    <tr><th>변이 / 변이도</th><td>침식 · 감염 · 대체 · 창조로 몸이 바뀐 상태. 변이도는 진행 정도이고 낮아질 수는 있어도 완전히 없어지지는 않는다.</td></tr>
+    <tr><th>급소</th><td>머리 · 목 · 심장 · 장기 · 척추처럼 손상되면 위험한 곳.</td></tr>
+    <tr><th>허기</th><td>화면에 보이는 수치. 식량 수치는 쓰지 않는다.</td></tr>
+    <tr><th>주기</th><td>시간 단위. 달 역할을 하는 것의 이름을 붙인 "~~주기력". 1주기는 지구 기준 약 50일. 일 단위는 없다. <span class="tag tbd">이름 미정</span></td></tr>
+    <tr><th>돈</th><td>동화(백성) 100개 = 은화(달) 1개, 은화 100개 = 금화(태양) 1개. 각 이름은 태양, 달, "백성"을 뜻하는 이세계 단어에서 딴다. <span class="tag tbd">실제 이름 미정</span></td></tr>
+    <tr><th>길이</th><td>아직 아이디어가 없다. 몸 · 걸음 기준(한 뼘, 한 걸음)에서 따오는 안이 있다. <span class="tag tbd">미정</span></td></tr>
+  </table></div>
+</section>
+
+<section id="s3">
+  <h2 class="s">3. 삶의 흐름</h2>
+  <p>태아기에서 시작해 <b>한 번의 진행 = 1주기</b>로 자란다. 나이는 "3세 5개월"처럼 표시한다. 특별한 일이 없는 때는 멈추지 않고 한 줄로 요약해 넘기며 허기와 돈만 반영한다. 단, 변이 단서와 위기 사건은 반드시 멈춘다.</p>
+  <div class="tw"><table>
+    <tr><th>시기</th><th>할 수 있는 일</th><th>사건 예</th></tr>
+    <tr><td>태아기</td><td>선택 거의 없음</td><td>엄마 · 아빠의 말이 들리고 집안의 단서가 된다. 출생 사건: 부모 사망 후 출생, 난산, 쌍둥이 중 생존, 태어나기 전 사망(짧은 엔딩 후보)</td></tr>
+    <tr><td>영아 0~2세</td><td>울기 · 옹알이 · 기기</td><td>부모의 선택이 크게 개입. 대부분 자동 진행, 중요한 순간에만 멈춤</td></tr>
+    <tr><td>유아 3~6세</td><td>걷기 · 말하기 · 만지기</td><td>어린이집, 처음 듣는 이상한 소리</td></tr>
+    <tr><td>아동 7~12세</td><td>배우기 · 돕기 · 심부름</td><td>초등학교, 친구와 싸움, 첫 침식 징후</td></tr>
+    <tr><td>청소년 13~17세</td><td>일 · 훈련 · 관계 · 첫 선택</td><td>직업 선택, 첫 이별, 징집 소문</td></tr>
+    <tr><td>성인 18세~</td><td>거래 · 전투 · 이식 · 이동</td><td>직업 이야기, 동반자, 출산과 양육, 전쟁, 이주</td></tr>
+    <tr><td>노년</td><td>기억 · 전수</td><td>기억을 전하는 일, 몸의 한계, 끝을 마주함</td></tr>
+  </table></div>
+  <h3>사건 체계 <span class="tag sug">제안</span></h3>
+  <ul>
+    <li>사건 풀은 네 겹이다: 공통, 직업별, 장소 · 제국별, 세계 사건(전쟁 · 악신). 한 달에 하나를 뽑는다.</li>
+    <li>조건은 나이, 멸망 시작 시기, 몸 상태, 특성, 허기, 돈, 아는 사람이다. 결과가 몇 달 뒤 다음 사건을 여는 연쇄도 있다.</li>
+    <li>세계 사건 타임라인 후보: 악신 출현 경보 → 제국 연합 토벌 → 소루안의 케르진 대공세 → 난민 · 망명 물결 → 부란돔의 영향력 확대. 멸망 경과에 맞춰 나오므로 같은 시기에 태어난 사람들은 같은 사건을 겪는다.</li>
+  </ul>
+</section>
+
+<section id="s4">
+  <h2 class="s">4. 몸과 변이</h2>
+  <h3>신체 부위</h3>
+  <p>얼굴(양쪽 눈, 코, 입, 귀), 몸, 양팔(손 / 팔), 양다리(발 / 다리), 그리고 심장 · 장기 · 뼈. 부위마다 원본 · 침식 · 감염 · 대체 · 창조의 상태와 손상도가 있다. 화면에는 <b>급소</b>만 레일에 보이고, 누르면 전체 상태가 열린다. 성기 같은 민감한 부위는 어디에도 보이지 않는다.</p>
+  <h3>변이 4종</h3>
+  <div class="tw"><table>
+    <tr><th>침식</th><td>외부 환경이 몸을 깎는다. 대개 손해이고 되돌리기 어렵지만 특정 침식은 내성이 된다.</td></tr>
+    <tr><th>감염</th><td>생물적으로 번진다. 몬스터화로 이어질 수 있고, 치료는 가능하지만 시간이 걸린다.</td></tr>
+    <tr><th>대체</th><td>잃은 부위를 의체나 이식으로 바꾼다. 내구와 정비가 필요하고 허기 부담이 있다.</td></tr>
+    <tr><th>창조</th><td>없던 기관이 새로 생긴다. 가장 드물고, 선택지를 크게 열지만 되돌릴 수 없다.</td></tr>
+  </table></div>
+  <ul>
+    <li><b>뼈</b>: 침식은 푸석해짐, 감염은 가시와 돌기, 대체는 금속골, 창조는 꼬리뼈 · 날개뼈. 자란 가시는 이식형 무기로 쓴다. 척추는 급소다.</li>
+    <li><b>심장과 장기</b>: 폐는 달리기와 침식 공기 저항, 위는 허기, 간은 독과 감염 저항, 신장은 정화, 장은 영양 흡수. 심장은 생존 한계를 정하며 대체하면 허기가 더 빨리 찬다.</li>
+    <li><b>허기</b>: 0~100, 높을수록 배고픔. 높으면 선택지와 전투가 둔해지고, 가득 차면 심장 · 장기부터 손상된다.</li>
+  </ul>
+</section>
+
+<section id="s5">
+  <h2 class="s">5. 도구와 몬스터</h2>
+  <h3>장비 3종과 도구</h3>
+  <div class="tw"><table>
+    <tr><th>무기</th><td>손에 쥐는 도구(쇠파이프, 단검, 석궁). 가방에서 끼고 뺀다.</td></tr>
+    <tr><th>이식형 무기</th><td>몸에 심는다(뼈 가시 이식체). 수술 후에는 빼기 어렵고 부위가 "창조" 또는 "대체"로 기록된다.</td></tr>
+    <tr><th>대체형 무기</th><td>대체한 부위 자체가 무기(의수의 충격, 의족의 발차기). 가방에서 바꿀 수 없다.</td></tr>
+  </table></div>
+  <ul>
+    <li><b>장비</b>: 갑옷, 고글, 정화 면포, 신성 부적, 가방, 열쇠. <b>약품</b>: 지혈 · 정화 · 해독 · 진통 · 식량. 약품은 변이를 늦출 뿐 없애지 못한다. 신성력은 약품보다 강하지만 신과의 적성이 필요하다.</li>
+    <li>가방은 12칸(시안 기준)이고 가득 차면 버릴 것을 고른다. 얻은 물건은 선택지의 조건이 된다.</li>
+  </ul>
+  <h3>몬스터</h3>
+  <ul>
+    <li>침식이 사람, 동물, 기계를 "옛이야기 속 모습"으로 빚은 결과다. 모든 몬스터는 원래 무엇이었는지를 설정에 가진다.</li>
+    <li>고블린(침식체 무리), 트롤(감염체, 재생), 오크(대체와 침식의 혼합)부터 시작해 계속 추가한다.</li>
+    <li>변이 4종에 맞춰 침식체 · 감염체 · 대체체 · 창조체로 나눈다. 몬스터에게서 얻은 것이 이식형 무기나 특성이 된다.</li>
+    <li>몬스터를 관리하는 편집 사이트를 따로 만든다.</li>
+  </ul>
+</section>
+
+<section id="s6">
+  <h2 class="s">6. 전투</h2>
+  <ul>
+    <li><b>실시간 턴제</b>: 타이머 안에 공격 방식을 고르고, 못하면 그 사이 공격당한다. 설정으로 느림 15초 · 보통 10초 · 빠름 6초.</li>
+    <li>공격 방식은 근접 · 이식형 · 대체형 · 방어 · 회피 · 가방. 몸 상태에 따라 못 쓰는 방식이 있다.</li>
+    <li>주위의 모든 적이 공격 후보다. 한 명을 상대하는 사이 다른 적이 파고든다.</li>
+    <li>몸의 영향: 다리는 회피, 팔은 공격 방식, 눈은 조준, 심장 · 장기는 버티는 시간. 급소를 맞으면 큰 피해와 후유증이 남는다.</li>
+    <li>접근성을 위해 메뉴를 열면 타이머를 멈추는 옵션을 둔다.</li>
+  </ul>
+</section>
+
+<section id="s7">
+  <h2 class="s">7. 직업과 던전</h2>
+  <h3>직업</h3>
+  <p>직업마다 개별 스토리가 있다(입문 → 전환 → 끝). 같은 직업도 제국이 다르면 이야기가 다르고, 청소년기 이후에 갈라진다. <span class="tag sug">제안</span> 직업 후보 14가지: 전사, 용병, 신관, 심판관, 괴담술사, 연구자, 포획 연구관, 의체 기술자, 상인, 농부, 광부, 첩자, 순례자, 치료사.</p>
+  <div class="tw"><table>
+    <tr><th>소루안</th><td>전사, 용병, 첩자, 광부, 농부. 전투와 모략이 중심.</td></tr>
+    <tr><th>케르진</th><td>신관, 심판관, 괴담술사, 순례자, 상인. 신성력 적성이 첫 문.</td></tr>
+    <tr><th>부란돔</th><td>연구자, 포획 연구관, 농부, 광부, 치료사. 아카데미 출신이 위로 가고 못 가면 망명.</td></tr>
+    <tr><th>제국 불문</th><td>의체 기술자, 상인, 용병, 순례자는 경계와 교역 도시에서 제국을 가리지 않는다.</td></tr>
+  </table></div>
+  <h3>던전</h3>
+  <ul>
+    <li><b>문장형</b>은 글 몇 줄과 선택으로 끝나는 가벼운 던전이고, <b>미니게임형</b>은 1~3분 게임이다. 던전 한 곳은 1주기를 쓴다. <span class="tag sug">제안</span></li>
+    <li>미니게임 후보: 회로 이어 붙이기, 문양 기억 짝 맞추기, 타이밍 막대, 안개 길 찾기, 틀린 곳 찾기, 소리 따라 하기, 식량 나누기, 피하기.</li>
+    <li class="num"><b>미니게임은 아직 만들지 않는다.</b> 스토리를 다 만든 뒤에 마무리한다.</li>
+    <li>던전은 침식 단서가 숨은 곳이라 단서가 나오면 시간이 멈춘다.</li>
+  </ul>
+</section>
+
+<section id="s8">
+  <h2 class="s">8. 선택과 특성</h2>
+  <ul>
+    <li>선택지는 몸 · 특성 · 물건 · 나이에 따라 열리거나 잠긴다. 잠긴 선택지는 이유를 보여 준다. 같은 장면에서 5개 중 3~4개만 보이므로 다른 몸으로 다시 하면 다른 길이 보인다.</li>
+    <li><b>태어날 환경</b>: 성별은 여 / 남 / 랜덤. 집안 형편, 지역, 가족이 정해지고 시작 허기와 돈과 첫 특성 일부가 여기서 나온다. 멸망 이후 가난한 집에서는 드물게 부모가 아이를 먹거나 파는 일도 있을 수 있다(암시로만 전함).</li>
+  </ul>
+  <h3>특성 점수제</h3>
+  <div class="tw"><table>
+    <tr><th>기본 특성</th><td>손재주, 눈썰미, 끈기 등. 처음부터 쓸 수 있고 점수가 들지 않는다.</td></tr>
+    <tr><th>긍정 특성 (+)</th><td>랜덤에서 겪어 사전에 기록된 것만 직접 고를 수 있다. 점수가 오른다(+1~+3).</td></tr>
+    <tr><th>부정 특성 (−)</th><td>같은 방식으로 기록된다. 고르면 점수가 내려간다(−1~−2).</td></tr>
+  </table></div>
+  <p>고르는 데에는 제한이 없고, <b>점수가 2점 이하일 때만 플레이를 시작</b>할 수 있다. 좋은 특성을 더 가져가려면 부정 특성도 함께 든다. 랜덤 시작에서는 점수 계산을 하지 않는다. 특성은 별도 창에서 기본 / 긍정 / 부정 탭으로 고른다.</p>
+</section>
+
+<section id="s9">
+  <h2 class="s">9. 태어나기와 기록</h2>
+  <h3>태어나기 화면</h3>
+  <ul>
+    <li><b>기본 탭</b>: 이름, 성별, 멸망 시작 시기, 지역(랜덤 표시), 시드.</li>
+    <li><b>커스텀 탭</b>: 지역(랜덤 / 지정) → 부모와 형제 → 집안 형편 → 시작 자원 → 특성 → 몸. 기본값은 모두 랜덤이다.</li>
+    <li>부모 구성에서 한 분만 남는 경우 누가 남을지는 랜덤이다. 형제는 수만 정하고, 손위인지 손아래인지는 모른다.</li>
+  </ul>
+  <h3>시드</h3>
+  <p>짧은 문자열(<code>K7-3F9A</code>)로 지역, 집안, 사건, 분기가 같은 순서로 나오게 한다. 선택은 자유라 같은 시드도 다른 결말이 된다. 랜덤 시드와, 정해 둔 분기를 따라가는 이야기 시드를 생각한다.</p>
+  <h3>지역과 다시 태어나기</h3>
+  <ul>
+    <li>지역은 처음엔 랜덤이고, 다녀간 곳은 사전에 기록된다. 이후 커스텀에서만 새 창으로 검색해 지정할 수 있고, 지정하면 지역은 확정이나 집안은 계속 랜덤이다. 다녀간 길(경로)도 선택할 수 있다.</li>
+  </ul>
+  <h3>사전 · 저장 · 업적</h3>
+  <ul>
+    <li><b>사전</b> 탭: 몬스터 / 장비 / 변이 / 지역 / 특성. 못 본 것은 <code>???</code>. 한 번의 삶이 끝나도 남는 영구 기록이다.</li>
+    <li>저장은 브라우저 저장소가 기본이고 파일 내보내기 · 가져오기로 백업한다. 항목 데이터와 발견 기록은 따로 둔다.</li>
+    <li><b>업적</b>은 사전과 설정 사이에 두고, 데이터(JSON)로 정의해 추가할 수 있게 한다. 홈 메뉴 순서는 게임 시작 → 이어서 하기 → 사전 → 업적 → 설정.</li>
+  </ul>
+</section>
+
+<section id="s10">
+  <h2 class="s">10. 이야기 뼈대</h2>
+  <p>"끝"은 세 가지로 읽힌다. 세상의 끝(멸망), 삶의 끝(죽음), 길의 끝(도달한 곳). 엔딩이 한 줄로 정해지지 않는 것이 의도다.</p>
+  <div class="tw"><table>
+    <tr><th>1막 성장 <span class="tag sug">제안</span></th><td>태어나 자라며 몸과 특성이 정해진다. 세상은 서서히 낡는다.</td></tr>
+    <tr><th>2막 멸망 <span class="tag sug">제안</span></th><td>침식이 본격화되고 변이와 선택이 몸을 바꾼다. 사람과 장소와 이별한다.</td></tr>
+    <tr><th>3막 끝 <span class="tag sug">제안</span></th><td>침식의 중심에 가까워지며 끝을 마주한다.</td></tr>
+  </table></div>
+  <p>엔딩 후보 <span class="tag sug">제안</span>: <b>남는 끝</b>(사람으로 늙어 죽음), <b>변하는 끝</b>(침식과 하나가 되어 다른 것이 됨), <b>잇는 끝</b>(새로운 몸으로 다음 사람에게 길을 엶), <b>닿는 끝</b>(침식의 중심에서 멸망의 정체와 만남). 엔딩은 몸 상태, 특성, 중요한 선택으로 결정된다.</p>
+  <p>장소 후보: 지하 대피소, 외곽 마을, 낡은 검문소, 침식 지대, 폐허 도시 외곽. 인물 후보: 부모, 고철상 마리(초안), 검문소의 목소리.</p>
+</section>
+
+<section id="s11">
+  <h2 class="s">11. 표현 원칙</h2>
+  <ul>
+    <li>성기 등 숨김 부위는 화면, 사전, 글 어디에도 직접 나오지 않는다. 필요하면 "체질", "혈통" 같은 간접 개념만 쓴다.</li>
+    <li>어떤 연령의 아이에게도 성적인 요소를 붙이지 않는다. 미성년과 얽힌 민감한 사건은 한 줄 사실로만 알리고, 이야기의 무게는 그 뒤(말할지 여부, 어른의 반응, 후유증, 회복)에 둔다.</li>
+    <li>자살과 "그럼에도 이어간다"를 모두 만들 수 있게 한다. 방법과 유서는 쓰지 않고, 보상이나 효율로 보이게 하지 않으며, 위기의 순간에 "말한다 / 도움을 청한다 / 버틴다"가 열려 있다. <span class="tag sug">제안</span></li>
+    <li>안전장치 안: "무거운 장면 줄이기", 내용 경고, 건너뛰기, 이용 연령 기준, 도움받을 곳 안내(실제 번호는 확인 후 기재). <span class="tag sug">제안</span></li>
+    <li>부란돔의 출산 풍습은 제도 · 소문 · 결과로만 전하고 장면은 쓰지 않는다. 아기 공장의 안쪽 이야기는 암시로만 둔다.</li>
+  </ul>
+</section>
+
+<section id="s12">
+  <h2 class="s">12. 풀어야 할 것</h2>
+  <p>다섯 가지를 먼저 정하면 나머지가 따라온다. <span class="tag sug">제안</span></p>
+  <div class="tw"><table>
+    <tr><th class="n">①</th><td>제국 3곳의 이름, 신과 신성력의 기본 규칙. 모든 것의 바탕이다.</td></tr>
+    <tr><th class="n">②</th><td>이세계 용어(주기 · 돈 · 길이) 이름과 사이버펑크 처리 방향.</td></tr>
+    <tr><th class="n">③</th><td>부란돔 풍습과 미성년 표현의 선, 이용 연령.</td></tr>
+    <tr><th class="n">④</th><td>변이도의 표시 방식(숫자 / 단계)과 단서 규칙.</td></tr>
+    <tr><th class="n">⑤</th><td>직업을 고르는 방식, 던전의 시간 비용.</td></tr>
+  </table></div>
+  <h3>서로 부딪히는 곳</h3>
+  <ul>
+    <li>지구식 사이버펑크 요소와 "완전히 새로운 차원" 설정.</li>
+    <li>"특별한 일 없는 달은 자동으로 넘김"과 몇 달에 걸친 변이 단서. 단서는 반드시 멈추게 하는 안.</li>
+    <li>점수 2 이하 규칙과 무제한 선택. 부정 특성을 많이 골라 긍정을 몰아 가져갈 수 있다.</li>
+    <li>1주기 단위 시간과 실시간 전투. 전투 후 회복이 몇 주기인지 미정.</li>
+    <li>케르진의 괴담 능력이 신성력과 같은 계통인지.</li>
+    <li>사전이 쌓일수록 플레이어가 정답을 안다. 어디까지가 의도된 메타 지식인지.</li>
+  </ul>
+  <h3>비어 있는 것</h3>
+  <p>신 사전, 몬스터 목록, 경제(가치 · 물가), 사람 외 종족, 이동과 지도, 엔딩 조건표, 죽음 뒤 다음 삶으로 이어지는 방식, 관계 시스템, 변이도 정의, 길이 단위. 추가 후보로는 전생 기록, 같은 달에 태어난 사람들, 소문 시스템, 가문 · 혈통, 조직 · 길드, 계절과 날씨, 질병, 축제 · 의식이 있다.</p>
+</section>
+
+<footer>이 문서는 세계관 노트(world/data.js)의 내용을 읽고 다시 쓴 것이다. 노트가 바뀌면 이 문서는 자동으로 바뀌지 않는다.</footer>
+</div>
+
+</body>
+</html>
