@@ -94,6 +94,17 @@ button:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
 .rb em{font:800 11px var(--font-num);font-style:normal;border:1px solid var(--ink);border-radius:6px;padding:0 5px}
 .rb:hover{border-width:3px;padding:2.5px 8.5px;background:var(--ink);color:var(--paper)}
 .rb:hover em{border-color:var(--paper)}
+.rrow{display:flex;justify-content:space-between;align-items:center;gap:6px;min-height:46px;border:1.5px solid var(--ink);border-radius:10px;padding:4px 10px;font-size:15px;font-weight:700}
+.rrow em{font:800 11px var(--font-num);font-style:normal;border:1px solid var(--ink);border-radius:6px;padding:0 5px}
+.wbtn{width:100%;min-height:50px;border:3px solid var(--ink);border-radius:10px;background:var(--ink);color:var(--paper);font-size:15px;font-weight:900;cursor:pointer;margin-top:2px}
+.wbtn:hover{background:var(--paper);color:var(--ink)}
+.rowbtn{width:100%;text-align:left;border:1.5px solid var(--ink);border-radius:10px;background:var(--paper);padding:8px 10px;cursor:pointer;display:grid;gap:3px}
+.rowbtn:hover{border-width:3px;padding:6.5px 8.5px;background:var(--ink);color:var(--paper)}
+.rowbtn .rh{font-size:13px;font-weight:900;border-bottom:1px solid currentColor;padding-bottom:3px;margin-bottom:2px}
+.rowbtn .sl{display:flex;justify-content:space-between;align-items:baseline;font-size:14px;font-weight:700}
+.rowbtn b{font:800 15px var(--font-num)}
+.rowbtn small{font-size:11px}
+.pgrp{display:grid;gap:6px}.pgrp h4{margin:0;font-size:14px;font-weight:900;border-bottom:1.5px solid var(--ink);padding-bottom:3px}
 .stat{border:1.5px solid var(--ink);border-radius:10px;padding:8px 10px;display:grid;gap:4px;min-height:52px}
 .stat .sl{display:flex;justify-content:space-between;align-items:baseline;font-size:14px;font-weight:700}
 .stat b{font:800 18px var(--font-num)}
@@ -123,8 +134,8 @@ button:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
 .mlist{display:grid;gap:8px}
 @media (max-width:760px){
   .gmain{grid-template-columns:78px minmax(0,1fr) 78px;gap:6px}
-  .rail{padding:5px;gap:4px}.rb{min-height:46px;padding:2px 4px;font-size:13px;flex-direction:column;justify-content:center;gap:0}
-  .rb em{font-size:10px}.stat{padding:5px 6px}.stat .sl{font-size:12px;flex-direction:column;gap:0}.stat b{font-size:15px}
+  .rail{padding:5px;gap:4px}.rrow{min-height:42px;padding:2px 4px;font-size:13px;flex-direction:column;justify-content:center;gap:0}
+  .rrow em{font-size:10px}.wbtn{font-size:12px;min-height:44px}.rowbtn{padding:5px 6px}.rowbtn .sl{font-size:12px;flex-direction:column;gap:0}.rowbtn b{font-size:14px}
   .rail h4{font-size:11px}.gframe{height:auto;min-height:calc(100dvh - 32px)}.gmain{min-height:420px}
   .plist li{grid-template-columns:minmax(0,1fr) auto}.plist .bar2{grid-column:1/-1}
 }

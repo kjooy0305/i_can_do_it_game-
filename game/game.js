@@ -90,15 +90,20 @@
     play() {
       const run = store.get('run', null); if (!run) { go('start'); return; }
       const lv = LEVELS.find(l => l.id === run.level) || LEVELS[1];
-      // 몸 상태: 지금은 모두 원본. 왼쪽 막대는 급소 5곳, 누르면 세부 부위를 연다.
+      // 몸 상태: 지금은 모두 원본. 왼쪽 막대는 급소 5곳을 보여 주기만 하고, 버튼 하나로 전체 몸 상태 창을 연다.
       const ST = '원본';
-      const VITALS = [
-        { id: 'head', name: '머리', parts: [['왼쪽 눈', '시야 · 조준'], ['오른쪽 눈', '시야 · 조준'], ['코', '냄새 · 침식 감지'], ['입', '말 · 먹기'], ['왼쪽 귀', '소리 · 경계'], ['오른쪽 귀', '소리 · 경계']] },
-        { id: 'neck', name: '목', parts: [['목', '급소 · 손상되면 큰 후유증']] },
-        { id: 'spine', name: '척추', parts: [['척추', '급소 · 이동과 자세 전체에 영향']] },
-        { id: 'heart', name: '심장', parts: [['심장', '생존 한계를 정한다']] },
-        { id: 'legs', name: '다리', parts: [['왼쪽 다리', '회피'], ['왼쪽 발', '회피'], ['오른쪽 다리', '회피'], ['오른쪽 발', '회피']] }
+      const VITALS = ['머리', '목', '척추', '심장', '다리'];
+      const BODY = [ // 전체 몸 상태 창: [그룹, [[부위, 역할]]]
+        ['얼굴', [['왼쪽 눈', '시야 · 조준'], ['오른쪽 눈', '시야 · 조준'], ['코', '냄새 · 침식 감지'], ['입', '말 · 먹기'], ['왼쪽 귀', '소리 · 경계'], ['오른쪽 귀', '소리 · 경계']]],
+        ['몸', [['목', '급소'], ['몸통', ''], ['척추', '급소 · 이동과 자세 전체에 영향'], ['심장', '급소 · 생존 한계를 정한다'], ['장기', '폐 · 위 · 간 · 신장 · 장']]],
+        ['팔', [['왼쪽 팔', '공격 방식'], ['왼쪽 손', '공격 방식'], ['오른쪽 팔', '공격 방식'], ['오른쪽 손', '공격 방식']]],
+        ['다리', [['왼쪽 다리', '회피'], ['왼쪽 발', '회피'], ['오른쪽 다리', '회피'], ['오른쪽 발', '회피']]],
+        ['뼈', [['두개골', ''], ['갈비뼈', ''], ['팔뼈', ''], ['다리뼈', ''], ['손발뼈', '']]]
       ];
+      const STATS = ['힘', '민첩', '체력', '변이도', '명성', '정신력'];
+      const STAT_VAL = Object.fromEntries(STATS.map(k => [k, 0])); // 값은 태어나기 뒤에 정해진다
+      const MONEY = [['세오', '금화'], ['므나', '은화'], ['하무', '동화']];
+      const bar = v => `<div class="bar2"><i style="width:${v}%"></i></div>`;
       app.classList.add('wide');
       app.innerHTML = `<div class="gframe" aria-label="게임 화면">
         <header class="gtop">
@@ -107,16 +112,16 @@
         </header>
         <div class="gline"></div>
         <div class="gmain">
-          <aside class="rail l" aria-label="주요 신체 상태"><h4>급소</h4>${VITALS.map(v => `<button class="rb" data-v="${v.id}"><span>${v.name}</span><em>${ST}</em></button>`).join('')}</aside>
+          <aside class="rail l" aria-label="주요 신체 상태"><h4>급소</h4>${VITALS.map(v => `<div class="rrow"><span>${v}</span><em>${ST}</em></div>`).join('')}<button class="wbtn" id="bodyBtn">전체 몸 상태 <span aria-hidden="true">▸</span></button></aside>
           <section class="gstage" aria-label="이야기">
             <div class="head2"><span>이번 달</span><span class="mono">#000</span></div>
             <div class="art"><span>장면</span></div>
             <div class="log"><p class="sys">▸ 시작 · 시드 ${run.seed}${run.auto ? ' (자동)' : ''} · ${lv.name}</p><p>이야기가 여기에 나옵니다.</p></div>
           </section>
-          <aside class="rail r" aria-label="스텟"><h4>스텟</h4>
-            <div class="stat"><div class="sl"><span>허기</span><b>0</b></div><div class="bar2"><i style="width:0%"></i></div></div>
-            <div class="stat"><div class="sl"><span>돈</span><b>0</b></div><small>하무</small></div>
-            <div class="stat"><div class="sl"><span>변이도</span><b>0</b></div><div class="bar2"><i style="width:0%"></i></div></div>
+          <aside class="rail r" aria-label="스텟 · 돈 · 아이템">
+            <button class="rowbtn" id="statBtn" aria-label="스텟 창 열기"><span class="rh">스텟</span>${STATS.map(k => `<span class="sl"><span>${k}</span><b>${STAT_VAL[k]}</b></span>`).join('')}</button>
+            <button class="rowbtn" id="moneyBtn" aria-label="돈 창 열기"><span class="sl"><span>돈</span><b>0</b></span><small>하무</small></button>
+            <button class="rowbtn" id="itemBtn" aria-label="아이템 목록 열기"><span class="sl"><span>아이템</span><b>0/12</b></span></button>
           </aside>
         </div>
         <footer class="gbot"><div class="q"><span>이번 달 어떻게 할까?</span><span class="mono">- / -</span></div><div class="box">선택지가 여기에 나옵니다.</div></footer>
@@ -125,19 +130,17 @@
       const pop = document.getElementById('pop'), menuBtn = document.getElementById('menuBtn');
       let opener = null;
       const close = () => { pop.hidden = true; pop.innerHTML = ''; menuBtn.setAttribute('aria-expanded', 'false'); if (opener) { opener.focus(); opener = null; } };
-      const show = (html, from) => { opener = from; pop.innerHTML = `<div class="sheet" role="dialog" aria-modal="true">${html}</div>`; pop.hidden = false; const f = pop.querySelector('[data-first]'); if (f) f.focus(); pop.querySelectorAll('[data-close]').forEach(x => x.onclick = close); };
+      const show = (title, body, from) => { opener = from; pop.innerHTML = `<div class="sheet" role="dialog" aria-modal="true" aria-label="${title}"><div class="shead"><h3>${title}</h3><button class="back" data-close data-first>닫기</button></div>${body}</div>`; pop.hidden = false; pop.querySelector('[data-first]').focus(); pop.querySelectorAll('[data-close]').forEach(x => x.onclick = close); };
       pop.onclick = e => { if (e.target === pop) close(); };
-      app.querySelectorAll('.rb').forEach(b => b.onclick = () => {
-        const v = VITALS.find(x => x.id === b.dataset.v);
-        show(`<div class="shead"><h3>${v.name}</h3><button class="back" data-close data-first>닫기</button></div>
-          <ul class="plist">${v.parts.map(p => `<li><div><b>${p[0]}</b><small>${p[1]}</small></div><span class="st">${ST}</span><div class="bar2" title="손상도 0"><i style="width:0%"></i></div></li>`).join('')}</ul>
-          <small class="foot">상태 · ${ST} / 침식 / 감염 / 대체 / 창조 &nbsp;·&nbsp; 손상도 0</small>`, b);
-      });
+      const $ = id => document.getElementById(id);
+      $('bodyBtn').onclick = e => show('전체 몸 상태', BODY.map(([g, ps]) => `<section class="pgrp"><h4>${g}</h4><ul class="plist">${ps.map(p => `<li><div><b>${p[0]}</b>${p[1] ? `<small>${p[1]}</small>` : ''}</div><span class="st">${ST}</span>${bar(0)}</li>`).join('')}</ul></section>`).join('') + `<small class="foot">상태 · 원본 / 침식 / 감염 / 대체 / 창조 &nbsp;·&nbsp; 손상도는 막대로 보여요</small>`, e.currentTarget);
+      $('statBtn').onclick = e => show('스텟', `<ul class="plist">${STATS.map(k => `<li><div><b>${k}</b></div><span class="st mono">${STAT_VAL[k]}</span>${bar(STAT_VAL[k])}</li>`).join('')}</ul><small class="foot">값은 태어난 뒤에 정해져요</small>`, e.currentTarget);
+      $('moneyBtn').onclick = e => show('돈', `<ul class="plist">${MONEY.map(([n, k]) => `<li><div><b>${n}</b><small>${k}</small></div><span class="st mono">0</span></li>`).join('')}</ul><small class="foot">하무 100 = 므나 1 · 므나 100 = 세오 1</small>`, e.currentTarget);
+      $('itemBtn').onclick = e => show('아이템 목록', `<div class="box">가진 물건이 없어요.</div><small class="foot">가방 0 / 12</small>`, e.currentTarget);
       menuBtn.onclick = () => {
         menuBtn.setAttribute('aria-expanded', 'true');
-        show(`<div class="shead"><h3>메뉴</h3><button class="back" data-close data-first>계속하기</button></div>
-          <div class="mlist"><button class="menu-btn" id="m-start"><span><b>게임 시작 화면으로</b><small>난이도와 시드를 다시 고른다</small></span></button><button class="menu-btn" id="m-home"><span><b>홈으로</b></span></button></div>`, menuBtn);
-        document.getElementById('m-start').onclick = () => go('start'); document.getElementById('m-home').onclick = () => go('home');
+        show('메뉴', `<div class="mlist"><button class="menu-btn" id="m-start"><span><b>게임 시작 화면으로</b><small>난이도와 시드를 다시 고른다</small></span></button><button class="menu-btn" id="m-home"><span><b>홈으로</b></span></button></div>`, menuBtn);
+        $('m-start').onclick = () => go('start'); $('m-home').onclick = () => go('home');
       };
       window.__closePop = () => { if (!pop.hidden) { close(); return true; } return false; };
     },
