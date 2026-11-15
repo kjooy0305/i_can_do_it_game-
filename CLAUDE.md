@@ -3,6 +3,7 @@
 텍스트 기반 선택형 인생 시뮬레이션 기획 저장소. GitHub Pages로 공개: https://kjooy0305.github.io/i_can_do_it_game-/
 
 ## 구성
+- `game/` — 실제로 플레이하는 게임 (PC 먼저, 모바일 겸용, 최종 목표는 앱 배포). 빌드 없이 `index.html` + `game.css` + `game.js`. 지금은 홈 화면과 버튼 반응만 있고, 화면은 `game.js` 의 `SCREENS` 에 하나씩 덧붙인다. 저장은 `localStorage` 의 `ceg.` 키. 흑백 + 가는 선.
 - `mock/index.html` — 폰 화면 시안 (흑백 + 예외색 1개, dayclean 시안 규칙). 위 경로 + 왼쪽 목차 트리로 화면 하나만 표시
 - `world/` — 세계관 노트 (`data.js` 데이터 + `index.html` 뷰어(왼쪽 목차 트리 + 위 경로, 고른 것만 표시) + `page.html` 한 항목 전용 페이지(“페이지로 열기”) + `render.js` 공용 그리기 + `style.css`). 뷰어/페이지 구조를 바꿀 때 `data.js` 는 건드리지 않는다. **주제 노트(groups)** + **사전(types, entries: 제국›국가›도시›마을, 신·무기·변이·몬스터 …)**. 이야기는 사전을 기준으로 만든다
 - 세계관 노트는 **큰 분류 9개**(게임의 세계관 · 제국 · 직업 · 변이 · 던전 · 도구 · 전체적인 삶 · 아이디어 노트 · 시스템과 기록)로 나뉜다. `data.js` 의 `sections` 에 분류(groups)와 종류(types)를 등록해야 하고, 빠지면 `check-world.js` 가 실패한다.
