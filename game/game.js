@@ -16,7 +16,9 @@
   ];
   const NAMES = { start: '게임 시작', load: '이어서 하기', dict: '사전', ach: '업적', set: '설정', play: '게임 플레이' };
   const LEVELS = [ // 난이도는 미니게임과 일부 선택지의 보정에 쓸 예정 (아직 효과 없음)
-    { id: 'hero', name: '영웅', sub: '어려움' }, { id: 'daily', name: '일상', sub: '보통' }, { id: 'watch', name: '방관', sub: '쉬움' }
+    { id: 'hero', name: '영웅', sub: '어려움', desc: '당신은 영웅의 싹입니다. 그런 당신에게 가호가 깃들기를.' },
+    { id: 'daily', name: '일상', sub: '보통', desc: '이곳을 느끼기에 좋습니다. 어쩌면 당신 또한 영웅이 될 수 있겠죠.' },
+    { id: 'watch', name: '방관', sub: '쉬움', desc: '당신은 변덕쟁이입니다. 원하는건 취하고 필요 없는 건 무시하는.' }
   ];
   const SEED_RE = /^[A-Z0-9-]{1,16}$/;
   const newSeed = () => { const c = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789', r = n => Array.from({ length: n }, () => c[Math.floor(Math.random() * c.length)]).join(''); return r(2) + '-' + r(4); };
@@ -59,7 +61,7 @@
         </div>
         <div id="p-basic" role="tabpanel" aria-labelledby="tab-basic" class="panel">
           <fieldset class="levels"><legend>난이도</legend>
-            ${LEVELS.map(l => `<label class="lv"><input type="radio" name="level" value="${l.id}"${l.id === level ? ' checked' : ''}><span><b>${l.name}</b><small>${l.sub}</small></span></label>`).join('')}
+            ${LEVELS.map(l => `<label class="lv"><input type="radio" name="level" value="${l.id}"${l.id === level ? ' checked' : ''}><span><span class="lt"><b>${l.name}</b><small>${l.sub}</small></span><em>${l.desc}</em></span></label>`).join('')}
           </fieldset>
           <div class="seedbox"><label for="seed">시드</label>
             <div class="seedrow"><input id="seed" type="text" maxlength="16" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="비워 두면 자동으로 정해져요" value="${(last.seed || '').replace(/"/g, '')}"><button type="button" class="back" id="rand">랜덤</button></div>
