@@ -105,7 +105,7 @@
         <h1>끝에 도달하는 이야기</h1>
         <p class="lead">80억 분의 1, 단 하나의 선택으로 이어지는 길.</p>
         <nav class="menu" aria-label="메뉴">${MENU.map((m, i) => `<button class="menu-btn${m.first ? ' first' : ''}${i === sel ? ' sel' : ''}" data-i="${i}" data-id="${m.id}"><span><b>${m.title}</b><small>${m.sub()}</small></span><span style="display:flex;gap:10px;align-items:center"><span class="key" aria-hidden="true">${i + 1}</span><span class="go" aria-hidden="true">→</span></span></button>`).join('')}</nav>
-        <div class="foot"><span>↑ ↓ 로 고르고 Enter · 숫자 1~5</span><span>v0.1</span></div>
+        <div class="foot"><span>↑ ↓ 로 고르고 Enter · 숫자 1~5</span><span><a href="scenes.html">배경 도감</a> · v0.1</span></div>
       </section>`;
       app.querySelectorAll('.menu-btn').forEach(b => {
         b.addEventListener('click', () => open(b.dataset.id));
@@ -166,8 +166,8 @@
           <aside class="rail l" aria-label="주요 신체 상태"><h4>몸 상태</h4>${VITALS.map(v => `<div class="rrow"><span>${v}</span><em>${ST}</em></div>`).join('')}<button class="wbtn" id="bodyBtn">전체 몸 상태 <span aria-hidden="true">▸</span></button></aside>
           <section class="gstage" aria-label="이야기">
             <div class="head2"><span>이번 달</span><span class="mono">#000</span></div>
-            <div class="art"><span>장면</span></div>
-            <div class="log"><p class="sys">▸ 시작 · 시드 ${run.seed}${run.auto ? ' (자동)' : ''} · ${lv.name}</p><p>이야기가 여기에 나옵니다.</p><p><button class="back" id="sample">임시 · 선택지 창 보기</button></p></div>
+            <div class="art" id="art"><img id="artimg" alt="" width="192" height="96"></div>
+            <div class="log"><p class="sys">▸ 시작 · 시드 ${run.seed}${run.auto ? ' (자동)' : ''} · ${lv.name}</p><p>이야기가 여기에 나옵니다.</p><p class="tmp"><button class="back" id="sample">임시 · 선택지 창 보기</button> <button class="back" id="prevBg" aria-label="이전 배경">◀</button> <button class="back" id="nextBg" aria-label="다음 배경">▶</button> <span class="mono" id="bgName"></span></p></div>
           </section>
           <aside class="rail r" aria-label="스텟 · 돈 · 아이템">
             <button class="rowbtn" id="statBtn" aria-label="스텟과 돈 화면 열기"><span class="rh">스텟</span>${STATS.map(k => `<span class="sl"><span>${k}</span><b>${STAT_VAL[k]}</b></span>`).join('')}</button>
@@ -188,6 +188,20 @@
       $('statBtn').onclick = () => go('stats');
       $('moneyBtn').onclick = () => go('stats');
       $('itemBtn').onclick = () => go('stats');
+      // 장면 배경: scenes/index.json 의 그림을 장면 칸에 꽉 채운다. CEG.scene('forest_path') 처럼 id 로 바꾼다.
+      let bgList = [], bgIdx = -1;
+      const setScene = id => {
+        const i = bgList.findIndex(b => b.id === id); if (i < 0) return false; bgIdx = i;
+        const im = document.getElementById('artimg'); if (!im) return false;
+        im.src = 'scenes/' + id + '.png'; im.alt = bgList[i].name + ' 배경';
+        const n = document.getElementById('bgName'); if (n) n.textContent = bgList[i].name + ' (' + (i + 1) + '/' + bgList.length + ')';
+        return true;
+      };
+      CEG.scene = setScene;
+      const step = d => { if (bgList.length) setScene(bgList[(bgIdx + d + bgList.length) % bgList.length].id); };
+      document.getElementById('prevBg').onclick = () => step(-1); document.getElementById('nextBg').onclick = () => step(1);
+      if (typeof fetch !== 'function') return;
+      fetch('scenes/index.json').then(r => r.json()).then(l => { bgList = l; if (document.getElementById('artimg')) setScene(l[Math.floor(Math.random() * l.length)].id); }).catch(() => { const n = document.getElementById('bgName'); if (n) n.textContent = '배경 없음'; });
       // 선택지가 필요한 장면은 이 창으로 띄운다. 뒤는 흐리게 가리고, 고르기 전에는 닫히지 않는다 (숫자 키로도 고른다).
       const ask = (question, choices) => new Promise(res => {
         opener = document.activeElement;
@@ -253,7 +267,7 @@
   }
   function focusSel() { const b = app.querySelector('.menu-btn.sel'); if (b && document.activeElement !== b) b.focus({ preventScroll: true }); }
   function go(id) {
-    cur = id; app.classList.remove('wide'); window.__closePop = null; window.__pickChoice = null; CEG.ask = null; try { history.replaceState(null, '', id === 'home' ? location.pathname + location.search : '#' + id); } catch (e) {}
+    cur = id; app.classList.remove('wide'); window.__closePop = null; window.__pickChoice = null; CEG.ask = null; CEG.scene = null; try { history.replaceState(null, '', id === 'home' ? location.pathname + location.search : '#' + id); } catch (e) {}
     (SCREENS[id] || SCREENS.stub)(id);
   }
   function open(id) { sel = Math.max(0, MENU.findIndex(m => m.id === id)); go(id); }

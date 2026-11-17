@@ -174,3 +174,9 @@ details.bgrp[open]{border-width:3px}
 .bgrp .gs small{font-size:12px;min-width:5em}
 .bgrp .plist{padding:0 16px 16px}
 .sprite{image-rendering:pixelated;image-rendering:crisp-edges;max-width:100%;height:auto;display:block}
+
+/* 장면 배경 (192x96 도트를 칸에 꽉 채움) */
+.gstage .art{margin:0;border:0;border-bottom:1.5px solid var(--ink);border-radius:0;background:var(--paper);flex:none;width:100%;height:auto;min-height:0;aspect-ratio:2/1;max-height:54%;overflow:hidden;display:block}
+.gstage .art img{display:block;width:100%;height:100%;object-fit:cover;image-rendering:pixelated;image-rendering:crisp-edges}
+.log .tmp{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.log .tmp .back{min-height:34px;font-size:13px}

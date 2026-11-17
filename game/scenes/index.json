@@ -1,0 +1,917 @@
+[
+{
+"id": "house_hearth",
+"name": "오두막 아궁이",
+"cat": "집"
+},
+{
+"id": "house_farmyard",
+"name": "농가 마당",
+"cat": "집"
+},
+{
+"id": "house_alley",
+"name": "골목 집 앞 밤",
+"cat": "집"
+},
+{
+"id": "house_ruin",
+"name": "폐가 거실",
+"cat": "집"
+},
+{
+"id": "house_shelter",
+"name": "지하 대피소",
+"cat": "집"
+},
+{
+"id": "market_morning",
+"name": "아침 장터",
+"cat": "장터"
+},
+{
+"id": "market_night",
+"name": "야시장",
+"cat": "장터"
+},
+{
+"id": "market_grain",
+"name": "곡물 시장",
+"cat": "장터"
+},
+{
+"id": "market_fish",
+"name": "항구 어시장",
+"cat": "장터"
+},
+{
+"id": "market_scrap",
+"name": "고철 장터",
+"cat": "장터"
+},
+{
+"id": "cave_great",
+"name": "종유석 동굴",
+"cat": "동굴 안"
+},
+{
+"id": "cave_crystal",
+"name": "수정 동굴",
+"cat": "동굴 안"
+},
+{
+"id": "cave_lake",
+"name": "지하 호수",
+"cat": "동굴 안"
+},
+{
+"id": "cave_mine",
+"name": "광산 갱도",
+"cat": "동굴 안"
+},
+{
+"id": "cave_bats",
+"name": "박쥐 동굴",
+"cat": "동굴 안"
+},
+{
+"id": "wall_gate",
+"name": "성문과 해자",
+"cat": "성벽 앞"
+},
+{
+"id": "wall_watch",
+"name": "망루 전망",
+"cat": "성벽 앞"
+},
+{
+"id": "wall_breach",
+"name": "무너진 성벽",
+"cat": "성벽 앞"
+},
+{
+"id": "wall_siege",
+"name": "공성 진영",
+"cat": "성벽 앞"
+},
+{
+"id": "wall_alley",
+"name": "성벽 아래 골목",
+"cat": "성벽 앞"
+},
+{
+"id": "forest_path",
+"name": "숲 오솔길",
+"cat": "숲 속"
+},
+{
+"id": "forest_fog",
+"name": "안개 숲",
+"cat": "숲 속"
+},
+{
+"id": "forest_giant",
+"name": "거대 고목 숲",
+"cat": "숲 속"
+},
+{
+"id": "forest_corrupt",
+"name": "침식된 숲",
+"cat": "숲 속"
+},
+{
+"id": "forest_fireflies",
+"name": "반딧불 숲",
+"cat": "숲 속"
+},
+{
+"id": "river_bridge",
+"name": "돌다리 강",
+"cat": "강가"
+},
+{
+"id": "river_ferry",
+"name": "나루터",
+"cat": "강가"
+},
+{
+"id": "river_laundry",
+"name": "빨래터",
+"cat": "강가"
+},
+{
+"id": "river_falls",
+"name": "폭포 아래",
+"cat": "강가"
+},
+{
+"id": "river_reeds",
+"name": "갈대밭 석양",
+"cat": "강가"
+},
+{
+"id": "sea_cliff",
+"name": "해안 절벽",
+"cat": "바다"
+},
+{
+"id": "sea_harbor",
+"name": "항구 부두",
+"cat": "바다"
+},
+{
+"id": "sea_wreck",
+"name": "난파선 해변",
+"cat": "바다"
+},
+{
+"id": "sea_lighthouse",
+"name": "등대 밤",
+"cat": "바다"
+},
+{
+"id": "sea_storm",
+"name": "폭풍우 바다",
+"cat": "바다"
+},
+{
+"id": "dragon_peak",
+"name": "산꼭대기 둥지",
+"cat": "드래곤 둥지"
+},
+{
+"id": "dragon_eggcave",
+"name": "알이 가득한 방",
+"cat": "드래곤 둥지"
+},
+{
+"id": "dragon_hoard",
+"name": "보물 위의 용",
+"cat": "드래곤 둥지"
+},
+{
+"id": "dragon_volcano",
+"name": "화산 둥지",
+"cat": "드래곤 둥지"
+},
+{
+"id": "dragon_bonegrave",
+"name": "용 뼈 무덤",
+"cat": "드래곤 둥지"
+},
+{
+"id": "palace_throne",
+"name": "알현실",
+"cat": "왕성"
+},
+{
+"id": "palace_garden",
+"name": "왕성 정원",
+"cat": "왕성"
+},
+{
+"id": "palace_hall",
+"name": "왕성 복도",
+"cat": "왕성"
+},
+{
+"id": "palace_window",
+"name": "옥좌 뒤 큰 창",
+"cat": "왕성"
+},
+{
+"id": "palace_view",
+"name": "왕성 전경",
+"cat": "왕성"
+},
+{
+"id": "black_alley",
+"name": "뒷골목 암시장",
+"cat": "암시장"
+},
+{
+"id": "black_underground",
+"name": "지하 거래소",
+"cat": "암시장"
+},
+{
+"id": "black_sewer",
+"name": "하수도 위 시장",
+"cat": "암시장"
+},
+{
+"id": "black_masks",
+"name": "가면 시장",
+"cat": "암시장"
+},
+{
+"id": "black_warehouse",
+"name": "폐창고 거래",
+"cat": "암시장"
+},
+{
+"id": "maze_stone",
+"name": "돌 미로",
+"cat": "미로"
+},
+{
+"id": "maze_hedge",
+"name": "생울타리 미로",
+"cat": "미로"
+},
+{
+"id": "maze_mirror",
+"name": "거울 미로",
+"cat": "미로"
+},
+{
+"id": "maze_tunnel",
+"name": "지하 미로 통로",
+"cat": "미로"
+},
+{
+"id": "maze_bone",
+"name": "뼈 미로",
+"cat": "미로"
+},
+{
+"id": "demon_storm",
+"name": "검은 성 전경",
+"cat": "마왕성 앞"
+},
+{
+"id": "demon_gate",
+"name": "마왕성 정문",
+"cat": "마왕성 앞"
+},
+{
+"id": "demon_lavabridge",
+"name": "용암 위 다리",
+"cat": "마왕성 앞"
+},
+{
+"id": "demon_thorn",
+"name": "가시 숲 입구",
+"cat": "마왕성 앞"
+},
+{
+"id": "demon_courtyard",
+"name": "마왕성 안뜰",
+"cat": "마왕성 앞"
+},
+{
+"id": "church_nave",
+"name": "예배당 내부",
+"cat": "성당"
+},
+{
+"id": "church_exterior",
+"name": "성당 외관",
+"cat": "성당"
+},
+{
+"id": "church_belfry",
+"name": "종탑 위",
+"cat": "성당"
+},
+{
+"id": "church_crypt",
+"name": "지하 납골당",
+"cat": "성당"
+},
+{
+"id": "church_ruin",
+"name": "폐성당",
+"cat": "성당"
+},
+{
+"id": "holy_pillars",
+"name": "신전 기둥 홀",
+"cat": "신성한 공간"
+},
+{
+"id": "holy_spring",
+"name": "성스러운 샘",
+"cat": "신성한 공간"
+},
+{
+"id": "holy_altar_light",
+"name": "빛의 제단",
+"cat": "신성한 공간"
+},
+{
+"id": "holy_skystairs",
+"name": "하늘 계단",
+"cat": "신성한 공간"
+},
+{
+"id": "holy_tree",
+"name": "신목",
+"cat": "신성한 공간"
+},
+{
+"id": "academy_lecture",
+"name": "강의실",
+"cat": "아카데미"
+},
+{
+"id": "academy_library",
+"name": "도서관",
+"cat": "아카데미"
+},
+{
+"id": "academy_lab",
+"name": "연구실",
+"cat": "아카데미"
+},
+{
+"id": "academy_gate",
+"name": "아카데미 정문",
+"cat": "아카데미"
+},
+{
+"id": "academy_storage",
+"name": "시료 보관실",
+"cat": "아카데미"
+},
+{
+"id": "nat_snowfield",
+"name": "설원",
+"cat": "자연·지형"
+},
+{
+"id": "nat_oasis",
+"name": "사막 오아시스",
+"cat": "자연·지형"
+},
+{
+"id": "nat_desert_ruin",
+"name": "사막의 폐허",
+"cat": "자연·지형"
+},
+{
+"id": "nat_meadow_wind",
+"name": "초원과 바람",
+"cat": "자연·지형"
+},
+{
+"id": "nat_windmill_hill",
+"name": "풍차 언덕",
+"cat": "자연·지형"
+},
+{
+"id": "nat_paddy",
+"name": "논밭",
+"cat": "자연·지형"
+},
+{
+"id": "nat_orchard",
+"name": "과수원",
+"cat": "자연·지형"
+},
+{
+"id": "nat_ranch",
+"name": "목장",
+"cat": "자연·지형"
+},
+{
+"id": "nat_terraces",
+"name": "계단식 밭",
+"cat": "자연·지형"
+},
+{
+"id": "nat_swamp",
+"name": "늪지",
+"cat": "자연·지형"
+},
+{
+"id": "nat_bamboo",
+"name": "대나무 숲",
+"cat": "자연·지형"
+},
+{
+"id": "nat_canyon",
+"name": "깊은 협곡",
+"cat": "자연·지형"
+},
+{
+"id": "nat_crater",
+"name": "화산 분화구",
+"cat": "자연·지형"
+},
+{
+"id": "nat_lava_cave",
+"name": "용암 동굴",
+"cat": "자연·지형"
+},
+{
+"id": "nat_ice_cave",
+"name": "얼음 동굴",
+"cat": "자연·지형"
+},
+{
+"id": "nat_summit",
+"name": "설산 정상",
+"cat": "자연·지형"
+},
+{
+"id": "nat_pass",
+"name": "산 고갯길",
+"cat": "자연·지형"
+},
+{
+"id": "nat_plank_road",
+"name": "절벽 잔도",
+"cat": "자연·지형"
+},
+{
+"id": "nat_sky_island",
+"name": "하늘의 섬",
+"cat": "자연·지형"
+},
+{
+"id": "nat_cloud_bridge",
+"name": "구름 위 다리",
+"cat": "자연·지형"
+},
+{
+"id": "nat_starry_hill",
+"name": "별밤 언덕",
+"cat": "자연·지형"
+},
+{
+"id": "nat_sunset_field",
+"name": "일몰 들판",
+"cat": "자연·지형"
+},
+{
+"id": "nat_rain_road",
+"name": "폭우 내리는 길",
+"cat": "자연·지형"
+},
+{
+"id": "nat_fog_field",
+"name": "안개 낀 들판",
+"cat": "자연·지형"
+},
+{
+"id": "nat_fairy_ring",
+"name": "요정의 버섯 고리",
+"cat": "자연·지형"
+},
+{
+"id": "nat_giant_mushrooms",
+"name": "거대 버섯 숲",
+"cat": "자연·지형"
+},
+{
+"id": "nat_mossy_ruins",
+"name": "이끼 낀 유적",
+"cat": "자연·지형"
+},
+{
+"id": "nat_undersea_cave",
+"name": "해저 동굴",
+"cat": "자연·지형"
+},
+{
+"id": "nat_frozen_lake",
+"name": "얼어붙은 호수",
+"cat": "자연·지형"
+},
+{
+"id": "nat_blizzard_camp",
+"name": "눈보라 속 야영",
+"cat": "자연·지형"
+},
+{
+"id": "nat_aurora",
+"name": "오로라 밤하늘",
+"cat": "자연·지형"
+},
+{
+"id": "nat_sandstorm",
+"name": "모래폭풍",
+"cat": "자연·지형"
+},
+{
+"id": "nat_caravan",
+"name": "사막의 대상",
+"cat": "자연·지형"
+},
+{
+"id": "nat_salt_flat",
+"name": "소금 평원",
+"cat": "자연·지형"
+},
+{
+"id": "nat_geyser",
+"name": "간헐천과 증기",
+"cat": "자연·지형"
+},
+{
+"id": "nat_waterfall",
+"name": "폭포",
+"cat": "자연·지형"
+},
+{
+"id": "town_square",
+"name": "마을 광장",
+"cat": "마을·생활"
+},
+{
+"id": "town_wellside",
+"name": "우물가",
+"cat": "마을·생활"
+},
+{
+"id": "town_smithy",
+"name": "대장간",
+"cat": "마을·생활"
+},
+{
+"id": "town_inn",
+"name": "여관 안",
+"cat": "마을·생활"
+},
+{
+"id": "town_tavern",
+"name": "술집",
+"cat": "마을·생활"
+},
+{
+"id": "town_apothecary",
+"name": "약방",
+"cat": "마을·생활"
+},
+{
+"id": "town_stable",
+"name": "마구간",
+"cat": "마을·생활"
+},
+{
+"id": "town_mill",
+"name": "방앗간",
+"cat": "마을·생활"
+},
+{
+"id": "town_carpenter",
+"name": "목공소",
+"cat": "마을·생활"
+},
+{
+"id": "town_brewery",
+"name": "양조장",
+"cat": "마을·생활"
+},
+{
+"id": "town_saltstore",
+"name": "염장 창고",
+"cat": "마을·생활"
+},
+{
+"id": "town_bakery",
+"name": "빵집",
+"cat": "마을·생활"
+},
+{
+"id": "town_jail_corridor",
+"name": "감옥 복도",
+"cat": "마을·생활"
+},
+{
+"id": "town_jail_window",
+"name": "감옥 작은 창",
+"cat": "마을·생활"
+},
+{
+"id": "town_arena",
+"name": "투기장",
+"cat": "마을·생활"
+},
+{
+"id": "town_training",
+"name": "훈련장",
+"cat": "마을·생활"
+},
+{
+"id": "town_barracks",
+"name": "병영 막사",
+"cat": "마을·생활"
+},
+{
+"id": "town_camp",
+"name": "야영지",
+"cat": "마을·생활"
+},
+{
+"id": "town_battlefield",
+"name": "폐허 전장",
+"cat": "마을·생활"
+},
+{
+"id": "town_graveyard",
+"name": "묘지",
+"cat": "마을·생활"
+},
+{
+"id": "town_catacomb",
+"name": "카타콤",
+"cat": "마을·생활"
+},
+{
+"id": "town_mine",
+"name": "폐광 입구",
+"cat": "마을·생활"
+},
+{
+"id": "town_refectory",
+"name": "수도원 식당",
+"cat": "마을·생활"
+},
+{
+"id": "town_cloister",
+"name": "수도원 정원",
+"cat": "마을·생활"
+},
+{
+"id": "town_signpost",
+"name": "순례길 이정표",
+"cat": "마을·생활"
+},
+{
+"id": "town_checkpoint",
+"name": "국경 검문소",
+"cat": "마을·생활"
+},
+{
+"id": "town_healtent",
+"name": "치료막사",
+"cat": "마을·생활"
+},
+{
+"id": "town_herbfield",
+"name": "약초밭",
+"cat": "마을·생활"
+},
+{
+"id": "town_orphan",
+"name": "고아원 방",
+"cat": "마을·생활"
+},
+{
+"id": "town_playroom",
+"name": "어린이집 놀이방",
+"cat": "마을·생활"
+},
+{
+"id": "town_playground",
+"name": "마을 운동장",
+"cat": "마을·생활"
+},
+{
+"id": "town_babyroom",
+"name": "아기 방",
+"cat": "마을·생활"
+},
+{
+"id": "town_womb",
+"name": "태아기의 어둠",
+"cat": "마을·생활"
+},
+{
+"id": "town_gate_fog",
+"name": "마을 입구 아침 안개",
+"cat": "마을·생활"
+},
+{
+"id": "town_dusk_village",
+"name": "해질녘 마을",
+"cat": "마을·생활"
+},
+{
+"id": "x_erosion_zone",
+"name": "침식 지대",
+"cat": "폐허"
+},
+{
+"id": "x_eroded_village",
+"name": "침식된 마을",
+"cat": "폐허"
+},
+{
+"id": "x_mutant_forest",
+"name": "변이한 거대 식물 숲",
+"cat": "폐허"
+},
+{
+"id": "x_tainted_lake",
+"name": "오염된 호수",
+"cat": "폐허"
+},
+{
+"id": "x_black_rain_street",
+"name": "검은 비 거리",
+"cat": "폐허"
+},
+{
+"id": "x_ruined_shops",
+"name": "폐허 상점가",
+"cat": "폐허"
+},
+{
+"id": "x_cellar",
+"name": "지하 저장고",
+"cat": "폐허"
+},
+{
+"id": "x_sewer",
+"name": "하수도 통로",
+"cat": "폐허"
+},
+{
+"id": "x_canal",
+"name": "지하 수로",
+"cat": "폐허"
+},
+{
+"id": "x_chimney_night",
+"name": "굴뚝 지붕 밤하늘",
+"cat": "마법"
+},
+{
+"id": "x_clock_tower",
+"name": "시계탑",
+"cat": "마법"
+},
+{
+"id": "x_castle_moon",
+"name": "성 지붕 위 달",
+"cat": "마법"
+},
+{
+"id": "x_wizard_tower_top",
+"name": "마법사 탑 꼭대기",
+"cat": "마법"
+},
+{
+"id": "x_alchemy_lab",
+"name": "연금술 공방",
+"cat": "마법"
+},
+{
+"id": "x_witch_hut",
+"name": "마녀 오두막",
+"cat": "마법"
+},
+{
+"id": "x_magic_circle_room",
+"name": "마법진 방",
+"cat": "마법"
+},
+{
+"id": "x_dimension_gate",
+"name": "차원문",
+"cat": "마법"
+},
+{
+"id": "x_treetop_village",
+"name": "거대 나무 위 마을",
+"cat": "마법"
+},
+{
+"id": "x_underground_city",
+"name": "땅속 도시",
+"cat": "마법"
+},
+{
+"id": "x_floating_city",
+"name": "부유 도시",
+"cat": "마법"
+},
+{
+"id": "x_giant_foot",
+"name": "거인의 발치",
+"cat": "거대한 것"
+},
+{
+"id": "x_giant_skull",
+"name": "거대 해골 유적",
+"cat": "거대한 것"
+},
+{
+"id": "x_fossil_canyon",
+"name": "화석 협곡",
+"cat": "거대한 것"
+},
+{
+"id": "x_machine_room",
+"name": "폐허 기계실",
+"cat": "폐허"
+},
+{
+"id": "x_broken_tower",
+"name": "무너진 탑",
+"cat": "폐허"
+},
+{
+"id": "x_broken_bridge",
+"name": "부서진 다리",
+"cat": "폐허"
+},
+{
+"id": "x_ruined_city_street",
+"name": "폐허 도시 거리",
+"cat": "폐허"
+},
+{
+"id": "x_statue_road",
+"name": "석상 길",
+"cat": "폐허"
+},
+{
+"id": "x_sunken_city",
+"name": "해저 도시",
+"cat": "바다·항구"
+},
+{
+"id": "x_fishing_village",
+"name": "어촌 마을",
+"cat": "바다·항구"
+},
+{
+"id": "x_salt_flats",
+"name": "염전",
+"cat": "바다·항구"
+},
+{
+"id": "x_palm_beach",
+"name": "야자나무 해변",
+"cat": "바다·항구"
+},
+{
+"id": "x_dock_warehouse",
+"name": "부두 창고",
+"cat": "바다·항구"
+},
+{
+"id": "x_tavern",
+"name": "선원 선술집",
+"cat": "바다·항구"
+},
+{
+"id": "x_ship_deck",
+"name": "배 갑판",
+"cat": "바다·항구"
+},
+{
+"id": "x_cabin",
+"name": "선실",
+"cat": "바다·항구"
+},
+{
+"id": "x_warship_port",
+"name": "전함 포구",
+"cat": "바다·항구"
+}
+]

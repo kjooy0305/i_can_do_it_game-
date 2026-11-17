@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>배경 도감 · 끝에 도달하는 이야기</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&family=JetBrains+Mono:wght@800&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#000;--paper:#fff}
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.6 "Noto Sans KR",system-ui,sans-serif;padding:20px max(16px,env(safe-area-inset-right,0px)) 56px max(16px,env(safe-area-inset-left,0px))}
+.wrap{max-width:1160px;margin:0 auto;display:grid;gap:14px}
+h1{margin:0;font-size:26px;font-weight:900}
+a{color:inherit}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font:inherit;font-size:13px;color:var(--ink);background:var(--paper);border:1px solid var(--ink);border-radius:999px;padding:3px 12px;min-height:34px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.chip:focus-visible,input:focus-visible,.cell:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+input{font:inherit;font-size:16px;min-height:44px;border:1.5px solid var(--ink);border-radius:12px;padding:0 14px;width:100%;color:var(--ink);background:var(--paper)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+.cell{font:inherit;text-align:left;color:var(--ink);background:var(--paper);border:1.5px solid var(--ink);border-radius:12px;padding:0;cursor:pointer;overflow:hidden;display:grid}
+.cell:hover{border-width:3px}
+.cell img{display:block;width:100%;aspect-ratio:2/1;image-rendering:pixelated;image-rendering:crisp-edges;border-bottom:1.5px solid var(--ink)}
+.cell span{padding:6px 10px;display:flex;justify-content:space-between;gap:8px;font-weight:700;font-size:14px}
+.cell small{font:800 11px "JetBrains Mono",monospace;opacity:.7;align-self:center}
+.big{position:fixed;inset:0;background:rgba(255,255,255,.6);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:16px;z-index:5}
+.big div{background:var(--paper);border:3px solid var(--ink);border-radius:14px;padding:12px;width:min(900px,100%);display:grid;gap:8px}
+.big img{width:100%;image-rendering:pixelated;image-rendering:crisp-edges;border:1.5px solid var(--ink)}
+.big b{font-size:18px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a href="./">← 게임으로</a>
+  <h1>배경 도감</h1>
+  <p id="count" style="margin:0"></p>
+  <input id="q" type="search" placeholder="이름 검색 (예: 숲, 성당, 바다)" autocomplete="off">
+  <div class="chips" id="cats"></div>
+  <div class="grid" id="grid"></div>
+</div>
+<div class="big" id="big" hidden><div><img id="bigimg" alt=""><b id="bigname"></b><button class="chip" id="bigclose" style="justify-self:start">닫기</button></div></div>
+<script>
+let list = [], cat = '', q = '';
+const $ = id => document.getElementById(id);
+function draw() {
+  const k = q.trim().toLowerCase(), v = list.filter(b => (!cat || b.cat === cat) && (!k || (b.name + b.cat + b.id).toLowerCase().includes(k)));
+  $('count').textContent = '전체 ' + list.length + '장 · 보이는 것 ' + v.length + '장';
+  $('grid').innerHTML = v.map(b => `<button class="cell" data-id="${b.id}"><img loading="lazy" src="scenes/${b.id}.png" alt="${b.name}" width="192" height="96"><span>${b.name}<small>${b.cat}</small></span></button>`).join('');
+  document.querySelectorAll('#cats .chip').forEach(c => c.setAttribute('aria-pressed', (c.dataset.c || '') === cat));
+}
+fetch('scenes/index.json').then(r => r.json()).then(l => {
+  list = l; const cats = [...new Set(l.map(b => b.cat))];
+  $('cats').innerHTML = '<button class="chip" data-c="">전체</button>' + cats.map(c => `<button class="chip" data-c="${c}">${c}</button>`).join('');
+  $('cats').onclick = e => { const c = e.target.closest('.chip'); if (c) { cat = c.dataset.c; draw(); } };
+  draw();
+}).catch(() => { $('count').textContent = '배경 목록을 불러오지 못했어요.'; });
+$('q').oninput = e => { q = e.target.value; draw(); };
+$('grid').onclick = e => { const c = e.target.closest('.cell'); if (!c) return; const b = list.find(x => x.id === c.dataset.id); $('bigimg').src = 'scenes/' + b.id + '.png'; $('bigimg').alt = b.name; $('bigname').textContent = b.name + ' · ' + b.cat; $('big').hidden = false; $('bigclose').focus(); };
+$('bigclose').onclick = () => { $('big').hidden = true; };
+$('big').onclick = e => { if (e.target === $('big')) $('big').hidden = true; };
+document.addEventListener('keydown', e => { if (e.key === 'Escape') $('big').hidden = true; });
+</script>
+</body>
+</html>
