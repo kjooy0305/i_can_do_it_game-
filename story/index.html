@@ -1,0 +1,779 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>스토리 위키 · 끝에 도달하는 이야기</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
+<style>
+/* 레이아웃: 읽기용 문서 한 칸. 위에 문서 탭, 아래에 본문. 흰/검정/가는 선 + 노랑 하나 */
+:root{--bg:#fff;--ink:#15151a;--mute:#6b6b73;--line:#dcdce0;--soft:#f5f5f2;--acc:#f2c200;--accink:#15151a;--font:'Noto Sans KR',system-ui,-apple-system,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;--mono:'JetBrains Mono',ui-monospace,monospace;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121214;--ink:#ececee;--mute:#9a9aa3;--line:#34343a;--soft:#1b1b1e;--accink:#121214;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#121214;--ink:#ececee;--mute:#9a9aa3;--line:#34343a;--soft:#1b1b1e;--accink:#121214;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.8 var(--font);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:860px;margin:0 auto;padding-block:28px 80px}
+.top{position:sticky;top:env(safe-area-inset-top,0px);background:var(--bg);z-index:5;padding-block:10px;border-bottom:1px solid var(--ink);margin-bottom:18px}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--mute);margin:0 0 8px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tab{font:inherit;font-size:14px;color:var(--ink);background:var(--bg);border:1px solid var(--ink);border-radius:999px;padding:3px 14px;min-height:36px;cursor:pointer}
+.tab[aria-selected="true"]{background:var(--ink);color:var(--bg);font-weight:700}
+.tab:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.doc h1.dt{font-size:28px;line-height:1.3;margin:6px 0 12px;font-weight:900;text-wrap:balance}
+.doc h2{font-size:20px;margin:34px 0 10px;padding-bottom:5px;border-bottom:2px solid var(--ink);font-weight:900;text-wrap:balance}
+.doc h3{font-size:16px;margin:22px 0 6px;font-weight:700;display:flex;align-items:center;gap:8px}
+.doc h3::before{content:"";width:8px;height:8px;background:var(--acc);flex:none}
+.doc p{margin:0 0 10px;max-width:70ch}
+.doc ul,.doc ol{margin:0 0 12px;padding-left:1.3em;max-width:72ch}
+.doc li{margin-bottom:4px}
+.doc li::marker{color:var(--mute)}
+.doc hr{border:0;border-top:1px solid var(--line);margin:24px 0}
+.doc code{font-family:var(--mono);font-size:.85em;background:var(--soft);padding:1px 5px}
+.doc pre{background:var(--soft);border:1px solid var(--line);padding:12px 14px;overflow-x:auto;font-size:13px;line-height:1.6}
+.doc pre code{background:none;padding:0}
+.tw{overflow-x:auto;margin:8px 0 14px;border:1px solid var(--line)}
+table{border-collapse:collapse;width:100%;font-size:14px;line-height:1.55}
+th,td{text-align:left;padding:7px 11px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--soft);font-weight:700}
+tr:last-child td{border-bottom:0}
+.tg{display:inline-block;font:700 11px var(--mono);padding:0 6px;margin-right:6px;border:1px solid var(--ink);vertical-align:.08em;letter-spacing:.02em}
+.tg.k{background:var(--ink);color:var(--bg)}
+.tg.s{border-color:var(--mute);color:var(--mute)}
+.tg.u{background:var(--acc);color:var(--accink);border-color:var(--acc)}
+.toc{border:1px solid var(--ink);background:var(--soft);padding:12px 18px;margin:8px 0 6px;display:inline-block;min-width:min(100%,300px)}
+.toc b{display:block;margin-bottom:4px;font-size:14px}
+.toc ol{margin:0;padding-left:1.4em;columns:2;column-gap:32px}
+@media (max-width:560px){.toc ol{columns:1}}
+.toc li{break-inside:avoid;font-size:14px}
+.toc a{color:var(--ink);text-decoration:underline;text-decoration-color:var(--acc);text-decoration-thickness:2px;text-underline-offset:3px}
+.back{font-size:13px;margin:0 0 8px}.back a{color:var(--ink)}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+<p class="back"><a href="../">← 처음으로</a> · <a href="../world/">세계관 노트</a> · <a href="../game/">게임</a></p>
+<div class="top"><p class="legend"><span><span class="tg k">핵심</span>사용자가 정함</span><span><span class="tg s">제안</span>Claude 초안</span><span><span class="tg u">미정</span>아직 안 정함</span></p><div class="tabs" role="tablist" aria-label="문서"><button class="tab" role="tab" data-d="rules" aria-selected="false">스토리 작성 규칙서</button><button class="tab" role="tab" data-d="compare" aria-selected="false">3제국 비교</button><button class="tab" role="tab" data-d="a" aria-selected="false">소루안</button><button class="tab" role="tab" data-d="b" aria-selected="false">케르진</button><button class="tab" role="tab" data-d="c" aria-selected="false">부란돔</button></div></div>
+<section class="doc" id="d-rules" hidden><h1 class="dt">스토리 작성 규칙서 (초안)</h1>
+<hr />
+<h2>1. 이 규칙서의 범위</h2>
+<ul>
+<li><span class="tg k">핵심</span> 게임 이름은 "끝에 도달하는 이야기". 정해진 것은 "끝에 도달한다"뿐이고, 어떤 끝인지는 그 삶의 몸과 선택이 정한다.</li>
+<li><span class="tg k">핵심</span> 1차로는 평민의 이야기를 먼저 만든다. 영웅이나 귀족, 신관 같은 직업 이야기는 그 뒤에 한다.</li>
+<li><span class="tg s">제안</span> 이야기 한 편은 "한 번의 선택이 필요한 한 장면"을 기본 단위로 하고, 여러 장면이 이어지면 연쇄 사건이라 부른다.</li>
+</ul>
+<h2>2. 세계의 기본</h2>
+<ul>
+<li><span class="tg k">핵심</span> 완전히 새로운 차원의 이세계다. 지구식 느낌(지명, 요일, 단위, 속담, 종교 용어, 음식 이름)은 모두 뺀다.</li>
+<li><span class="tg k">핵심</span> 신이 있고 신성력이 쓰인다. 신마다 맡는 파트가 다르고, 믿는 데에도 적성이 필요하다. 적성이 안 맞으면 효율이 나쁘다.</li>
+<li><span class="tg k">핵심</span> 인신공양을 요구하는 순간 악신으로 판정되고, 그 신은 말살 대상이 된다.</li>
+<li><span class="tg k">핵심</span> 아포칼립스다. 한 번에 터진 재앙이 아니라 "멸망해 가는 중"이고, 사람들은 이것을 침식이라 부른다. 멸망의 형태(바이러스, 몬스터 변이화 등)는 정하지 않는다.</li>
+<li><span class="tg k">핵심</span> 침식의 정체는 플레이 방식에 따라 다르게 드러난다. 연구·탐구 계열은 일찍 알지만 자신도 모르게 노출되어 망가지고, 전투 계열은 모르다가 나중에 후회한다.</li>
+<li><span class="tg k">핵심</span> 3제국이 있다: 소루안(정복 · 전투), 케르진(신권 · 1위), 부란돔(인구와 땅 · 지식). 이름은 임시다. 자세한 것은 <code>국가/</code> 폴더.</li>
+<li><span class="tg s">제안</span> 3제국을 둘러싼 땅 전체의 이름은 "하르벤"(끝의 땅)으로 부른다.</li>
+</ul>
+<h2>3. 용어와 단위</h2>
+<ul>
+<li><span class="tg k">핵심</span> 시간 단위는 주기다. 1주기는 지구 기준 약 50일이고, 일 단위는 없다. "~~주기력"이라 부르며 앞 글자는 달의 이름에서 딴다.</li>
+<li><span class="tg k">핵심</span> 돈은 동화 · 은화 · 금화다. 동화 100개 = 은화 1개, 은화 100개 = 금화 1개. 금화는 태양, 은화는 달, 동화는 "백성"을 뜻하는 말에서 이름을 딴다.</li>
+<li><span class="tg k">핵심</span> 우리가 보는 글은 한국어 · 영어 · 일본어이지만 이세계의 실제 언어는 다르다. 나중에 기초 상식 퀴즈 이벤트의 함정으로 쓴다.</li>
+<li><span class="tg s">제안</span> 태양 "세오란", 달 "므나르", 돈 하무(동화) · 므나(은화) · 세오(금화), 한 해는 7주기 "세오룸", 길이는 다프(뼘) · 룬(걸음) · 카이 · 데슬. 이름 후보 전체는 세계관 노트의 "이름 후보" 줄에 있다.</li>
+<li><span class="tg k">핵심</span> 화면에 보이는 수치는 허기와 돈이다. 식량 수치는 쓰지 않는다. 스텟은 힘 · 민첩 · 체력 · 변이도 · 명성 · 정신력이다.</li>
+<li><span class="tg u">미정</span> 허기를 스텟과 같은 곳에 둘지.</li>
+</ul>
+<h2>4. 시간과 진행</h2>
+<ul>
+<li><span class="tg k">핵심</span> 태어나는 것부터 시작해 성장한다. 일이 아니라 주기마다 진행하고, 특별한 이벤트가 없는 때는 그냥 넘긴다.</li>
+<li><span class="tg s">제안</span> 나이는 "3세 5개월"처럼 적는다. 사건이 없는 주기는 한 줄로 요약한다(허기, 돈 변화만).</li>
+<li><span class="tg s">제안</span> 변이 단서와 위기 사건은 반드시 멈춘다. 자동으로 넘기지 않는다.</li>
+<li><span class="tg s">제안</span> 성장 단계: 태아기 → 영아(0~2) → 유아(3~6) → 아동(7~12) → 청소년(13~17) → 성인(18~) → 노년.</li>
+<li><span class="tg k">핵심</span> 멸망이 시작되는 때를 고를 수 있다: 태어나기 전부터 / 유아기부터 / 성인기부터. 태어나기 전부터는 초반 · 중반 · 후반 중 어느 단계인지도 고른다.</li>
+<li><span class="tg k">핵심</span> 멸망 전에 태어나면 어린이집이나 초등학교 이벤트도 좋고, 학교를 다니다 멸망하면서 생기는 이벤트도 좋다. 같은 장면도 설정에 따라 "평화로운 학교" 또는 "무너지는 학교"로 다르게 쓴다.</li>
+</ul>
+<h2>5. 태어나기 · 난이도 · 시드</h2>
+<ul>
+<li><span class="tg k">핵심</span> 게임 시작은 기본 모드와 커스텀 모드 두 갈래다. 커스텀은 나중에 정한다.</li>
+<li><span class="tg k">핵심</span> 기본 모드는 난이도(영웅 어려움 / 일상 보통 / 방관 쉬움)를 고르고 시드를 적은 뒤 플레이한다. 난이도는 미니게임이나 일부 선택지의 보정에 쓴다. 보정 값은 <span class="tg u">미정</span>.</li>
+<li><span class="tg k">핵심</span> 난이도 문구: 영웅 "당신은 영웅의 싹입니다. 그런 당신에게 가호가 깃들기를." / 일상 "이곳을 느끼기에 좋습니다. 어쩌면 당신 또한 영웅이 될 수 있겠죠." / 방관 "당신은 변덕쟁이입니다. 원하는건 취하고 필요 없는 건 무시하는."</li>
+<li><span class="tg k">핵심</span> 시드는 정해진 이벤트와 분기를 가게 한다. 같은 시드는 같은 세계를 내놓고, 선택은 자유다.</li>
+<li><span class="tg k">핵심</span> 태어날 지역은 처음에는 랜덤이고, 다녀간 지역은 사전에 기록되어 나중에 지정해 태어날 수 있다. 성별은 랜덤일 수 있고, 부모 중 한 분만 남는 경우 누가 남을지는 랜덤이다. 형제가 나보다 손위인지 손아래인지는 모른다.</li>
+<li><span class="tg k">핵심</span> 가난하게 태어나면 부모가 아이를 파는 등 어려운 일이 있을 수 있다(직접 묘사 없이 암시와 결과로만).</li>
+<li><span class="tg k">핵심</span> 쌍둥이 중 나만 태어나거나, 부모가 이미 죽었거나, 태어나기도 전에 죽는 경우가 있다. 태아기에는 엄마나 아빠의 짧은 이야기가 들린다.</li>
+</ul>
+<h2>6. 몸</h2>
+<ul>
+<li><span class="tg k">핵심</span> 부위: 얼굴(양쪽 눈, 코, 입, 귀), 몸, 팔(양쪽, 손 / 팔), 다리(양쪽, 발 / 다리), 심장, 장기, 뼈. 변이 4종: 침식 · 감염 · 대체 · 창조. 뼈와 심장, 장기도 변이한다.</li>
+<li><span class="tg k">핵심</span> 성기 등 민감한 부위는 화면과 글 어디에도 나오지 않는다(숨김).</li>
+<li><span class="tg k">핵심</span> 단서는 처음에는 티가 안 나고 사소한 변화로 나타난다. 예: 손톱이 검은 변이 몬스터에게 긁히고 → 지혈이나 버티기만 하면 → 몇 달 뒤 손톱이 빨리 자라고 → 털이 나고 → 그 팔만 커지고 → 변이가 퍼진다. 팔을 자를 수는 있고 변이도만 낮아진다. 게임은 "변이됐다"고 직접 말하지 않는다.</li>
+<li><span class="tg k">핵심</span> 급소(게임 화면의 몸 상태 줄)는 머리 · 목 · 척추 · 심장 · 다리다.</li>
+</ul>
+<h2>7. 이야기 쓰는 법 (문장 규칙)</h2>
+<ul>
+<li><span class="tg s">제안</span> 시점과 시제: 장면은 "지금 일어나는 일"을 현재형 3인칭에 가까운 짧은 문장으로 쓴다. 예: "엄마가 마지막 통조림을 열며 아빠에게 낮게 속삭인다."</li>
+<li><span class="tg s">제안</span> 한 장면은 3~6문장. 마지막 문장은 선택을 부르는 상황으로 끝낸다.</li>
+<li><span class="tg s">제안</span> 설명하지 않고 보여 준다. 침식과 변이는 이름을 대지 말고 겉모습(검은 손톱, 말끝의 어색함)으로만 암시한다.</li>
+<li><span class="tg s">제안</span> 평민의 말투는 짧고 거칠지 않게. 격식은 제국마다 다르다(국가 문서의 "말투" 칸).</li>
+<li><span class="tg s">제안</span> 금지: 지구 지명 · 현대 물건(전기, 차, 총) · 영어와 일본어 단어 · 특정 종교 용어 · 실제 브랜드.</li>
+<li><span class="tg s">제안</span> 선택지는 2~4개. 몸 · 특성 · 물건 · 나이에 따라 잠기는 선택지는 잠긴 이유를 보여 준다("잠김 · 입 변이").</li>
+<li><span class="tg s">제안</span> 같은 장면에서 5개 중 3~4개만 보이게 설계한다. 다른 몸으로 다시 하면 다른 길이 보이게.</li>
+<li><span class="tg s">제안</span> 결과는 허기 · 돈 · 몸 · 관계 · 단서 중 어디에 영향을 주는지 적는다.</li>
+</ul>
+<h2>8. 표현 수위 (바꾸지 않는 선)</h2>
+<ul>
+<li><span class="tg k">핵심</span> 미성년과 관련된 성적 내용은 어떤 연령에도 쓰지 않는다. 성폭력 같은 사건은 "너무나 무섭고 끔찍한 일을 당했습니다"처럼 간접 표현으로만 알리고 넘어간다. 행위 장면과 가해자의 행동은 묘사하지 않고, 그 순간에 선택지를 두지 않는다.</li>
+<li><span class="tg k">핵심</span> 자살하는 경우와 "그럼에도 이어가는" 경우의 이벤트를 모두 만들 수 있게 한다. 방법과 유서는 쓰지 않고, 해결책이나 보상, 업적으로 묶지 않는다. 위기의 순간에는 말하기 · 도움 청하기 · 버티기가 열려 있다.</li>
+<li><span class="tg s">제안</span> "무거운 장면 줄이기" 설정, 내용 경고, 건너뛰기, 도움받을 곳 안내(실제 번호는 확인 후 기재), 이용 연령 기준.</li>
+<li><span class="tg s">제안</span> 이 폴더와 노트는 공개 저장소에 있으므로 민감한 사건은 줄거리 수준만 적는다.</li>
+<li><span class="tg k">핵심</span> 부란돔의 출산 · 가족 풍습은 제도 · 소문 · 결과로만 전하고 장면으로 쓰지 않는다.</li>
+<li><span class="tg s">제안</span> 가난, 굶주림, 죽음은 쓸 수 있되 잔혹함 자체를 보여 주는 묘사는 하지 않는다.</li>
+</ul>
+<h2>9. 이야기 한 편의 틀 (복사해서 쓴다) <span class="tg s">제안</span></h2>
+<pre><code>## 제목
+- 시기: (나이 범위 / 멸망 시작 시기 조건)
+- 장소: (국가 › 도시/마을) · 배경 그림 id: (game/scenes 의 id)
+- 조건: (집안 형편 · 몸 · 특성 · 물건 · 이전 사건)
+- 장면: (3~6문장)
+- 선택지:
+  1. (선택) → (결과 한 줄) · 영향: 허기/돈/몸/관계/단서
+  2. ...
+- 잠기는 선택지와 이유:
+- 이어지는 사건:
+- 난이도 보정 자리: (미니게임이나 선택지 중 보정이 들어갈 곳, 값은 비워 둠)
+- 민감 소재 여부: (없음 / 있음 → 8장 규칙 확인)
+</code></pre>
+<h2>10. 쓰고 난 뒤 확인표 <span class="tg s">제안</span></h2>
+<ul>
+<li>☐ 지구식 말이나 현대 물건이 없다.</li>
+<li>☐ 침식 · 변이 · 신성력은 설명 없이 겉모습으로만 나온다.</li>
+<li>☐ 선택지가 2~4개이고 서로 느낌이 다르다.</li>
+<li>☐ 영향(허기 · 돈 · 몸 · 관계 · 단서)이 적혀 있다.</li>
+<li>☐ 민감한 소재는 8장 규칙 안에 있다.</li>
+<li>☐ 국가 분위기와 맞는 말투다.</li>
+<li>☐ 배경 그림 id가 실제로 <code>game/scenes/</code>에 있다.</li>
+</ul>
+<h2>11. 아직 정해지지 않은 것</h2>
+<ul>
+<li><span class="tg u">미정</span> 태양 · 달 · 돈의 실제 이름, 계절 여부, 길이 단위.</li>
+<li><span class="tg u">미정</span> 신의 이름과 수, 신성력 규칙의 세부, 괴담 능력이 신성력과 같은 계통인지.</li>
+<li><span class="tg u">미정</span> 난이도별 보정 값.</li>
+<li><span class="tg u">미정</span> 이름을 직접 입력하는 곳이 있는지(지금 몸 상태 화면에는 "아직 없음").</li>
+<li><span class="tg u">미정</span> 평민 이야기를 몇 편, 어떤 시기부터 쓸지.</li>
+</ul></section><section class="doc" id="d-compare" hidden><h1 class="dt">태어날 수 있는 국가 (3제국)</h1>
+<p>처음에는 플레이어가 제국 이름을 모른다. 사전에서 이름이 열리는 것은 자신의 소속을 알게 된 뒤다. 그래서 이야기 안에서는 제국 이름 대신 <strong>"그 땅 사람들이 쓰는 말"</strong>(마을 이름, 신의 별칭, 습관)로 먼저 보여 주고, 제국 이름은 사전과 설정 화면에서만 쓴다. <span class="tg s">제안</span></p>
+<h2>한눈에 비교</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th></th>
+<th>소루안 (a)</th>
+<th>케르진 (b)</th>
+<th>부란돔 (c)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>한 줄</td>
+<td>싸우는 민족</td>
+<td>신을 믿는 나라</td>
+<td>사람과 땅의 나라</td>
+</tr>
+<tr>
+<td>힘의 바탕</td>
+<td>무력과 정복</td>
+<td>신앙과 신성력</td>
+<td>인구, 땅, 지식</td>
+</tr>
+<tr>
+<td>순위</td>
+<td>전투력 위주</td>
+<td>사실상 1위</td>
+<td>2위, 영향력은 1위</td>
+</tr>
+<tr>
+<td>침식을 대하는 법</td>
+<td>"새로운 상대다" 하며 날뛴다</td>
+<td>신성력을 뿌리며 "위험하다" 하고 지킨다</td>
+<td>일단 잡아서 연구한다</td>
+</tr>
+<tr>
+<td>평민의 길</td>
+<td>병사, 군량 농부, 광부</td>
+<td>순례자, 신전 일꾼, 장사꾼</td>
+<td>농부, 학생, 일꾼, 망명</td>
+</tr>
+<tr>
+<td>소리 결</td>
+<td>열린 모음, 부드럽게</td>
+<td>파열음, 딱딱하게</td>
+<td>받침을 무겁게</td>
+</tr>
+<tr>
+<td>도시</td>
+<td>하이모르 · 누와엔 · 마솔라</td>
+<td>젝슬로 · 즈크란 · 팔케트</td>
+<td>무르감 · 도벅 · 가르둔</td>
+</tr>
+<tr>
+<td>마을</td>
+<td>이루모 · 하나우 · 오루세</td>
+<td>키츠르 · 토크벨 · 제르푸</td>
+<td>부옹 · 돔나르 · 엠바르</td>
+</tr>
+</tbody>
+</table></div>
+<h2>제국 사이</h2>
+<ul>
+<li><span class="tg k">핵심</span> 소루안은 케르진이 소루안의 국교 신을 하위 신으로 묶어 버려서 케르진과 자주 전쟁한다.</li>
+<li><span class="tg k">핵심</span> 악신이 나타나면 소루안도 사리고, 지금은 악신 토벌이 우선이다. 그러나 나중에 소루안이 케르진을 크게 친다.</li>
+<li><span class="tg k">핵심</span> 부란돔 사람들은 다른 제국으로 망명해 영향력을 넓힌다. 어느 제국에나 부란돔 출신이 있다.</li>
+<li><span class="tg s">제안</span> 평민에게 이 갈등은 "징집 통지", "국경 검문이 막힘", "물가 급등", "난민 행렬" 같은 생활의 변화로 온다. 지도 위의 전쟁은 직접 보여 주지 않는다.</li>
+</ul>
+<h2>쓰는 법</h2>
+<ul>
+<li>한 국가 문서를 읽고 이야기를 쓸 때는 "평민의 하루", "소리·빛·냄새", "말투", "쓰지 말 것"을 먼저 본다.</li>
+<li>이야기 씨앗 표의 "배경" 칸은 <code>game/scenes/</code>의 그림 id다. 게임 화면에서 <code>CEG.scene('id')</code>로 바꾼다.</li>
+</ul></section><section class="doc" id="d-a" hidden><h1 class="dt">소루안 제국 (임시) · 싸우는 민족</h1>
+<h2>한눈에</h2>
+<ul>
+<li><span class="tg k">핵심</span> 공격적이고 정복적인 전투 민족이다. 각 도시와 마을도 생각보다 전투 민족이다.</li>
+<li><span class="tg k">핵심</span> 몇 도시는 전투 민족인 척하며 은근히 모략을 잘 써서 제국이 유지된다.</li>
+<li><span class="tg k">핵심</span> 침식에 대한 대처: "새로운 상대다" 하며 그냥 날뛴다.</li>
+<li><span class="tg k">핵심</span> 케르진과 자주 전쟁한다 (소루안의 국교 신을 케르진이 하위 신으로 묶어서). 악신 앞에서는 사리지만, 나중에 케르진을 크게 친다.</li>
+<li><span class="tg s">제안</span> 이름 뜻: 소루(울림) + 안(품는다) = "울림이 품은 땅". 사람들은 북소리와 종소리를 시간의 단위처럼 쓴다.</li>
+</ul>
+<h2>소리 · 빛 · 냄새 <span class="tg s">제안</span></h2>
+<ul>
+<li>소리: 아침을 여는 북, 훈련장의 목검 소리, 출정식의 함성, 대장간의 쇠 두드리는 소리. 조용한 때는 이웃의 칼 가는 소리.</li>
+<li>빛: 횃불과 붉은 노을. 큰 깃발이 바람에 펄럭이는 그림자. 낮은 돌담 위로 길게 눕는 햇빛.</li>
+<li>냄새: 가죽, 기름, 쇳가루, 말린 고기, 땀. 전투가 끝난 날에는 연기.</li>
+<li>색 느낌: 검정에 가까운 짙은 천과 흰 줄무늬 장식(흑백 도트 그림에서는 굵은 줄무늬 깃발).</li>
+</ul>
+<h2>평민의 하루 <span class="tg s">제안</span></h2>
+<ul>
+<li>일: 농부는 군량을 대고, 광부는 무기용 광석을 캔다. 아이는 일찍부터 훈련과 심부름을 한다. 한가한 사람은 드물다.</li>
+<li>먹고 입기: 말린 고기와 거친 곡물 죽. 옷은 질기고 어둡다. 잔치는 출정과 귀환 때뿐이다.</li>
+<li>믿음: 국교 신은 전쟁과 승리 계열이다. 평민은 그 신에게 "무사히 돌아오게 해 달라"고 빌고, 돌아오지 못한 이를 위한 의식이 일상에 있다.</li>
+<li>금기: 도망친 이를 입에 올리지 않는다. 겁쟁이라는 말은 가장 큰 모욕이다.</li>
+<li>돈: 전리품이 곧 돈이다. 평민은 동화(하무) 위주로 살고, 은화(므나)는 군 가문의 몫이다.</li>
+<li>신분: 무훈이 곧 신분이다. 공을 세우면 평민도 올라갈 수 있어서 모두가 싸움을 꿈꾼다.</li>
+</ul>
+<h2>침식을 대하는 방식 <span class="tg s">제안</span></h2>
+<ul>
+<li>용맹한 일로 칭송한다. 침식 지대로 원정대를 보내고, 부상과 변이를 영광처럼 말한다.</li>
+<li>그래서 단서를 놓치고, 변이를 숨기며, 몸이 망가져도 싸우다 죽는 풍토가 있다.</li>
+<li>평민 시선: "그 애는 팔이 커졌는데 자랑스러워했다." 같은 식으로, 사람들의 반응으로 간접 표현한다. 게임은 변이라고 말하지 않는다.</li>
+<li>변이를 입은 이를 어떻게 대하는지는 <span class="tg u">미정</span>.</li>
+</ul>
+<h2>도시와 마을 (임시 이름) <span class="tg s">제안</span></h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>이름</th>
+<th>뜻</th>
+<th>뼈대 역할</th>
+<th>소루안식 색</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>하이모르</td>
+<td>높은 제단</td>
+<td>수도</td>
+<td>무훈이 신분이고 징집과 출정식이 도시의 리듬. 전사 제단이 중심</td>
+</tr>
+<tr>
+<td>누와엔</td>
+<td>길이 머무는 곳</td>
+<td>교역 도시</td>
+<td>전투 민족인 척하는 모략 도시 후보. 겉은 강한 척, 뒤로는 첩자 · 혼인 · 소문 <span class="tg u">미정</span></td>
+</tr>
+<tr>
+<td>마솔라</td>
+<td>경계의 벽</td>
+<td>변경 · 최전선</td>
+<td>케르진과 맞닿은 성벽 도시. 공성 진영과 검문</td>
+</tr>
+<tr>
+<td>이루모</td>
+<td>씨앗의 땅</td>
+<td>식량 마을</td>
+<td>군량을 대는 농가. 수확의 절반이 군으로 간다</td>
+</tr>
+<tr>
+<td>하나우</td>
+<td>돌샘</td>
+<td>자원 마을</td>
+<td>광산과 샘. 광부 가족</td>
+</tr>
+<tr>
+<td>오루세</td>
+<td>숨는 숲</td>
+<td>피난 · 변경 마을</td>
+<td>전쟁이 나면 사람들이 숨는 곳. 소문이 가장 먼저 닿는다</td>
+</tr>
+</tbody>
+</table></div>
+<h2>태어날 집안 <span class="tg s">제안</span></h2>
+<ul>
+<li>가난 40% · 보통 40% · 부유 20% (군 가문). 평민은 가난과 보통이 대부분이고, 부유는 군 가문이다.</li>
+<li>가족 구성의 특징: 부모 중 한 분이 군에 나가 있는 집이 흔하다. 형제가 많고 서열이 분명하다.</li>
+</ul>
+<h2>평민 이야기 씨앗 <span class="tg s">제안</span></h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>시기</th>
+<th>씨앗</th>
+<th>장면 감각</th>
+<th>배경</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>영아~유아</td>
+<td>부모가 출정 나간 달의 빈집. 이웃 아주머니가 밥을 가져온다</td>
+<td>북소리가 멀리서 들린다</td>
+<td><code>house_farmyard</code>, <code>house_hearth</code></td>
+</tr>
+<tr>
+<td>아동</td>
+<td>전사 놀이에서 다친 친구. 울면 놀림받는다</td>
+<td>겁쟁이라는 말의 무게</td>
+<td><code>town_playground</code>, <code>town_training</code></td>
+</tr>
+<tr>
+<td>아동</td>
+<td>훈련장 구경. 형들의 서열 싸움</td>
+<td>나도 저 줄에 서고 싶은가</td>
+<td><code>town_training</code></td>
+</tr>
+<tr>
+<td>청소년</td>
+<td>징집 통지가 문에 붙는다</td>
+<td>가족이 모이는 저녁</td>
+<td><code>house_hearth</code>, <code>town_square</code></td>
+</tr>
+<tr>
+<td>청소년</td>
+<td>무훈 시험. 이기면 신분이 오른다</td>
+<td>투기장의 함성</td>
+<td><code>town_arena</code></td>
+</tr>
+<tr>
+<td>청소년</td>
+<td>광산 일자리. 위험하지만 돈이 된다</td>
+<td>갱도의 어둠과 단서</td>
+<td><code>cave_mine</code></td>
+</tr>
+<tr>
+<td>성인</td>
+<td>출정에서 돌아오지 않은 사람. 마을의 의식</td>
+<td>조용한 마을</td>
+<td><code>town_dusk_village</code>, <code>town_graveyard</code></td>
+</tr>
+<tr>
+<td>성인</td>
+<td>침식 지대 원정에 뽑힌다. 영광인가, 싫은가</td>
+<td>안개 속으로 가는 행렬</td>
+<td><code>x_erosion_zone</code>, <code>town_camp</code></td>
+</tr>
+<tr>
+<td>성인</td>
+<td>첩자로 의심받는 이웃. 신고할 것인가</td>
+<td>모략 도시의 눈치</td>
+<td><code>house_alley</code>, <code>black_alley</code></td>
+</tr>
+</tbody>
+</table></div>
+<h2>말투 <span class="tg s">제안</span></h2>
+<ul>
+<li>짧고 단호하다. 존댓말은 윗사람에게만, 같은 또래는 반말이 기본이다.</li>
+<li>칭찬은 "잘 싸웠다", "서 있었다"처럼 몸 이야기로 한다. 감정 표현은 아끼는 편이다.</li>
+<li>침식은 "새 놈", "새로운 상대"로 부른다.</li>
+</ul>
+<h2>쓰지 말 것 <span class="tg s">제안</span></h2>
+<ul>
+<li>소루안 사람을 단순한 악당으로 쓰지 않는다. 평민은 싸움을 두려워하지만 입 밖에 못 낸다.</li>
+<li>전투의 잔혹한 장면을 묘사하지 않는다. 결과와 남은 사람의 모습으로 전한다.</li>
+<li>아이가 전투에 나가는 장면은 직접 쓰지 않는다. 훈련과 소문까지만.</li>
+</ul>
+<h2><span class="tg u">미정</span></h2>
+<ul>
+<li>국교 신의 이름과 얼굴(후보: 우루마).</li>
+<li>모략을 쓰는 도시가 어디인지.</li>
+<li>변이를 입은 사람을 어떻게 대하는지.</li>
+<li>이름을 확정할지.</li>
+</ul></section><section class="doc" id="d-b" hidden><h1 class="dt">케르진 제국 (임시) · 신을 믿는 나라</h1>
+<h2>한눈에</h2>
+<ul>
+<li><span class="tg k">핵심</span> 신을 믿는 국가다. 주신을 중심으로 그 밑에 신들이 따른다고 생각한다.</li>
+<li><span class="tg k">핵심</span> 소루안과 자주 전쟁한다. 소루안의 국교 신도 하위 신으로 묶어 버려서다.</li>
+<li><span class="tg k">핵심</span> 광신도도 은근 많고, 괴담 같은 능력을 주로 쓰는 이들도 있고, 외신을 모시기도 하며 별의별 신이 다 몰린다.</li>
+<li><span class="tg k">핵심</span> 인신공양을 요구하는 순간 악신으로 판정되고, 그 신의 존재를 말살하려 한다.</li>
+<li><span class="tg k">핵심</span> 실질적으로 1위 제국이다.</li>
+<li><span class="tg k">핵심</span> 침식에 대한 대처: 신성력을 뿌려대며 "위험하다" 하면서 열심히 지킨다. 신성력은 신을 믿는 이들이 쓰고, 신마다 맡는 파트가 다르며, 신과 적성이 안 맞으면 효율이 나쁘다.</li>
+<li><span class="tg s">제안</span> 이름 뜻: 케르(틀) + 진(깨뜨린다) = "틀을 깨는 곳". 서열과 규칙으로 가득한 나라이면서 이름은 반대인 점이 이야기가 된다.</li>
+</ul>
+<h2>소리 · 빛 · 냄새 <span class="tg s">제안</span></h2>
+<ul>
+<li>소리: 종소리와 낮게 외는 기도, 순례자의 발소리, 심판소 앞의 낭독. 밤에는 금기를 속삭이는 소리(괴담).</li>
+<li>빛: 높은 기둥 사이로 들어오는 빛줄기, 촛불과 부적에 붙은 불빛. 낮에도 그림자가 깊은 신전.</li>
+<li>냄새: 향, 밀랍, 젖은 돌, 정화액 냄새(침식을 쫓는다는 약 냄새).</li>
+<li>모양: 위로 곧게 솟은 것(기둥, 탑)과 줄(행렬, 서열표). 곳곳에 신의 표식이 붙어 있다.</li>
+</ul>
+<h2>평민의 하루 <span class="tg s">제안</span></h2>
+<ul>
+<li>일: 순례자를 상대로 장사하는 사람, 신전의 청소 · 짐 · 밭을 맡는 일꾼, 마을의 작은 사당지기. 신관이 되는 길은 적성 시험으로 열린다.</li>
+<li>먹고 입기: 신전 앞에서 나눠 주는 곡물 죽과 빵, 축일마다 다른 음식. 옷에는 신의 표식을 단다.</li>
+<li>믿음: 주신을 중심으로 하위 신이 서열로 묶여 있다. 평민은 자기 일에 맞는 신(치료, 길, 농사, 기억, 불)에게 비는 편이다.</li>
+<li>금기: 신의 이름을 함부로 부르지 않는다. 이웃을 악신 신도라고 부르는 것은 가장 무서운 말이다.</li>
+<li>돈: 헌금과 순례 장터가 돈이 되는 길이다. 은화(므나)가 신전과 평민 사이를 오간다.</li>
+<li>신분: 신관이 사실상의 상층이다. 신성력 적성이 곧 출세의 첫 문이다.</li>
+</ul>
+<h2>침식을 대하는 방식 <span class="tg s">제안</span></h2>
+<ul>
+<li>신성력을 뿌리고 부적을 달아 "위험하다"고 외친다. 일상에서는 정화 의식과 금지 구역 표지로 보인다.</li>
+<li>평민 시선: 마을마다 "오염 표시"가 붙은 우물, 신관이 정화해 주는 날의 줄, 약값 대신 헌금.</li>
+<li>신성력과 약품이 있으면 단서 사슬을 일찍 끊을 수 있다. 신성력이 안 닿는 가난한 마을이 먼저 무너진다.</li>
+<li>신성력이 침식을 어디까지 막는지는 <span class="tg u">미정</span>.</li>
+</ul>
+<h2>도시와 마을 (임시 이름) <span class="tg s">제안</span></h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>이름</th>
+<th>뜻</th>
+<th>뼈대 역할</th>
+<th>케르진식 색</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>젝슬로</td>
+<td>측정의 중심</td>
+<td>수도</td>
+<td>주신의 신전과 심판소. 서열표와 판정의 도시</td>
+</tr>
+<tr>
+<td>즈크란</td>
+<td>흐름의 이음매</td>
+<td>교역 도시</td>
+<td>순례 장터. 길이 모이고 소문이 오간다</td>
+</tr>
+<tr>
+<td>팔케트</td>
+<td>감시탑</td>
+<td>변경 · 최전선</td>
+<td>소루안과 맞닿은 감시탑 도시. 악신 경보가 가장 먼저 닿는다</td>
+</tr>
+<tr>
+<td>키츠르</td>
+<td>낟알 밭</td>
+<td>식량 마을</td>
+<td>신전에 곡식을 바치는 농가. 축일의 풍요</td>
+</tr>
+<tr>
+<td>토크벨</td>
+<td>광석 구덩이</td>
+<td>자원 마을</td>
+<td>신전 장식과 도구를 캐는 광부 마을</td>
+</tr>
+<tr>
+<td>제르푸</td>
+<td>그늘 둥지</td>
+<td>피난 · 변경 마을</td>
+<td>외신을 모시는 마을 후보. 악신 의혹이 가장 쉽게 붙는다</td>
+</tr>
+</tbody>
+</table></div>
+<h2>태어날 집안 <span class="tg s">제안</span></h2>
+<ul>
+<li>가난 35% · 보통 45% · 부유 20% (신관 가문과 큰 상인). 평민은 가난과 보통이다.</li>
+<li>가족의 특징: 부모의 믿는 신이 아이의 이름과 적성에 영향을 준다. 이웃 사이의 신앙 눈치가 있다.</li>
+</ul>
+<h2>평민 이야기 씨앗 <span class="tg s">제안</span></h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>시기</th>
+<th>씨앗</th>
+<th>장면 감각</th>
+<th>배경</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>영아~유아</td>
+<td>첫 축일에 신전에서 이름을 받는 날</td>
+<td>향과 종소리</td>
+<td><code>church_nave</code>, <code>holy_pillars</code></td>
+</tr>
+<tr>
+<td>아동</td>
+<td>마을 사당 청소를 맡는다. 오래된 표식이 이상하다</td>
+<td>그림자 깊은 사당</td>
+<td><code>church_ruin</code>, <code>holy_spring</code></td>
+</tr>
+<tr>
+<td>아동</td>
+<td>우물에 "오염 표시"가 붙은 날. 어른들이 수군거린다</td>
+<td>금기의 속삭임</td>
+<td><code>town_wellside</code>, <code>house_alley</code></td>
+</tr>
+<tr>
+<td>청소년</td>
+<td>신성력 적성 시험. 맞는 신을 찾는다</td>
+<td>기둥 홀의 줄</td>
+<td><code>holy_pillars</code>, <code>church_exterior</code></td>
+</tr>
+<tr>
+<td>청소년</td>
+<td>순례자를 상대로 첫 장사</td>
+<td>장터의 소음</td>
+<td><code>market_morning</code>, <code>town_signpost</code></td>
+</tr>
+<tr>
+<td>청소년</td>
+<td>이웃이 외신을 모신다는 소문. 말할까 말까</td>
+<td>낮은 목소리</td>
+<td><code>house_alley</code>, <code>town_cloister</code></td>
+</tr>
+<tr>
+<td>성인</td>
+<td>마을이 악신 의혹으로 심판을 받는다. 증언해야 한다</td>
+<td>심판소의 낭독</td>
+<td><code>church_nave</code>, <code>palace_hall</code></td>
+</tr>
+<tr>
+<td>성인</td>
+<td>신성력이 안 닿는 마을에서 약을 구하러 간다</td>
+<td>정화액과 헌금</td>
+<td><code>town_apothecary</code>, <code>town_healtent</code></td>
+</tr>
+<tr>
+<td>성인</td>
+<td>괴담을 아는 노인에게 이야기를 듣는다. 지키면 쓸 수 있는 힘</td>
+<td>금기를 어기지 않는 밤</td>
+<td><code>forest_fog</code>, <code>house_hearth</code></td>
+</tr>
+</tbody>
+</table></div>
+<h2>말투 <span class="tg s">제안</span></h2>
+<ul>
+<li>정중하고 돌려 말한다. 신의 이름은 별칭이나 높임으로 부른다("위에 계신 분", "그분").</li>
+<li>문장 끝에 기원을 붙이는 버릇이 있다. 예: "별일 없기를."</li>
+<li>금기는 "말하지 않는다"로 처리한다. 이름을 피하는 것이 분위기다.</li>
+</ul>
+<h2>쓰지 말 것 <span class="tg s">제안</span></h2>
+<ul>
+<li>케르진 사람을 단순한 광신도로 쓰지 않는다. 평민 대부분은 믿음과 두려움 사이에서 산다.</li>
+<li>악신 판정의 처벌을 직접 묘사하지 않는다. 판정 전후의 마을 분위기와 남은 사람의 이야기로 전한다.</li>
+<li>실제 종교의 용어(예: 특정 교의, 기도문, 성직 명칭)를 쓰지 않는다.</li>
+</ul>
+<h2><span class="tg u">미정</span></h2>
+<ul>
+<li>주신과 하위 신의 이름과 얼굴(후보: 아우렌).</li>
+<li>악신 판정과 토벌은 누가 맡는지, 판정된 신의 신도는 어떻게 되는지.</li>
+<li>괴담 같은 능력의 정체와 규칙.</li>
+<li>이름을 확정할지.</li>
+</ul></section><section class="doc" id="d-c" hidden><h1 class="dt">부란돔 제국 (임시) · 사람과 땅의 나라</h1>
+<h2>한눈에</h2>
+<ul>
+<li><span class="tg k">핵심</span> 인구와 땅이 힘이다. 일단 낳는다. 낙태는 금지이고 다태아면 지원금을 많이 준다.</li>
+<li><span class="tg k">핵심</span> 풍토는 크게 두 파다: "최소한 근친은 하지 말자" / "일단 낳을 수 있으면 낳아야지".</li>
+<li><span class="tg k">핵심</span> 2위로 강하지만 실질적인 영향력은 1위다. 이 제국에만 엮이지 않기 때문이다.</li>
+<li><span class="tg k">핵심</span> 위로 가려면 다른 제국으로 망명하거나, 아기 공장(농사를 병행하는 곳)이 되거나, 열심히 일해 남의 자리를 뺏어 차지하는 수밖에 없다.</li>
+<li><span class="tg k">핵심</span> 그래서 아카데미와 전체 지식 수준이 높다. 농사도 하기 좋은 땅이다.</li>
+<li><span class="tg k">핵심</span> 침식에 대한 대처: 일단 잡아서 연구하자는 마인드다.</li>
+<li><span class="tg s">제안</span> 이름 뜻: 부란(기둥 · 버팀) + 돔(땅덩이) = "버티는 땅덩이". 많은 사람이 땅을 받쳐 서 있는 모습.</li>
+</ul>
+<h2>이 문서의 표현 원칙 (중요)</h2>
+<ul>
+<li><span class="tg k">핵심</span> 출산 · 가족 풍습은 직접 묘사하지 않는다. 제도(지원금, 인구 조사, 학교, 시험), 소문, 결과(식구 많은 집, 좁은 집, 가난)로만 전한다.</li>
+<li><span class="tg k">핵심</span> 미성년이 얽힌 내용은 표현 수위 원칙을 따르고, 이 폴더에는 줄거리 수준만 적는다. 어떤 연령의 아이에게도 성적인 요소를 붙이지 않는다.</li>
+<li><span class="tg s">제안</span> 부란돔의 이야기는 "인구 정책이 평범한 가족에게 만드는 압박"(집, 일, 시험, 서류)을 중심으로 쓴다. 풍습의 세부는 쓰지 않는다.</li>
+</ul>
+<h2>소리 · 빛 · 냄새 <span class="tg s">제안</span></h2>
+<ul>
+<li>소리: 아이들 소리가 많은 골목, 장부를 넘기는 소리, 낫과 호미, 학교 종. 밤에도 방마다 불이 켜져 있다.</li>
+<li>빛: 넓은 밭에 낮게 깔린 햇빛, 계단식 지붕이 만드는 그림자, 아카데미 창의 일정한 불빛.</li>
+<li>냄새: 흙, 거름, 삶은 곡물, 종이와 잉크, 약초.</li>
+<li>모양: 반복되는 것(밭두렁, 줄 선 집, 같은 모양의 숙소)과 서류. 번호가 붙은 문패.</li>
+</ul>
+<h2>평민의 하루 <span class="tg s">제안</span></h2>
+<ul>
+<li>일: 농부(땅이 넉넉해 일손이 늘 필요하다), 광부, 학생, 아카데미 잡일꾼, 조수. 열심히 하면 자리를 얻지만, 자리가 적어서 서로 경쟁한다.</li>
+<li>먹고 입기: 곡물과 채소 위주로 풍족한 편이다. 옷은 단정하고 번호나 소속 표식이 붙는다.</li>
+<li>믿음: 특정한 신이 눈에 띄지 않는다. 신보다 제도와 학문을 믿는 사람이 많다. <span class="tg u">미정</span></li>
+<li>금기: 서류에 이름이 없는 사람이 되는 것. 자리를 잃는 것. 정책을 비웃는 것.</li>
+<li>돈: 지원금과 일당이 동화(하무)로 오가고, 아카데미 장학금이 은화(므나)다.</li>
+<li>신분: 자리가 신분이다. 시험과 추천으로 오르고, 못 오르면 망명을 생각한다.</li>
+</ul>
+<h2>두 파 <span class="tg s">제안</span></h2>
+<ul>
+<li>"다르벤파"(선을 긋는 이들): 최소한의 선을 지키자는 쪽. 비교적 보수적이고 문서를 중시한다.</li>
+<li>"하마울파"(이어 가는 이들): 낳을 수 있으면 낳자는 쪽. 인구를 앞세우고 정책에 열성이다.</li>
+<li>이야기에서는 정치 싸움이 아니라 <strong>집안 · 마을 단위의 갈등</strong>으로 쓴다(이웃이 다른 파라서 이사나 혼사에서 부딪힘). 세부 풍습은 쓰지 않는다.</li>
+<li>파 이름은 <span class="tg u">미정</span>.</li>
+</ul>
+<h2>침식을 대하는 방식 <span class="tg s">제안</span></h2>
+<ul>
+<li>침식을 입은 몬스터나 사람을 산 채로 잡아 연구 시설로 보낸다. 연구자는 "도움 되겠지"라고 말한다.</li>
+<li>평민 시선: 변이를 입으면 숨기려 한다. 이웃이 신고하면 보상금이 나온다. 신고하지 않으면 자리를 잃는다.</li>
+<li>그래서 변이를 숨겨야 하는 이유가 생긴다. 아카데미 지원자는 일찍 단서를 접하지만 노출되어 망가진다.</li>
+<li>연구 시설의 위치는 <span class="tg u">미정</span>.</li>
+</ul>
+<h2>도시와 마을 (임시 이름) <span class="tg s">제안</span></h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>이름</th>
+<th>뜻</th>
+<th>뼈대 역할</th>
+<th>부란돔식 색</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>무르감</td>
+<td>방벽이 품은 곳</td>
+<td>수도</td>
+<td>아카데미 본원. 시험과 추천의 도시</td>
+</tr>
+<tr>
+<td>도벅</td>
+<td>짐길</td>
+<td>교역 도시</td>
+<td>곡물과 사람이 오가는 집결지. 망명자가 지나간다</td>
+</tr>
+<tr>
+<td>가르둔</td>
+<td>끝의 문</td>
+<td>변경 · 최전선</td>
+<td>국경 검문소. 망명 시도와 단속</td>
+</tr>
+<tr>
+<td>부옹</td>
+<td>싹밭</td>
+<td>식량 마을</td>
+<td>넓은 밭의 농가. 늘 일손이 모자란다</td>
+</tr>
+<tr>
+<td>돔나르</td>
+<td>바위 캐는 곳</td>
+<td>자원 마을</td>
+<td>석재와 광석. 광부 가족과 큰 숙소</td>
+</tr>
+<tr>
+<td>엠바르</td>
+<td>숨는 굴</td>
+<td>피난 · 변경 마을</td>
+<td>서류에 이름이 없는 사람들이 숨는 곳. 연구 시설에서 먼 외곽</td>
+</tr>
+</tbody>
+</table></div>
+<h2>태어날 집안 <span class="tg s">제안</span></h2>
+<ul>
+<li>가난 35% · 보통 50% · 부유 15% (아카데미 가문). 식구가 많은 집이 흔하고 집이 좁다.</li>
+<li>가족의 특징: 형제가 많고 순서가 분명하지 않다. 부모의 일(농사, 광산, 학교 잡일)이 아이의 길을 정한다.</li>
+</ul>
+<h2>평민 이야기 씨앗 <span class="tg s">제안</span></h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>시기</th>
+<th>씨앗</th>
+<th>장면 감각</th>
+<th>배경</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>영아~유아</td>
+<td>식구가 많은 집의 아침. 밥상 앞의 줄</td>
+<td>복작거리는 소리</td>
+<td><code>house_hearth</code>, <code>house_farmyard</code></td>
+</tr>
+<tr>
+<td>아동</td>
+<td>마을 학교의 첫 시험. 번호가 붙은 책상</td>
+<td>종소리와 침묵</td>
+<td><code>town_playroom</code>, <code>academy_lecture</code></td>
+</tr>
+<tr>
+<td>아동</td>
+<td>밭일을 돕다 본 이상한 이삭(색이 변함)</td>
+<td>흙 속 단서</td>
+<td><code>nat_paddy</code>, <code>nat_terraces</code></td>
+</tr>
+<tr>
+<td>청소년</td>
+<td>아카데미 추천을 받을 기회. 한 자리를 두고 친구와 경쟁</td>
+<td>도서관의 불빛</td>
+<td><code>academy_gate</code>, <code>academy_library</code></td>
+</tr>
+<tr>
+<td>청소년</td>
+<td>이웃이 변이를 숨긴다. 신고하면 보상금</td>
+<td>침묵 속 저녁</td>
+<td><code>house_alley</code>, <code>town_apothecary</code></td>
+</tr>
+<tr>
+<td>청소년</td>
+<td>망명하려는 아카데미 학생을 돕는 사건</td>
+<td>국경 근처의 밤</td>
+<td><code>town_checkpoint</code>, <code>x_dock_warehouse</code></td>
+</tr>
+<tr>
+<td>성인</td>
+<td>자리를 잃고 망명할지 고민한다</td>
+<td>짐을 싸는 밤</td>
+<td><code>town_signpost</code>, <code>nat_pass</code></td>
+</tr>
+<tr>
+<td>성인</td>
+<td>연구 시설로 가는 마차를 목격한다</td>
+<td>불 꺼진 길</td>
+<td><code>x_ruined_city_street</code>, <code>academy_lab</code></td>
+</tr>
+<tr>
+<td>성인</td>
+<td>광산 숙소의 연말. 번호 없는 사람이 숨어든다</td>
+<td>좁은 방의 온기</td>
+<td><code>cave_mine</code>, <code>town_refectory</code></td>
+</tr>
+</tbody>
+</table></div>
+<h2>말투 <span class="tg s">제안</span></h2>
+<ul>
+<li>차분하고 정확하다. 숫자와 순서로 말한다("세 번째 줄", "다음 주기 첫째 번호"). 일 단위 말(날, 요일)은 쓰지 않는다.</li>
+<li>경쟁이 심해 서로를 "자네", "당신"으로 거리를 둔다. 감정은 단어를 골라 말한다.</li>
+<li>침식은 "시료", "대상"처럼 연구 말투로 부른다.</li>
+</ul>
+<h2>쓰지 말 것 <span class="tg s">제안</span></h2>
+<ul>
+<li>출산 · 성 · 가족 형성의 방식을 장면으로 쓰지 않는다. 제도와 결과만.</li>
+<li>부란돔 사람을 비정한 사람으로 단순화하지 않는다. 평민은 정책 안에서 버티는 사람이다.</li>
+<li>아기 공장의 안쪽을 쓰지 않는다. 겉으로는 평범한 농장으로 보인다는 점과 소문까지만.</li>
+<li>연구 시설의 고통을 묘사하지 않는다. 마차와 이름 없는 문, 돌아오지 않은 소식으로 전한다.</li>
+</ul>
+<h2><span class="tg u">미정</span></h2>
+<ul>
+<li>믿는 신(또는 믿지 않는 풍토).</li>
+<li>아기 공장의 겉 분위기(평범한 농장인지, 나라가 관리하는 시설인지).</li>
+<li>두 파의 이름과 대표 마을, 연구 시설의 위치.</li>
+<li>이름을 확정할지.</li>
+</ul></section>
+</div>
+<script>
+const tabs=[...document.querySelectorAll('.tab')],docs=[...document.querySelectorAll('.doc')];
+function show(id){tabs.forEach(t=>t.setAttribute('aria-selected',t.dataset.d===id));docs.forEach(d=>d.hidden=d.id!=='d-'+id);try{history.replaceState(null,'','#'+id)}catch(e){}window.scrollTo(0,0)}
+tabs.forEach(t=>t.onclick=()=>show(t.dataset.d));
+docs.forEach(d=>{const hs=[...d.querySelectorAll('h2')];if(hs.length<3)return;hs.forEach((h,k)=>h.id=d.id+'-s'+k);const t=document.createElement('nav');t.className='toc';t.setAttribute('aria-label','목차');t.innerHTML='<b>목차</b><ol>'+hs.map(h=>'<li><a href="#'+h.id+'" data-s="'+h.id+'">'+h.textContent+'</a></li>').join('')+'</ol>';const h1=d.querySelector('h1');(h1?h1.after(t):d.prepend(t));});
+document.addEventListener('click',e=>{const a=e.target.closest('a[data-s]');if(a){e.preventDefault();const el=document.getElementById(a.dataset.s);if(el)el.scrollIntoView({block:'start'})}});
+const h=location.hash.slice(1);show(tabs.some(t=>t.dataset.d===h)?h:'rules');
+</script>
+
+</body>
+</html>
