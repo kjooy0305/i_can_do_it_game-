@@ -14,7 +14,7 @@
     { id: 'ach', title: '업적', sub: () => '달성 0 / 48' },
     { id: 'set', title: '설정', sub: () => '저장 · 전투 · 화면 · 소리' }
   ];
-  const NAMES = { start: '게임 시작', load: '이어서 하기', dict: '사전', ach: '업적', set: '설정', play: '게임 플레이', body: '전체 몸 상태', stats: '스텟과 돈' };
+  const NAMES = { start: '게임 시작', load: '이어서 하기', dict: '사전', ach: '업적', set: '설정', play: '게임 플레이', body: '전체 몸 상태', stats: '스텟 · 돈 · 아이템' };
   const INGAME = { play: 1, body: 1, stats: 1 }; // 진행 중인 게임이 있어야 열리는 화면
   const LEVELS = [ // 난이도는 미니게임과 일부 선택지의 보정에 쓸 예정 (아직 효과 없음)
     { id: 'hero', name: '영웅', sub: '어려움', desc: '당신은 영웅의 싹입니다. 그런 당신에게 가호가 깃들기를.' },
@@ -119,34 +119,45 @@
           <section class="gstage" aria-label="이야기">
             <div class="head2"><span>이번 달</span><span class="mono">#000</span></div>
             <div class="art"><span>장면</span></div>
-            <div class="log"><p class="sys">▸ 시작 · 시드 ${run.seed}${run.auto ? ' (자동)' : ''} · ${lv.name}</p><p>이야기가 여기에 나옵니다.</p></div>
+            <div class="log"><p class="sys">▸ 시작 · 시드 ${run.seed}${run.auto ? ' (자동)' : ''} · ${lv.name}</p><p>이야기가 여기에 나옵니다.</p><p><button class="back" id="sample">임시 · 선택지 창 보기</button></p></div>
           </section>
           <aside class="rail r" aria-label="스텟 · 돈 · 아이템">
             <button class="rowbtn" id="statBtn" aria-label="스텟과 돈 화면 열기"><span class="rh">스텟</span>${STATS.map(k => `<span class="sl"><span>${k}</span><b>${STAT_VAL[k]}</b></span>`).join('')}</button>
             <button class="rowbtn" id="moneyBtn" aria-label="스텟과 돈 화면 열기"><span class="sl"><span>돈</span><b>0</b></span><small>하무</small></button>
-            <button class="rowbtn" id="itemBtn" aria-label="아이템 목록 열기"><span class="sl"><span>아이템</span><b>0/12</b></span></button>
+            <button class="rowbtn" id="itemBtn" aria-label="스텟 · 돈 · 아이템 화면 열기"><span class="sl"><span>아이템</span><b>0/12</b></span></button>
           </aside>
         </div>
-        <footer class="gbot"><div class="q"><span>이번 달 어떻게 할까?</span><span class="mono">- / -</span></div><div class="box">선택지가 여기에 나옵니다.</div></footer>
       </div>
       <div class="pop" id="pop" hidden></div>`;
       const pop = document.getElementById('pop'), menuBtn = document.getElementById('menuBtn');
       let opener = null;
       const close = () => { pop.hidden = true; pop.innerHTML = ''; menuBtn.setAttribute('aria-expanded', 'false'); if (opener) { opener.focus(); opener = null; } };
       const show = (title, body, from) => { opener = from; pop.innerHTML = `<div class="sheet" role="dialog" aria-modal="true" aria-label="${title}"><div class="shead"><h3>${title}</h3><button class="back" data-close data-first>닫기</button></div>${body}</div>`; pop.hidden = false; pop.querySelector('[data-first]').focus(); pop.querySelectorAll('[data-close]').forEach(x => x.onclick = close); };
-      pop.onclick = e => { if (e.target === pop) close(); };
+      pop.onclick = e => { if (e.target === pop && !pop.dataset.choice) close(); };
       const $ = id => document.getElementById(id);
       $('bodyBtn').onclick = e => { e.stopPropagation(); go('body'); };
       document.querySelector('.rail.l').onclick = () => go('body');   // 막대 어디를 눌러도 몸 상태 화면으로
       $('statBtn').onclick = () => go('stats');
       $('moneyBtn').onclick = () => go('stats');
-      $('itemBtn').onclick = e => show('아이템 목록', `<div class="box">가진 물건이 없어요.</div><small class="foot">가방 0 / 12</small>`, e.currentTarget);
+      $('itemBtn').onclick = () => go('stats');
+      // 선택지가 필요한 장면은 이 창으로 띄운다. 뒤는 흐리게 가리고, 고르기 전에는 닫히지 않는다 (숫자 키로도 고른다).
+      const ask = (question, choices) => new Promise(res => {
+        opener = document.activeElement;
+        pop.innerHTML = `<div class="sheet" role="dialog" aria-modal="true" aria-label="선택"><div class="q"><span>${question}</span></div><div class="mlist">${choices.map((c, i) => `<button class="menu-btn" data-c="${i}"><span><b>${c}</b></span><span class="key" aria-hidden="true">${i + 1}</span></button>`).join('')}</div></div>`;
+        pop.hidden = false; pop.dataset.choice = '1';
+        const pick = i => { delete pop.dataset.choice; close(); const lg = document.querySelector('.log'); if (lg) { const p = document.createElement('p'); p.className = 'me'; p.textContent = '▸ 선택: ' + choices[i]; lg.append(p); } res(i); };
+        pop.querySelectorAll('[data-c]').forEach(b => b.onclick = () => pick(+b.dataset.c));
+        pop.__pick = pick; pop.__n = choices.length; pop.querySelector('[data-c]').focus();
+      });
+      CEG.ask = ask;
+      $('sample').onclick = () => ask('지하 대피소의 불이 깜박인다. 이번 달 어떻게 할까?', ['엄마 품에서 울음을 터뜨린다', '아빠 손을 잡고 첫걸음을 떼 본다', '가만히 위의 소리를 듣는다']);
       menuBtn.onclick = () => {
         menuBtn.setAttribute('aria-expanded', 'true');
         show('메뉴', `<div class="mlist"><button class="menu-btn" id="m-start"><span><b>게임 시작 화면으로</b><small>난이도와 시드를 다시 고른다</small></span></button><button class="menu-btn" id="m-home"><span><b>홈으로</b></span></button></div>`, menuBtn);
         $('m-start').onclick = () => go('start'); $('m-home').onclick = () => go('home');
       };
-      window.__closePop = () => { if (!pop.hidden) { close(); return true; } return false; };
+      window.__closePop = () => { if (pop.dataset.choice) return true; if (!pop.hidden) { close(); return true; } return false; };
+      window.__pickChoice = k => { if (pop.dataset.choice && k < pop.__n) { pop.__pick(k); return true; } return false; };
     },
     body() {
       if (!store.get('run', null)) { go('home'); return; }
@@ -158,9 +169,10 @@
     },
     stats() {
       if (!store.get('run', null)) { go('home'); return; }
-      app.innerHTML = `<section class="stub" aria-label="스텟과 돈"><div class="topbar"><button class="back" id="back">← 게임으로</button></div><h2>스텟과 돈</h2>
+      app.innerHTML = `<section class="stub" aria-label="스텟 · 돈 · 아이템"><div class="topbar"><button class="back" id="back">← 게임으로</button></div><h2>스텟 · 돈 · 아이템</h2>
         <section class="pgrp"><h4>스텟</h4><ul class="plist">${STATS.map(k => `<li><div><b>${k}</b></div><span class="st mono">${STAT_VAL[k]}</span>${bar(STAT_VAL[k])}</li>`).join('')}</ul></section>
         <section class="pgrp"><h4>돈</h4><ul class="plist">${MONEY.map(([n, k]) => `<li><div><b>${n}</b><small>${k}</small></div><span class="st mono">0</span></li>`).join('')}</ul></section>
+        <section class="pgrp"><h4>아이템 <span class="mono" style="font-weight:800">0 / 12</span></h4><div class="box">가진 물건이 없어요.</div></section>
         <small class="foot">스텟 값은 태어난 뒤에 정해져요 &nbsp;·&nbsp; 하무 100 = 므나 1 · 므나 100 = 세오 1</small></section>`;
       document.getElementById('back').onclick = () => go('play'); document.getElementById('back').focus();
     },
@@ -177,13 +189,14 @@
   }
   function focusSel() { const b = app.querySelector('.menu-btn.sel'); if (b && document.activeElement !== b) b.focus({ preventScroll: true }); }
   function go(id) {
-    cur = id; app.classList.remove('wide'); window.__closePop = null; try { history.replaceState(null, '', id === 'home' ? location.pathname + location.search : '#' + id); } catch (e) {}
+    cur = id; app.classList.remove('wide'); window.__closePop = null; window.__pickChoice = null; CEG.ask = null; try { history.replaceState(null, '', id === 'home' ? location.pathname + location.search : '#' + id); } catch (e) {}
     (SCREENS[id] || SCREENS.stub)(id);
   }
   function open(id) { sel = Math.max(0, MENU.findIndex(m => m.id === id)); go(id); }
   let cur = 'home';
   document.addEventListener('keydown', e => {
     if (e.metaKey || e.ctrlKey || e.altKey) return;
+    if (cur === 'play' && window.__pickChoice && /^[1-9]$/.test(e.key) && window.__pickChoice(+e.key - 1)) { e.preventDefault(); return; }
     if (cur === 'home') {
       if (e.key === 'ArrowDown') { e.preventDefault(); mark(sel + 1, true); }
       else if (e.key === 'ArrowUp') { e.preventDefault(); mark(sel - 1, true); }
@@ -193,6 +206,6 @@
     else if (e.key === 'Escape' || (e.key === 'Backspace' && !/^(INPUT|TEXTAREA)$/.test((e.target || {}).tagName))) { e.preventDefault(); go(cur === 'body' || cur === 'stats' ? 'play' : cur === 'play' ? 'start' : 'home'); }
   });
   window.addEventListener('hashchange', () => { const h = location.hash.slice(1); if (NAMES[h] && !INGAME[h] && h !== cur) open(h); else if (INGAME[h] && h !== cur && store.get('run', null)) go(h); else if (!h && cur !== 'home') go('home'); });
-  window.CEG = { go, toast, store }; // 다음 화면들이 쓸 문
+  const CEG = window.CEG = { go, toast, store, ask: null }; // 다음 화면들이 쓸 문
   const h = location.hash.slice(1); NAMES[h] && !INGAME[h] ? open(h) : INGAME[h] && store.get('run', null) ? go(h) : go('home');
 })();
