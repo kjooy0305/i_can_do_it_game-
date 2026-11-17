@@ -173,3 +173,4 @@ details.bgrp[open]{border-width:3px}
 .bgrp .gs b{font-size:14px;min-width:3.2em;text-align:right}
 .bgrp .gs small{font-size:12px;min-width:5em}
 .bgrp .plist{padding:0 16px 16px}
+.sprite{image-rendering:pixelated;image-rendering:crisp-edges;max-width:100%;height:auto;display:block}

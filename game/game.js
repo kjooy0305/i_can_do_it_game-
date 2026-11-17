@@ -42,6 +42,54 @@
   const STAT_VAL = Object.fromEntries(STATS.map(k => [k, 0])); // 값은 태어나기 뒤에 정해진다
   const MONEY = [['세오', '금화'], ['므나', '은화'], ['하무', '동화']];
 
+  // 임시 캐릭터: 일본 판타지풍 어린이 도트 (24x38). K 검정 · D 진회색 · G 연회색 · W 흰색 · . 투명
+  const SPRITE = [
+    '.............KDK........',
+    '............KDDK........',
+    '...........KDKK.........',
+    '..........KDDDK.........',
+    '.........KKKKKK.........',
+    '......KKKDDDDDDKKK......',
+    '.....KDDDDDDDDDDDDK.....',
+    '....KDDDDDDDDDDDDDDK....',
+    '...KDDDDDDDDDDDDDDDDK...',
+    '..KDDDDDDDDDDDDDDDDDDK..',
+    '..KDDDDDDDDDDDDDDDDDDK..',
+    '.KDDDDDDDDDDDDDDDDDDDDK.',
+    '.KDDDDDDDDDDDDDDDDDDDDK.',
+    '..KDDDDDDDDDDDDDDDDDDK..',
+    '..KDDWWDWWDWWDWWDWWDDK..',
+    '..KDDWWKKKWWWWKKKWWDDK..',
+    '..KDDWWWKKWWWWWKKWWDDK..',
+    '..KDDWWWKKWWWWWKKWWDDK..',
+    '..KDKWWKKKWWWWKKKWWKDK..',
+    '...KKWWKKWWWWWKKWWWKK...',
+    '....KGGWWWWWWWWWWGGK....',
+    '.....KKKWWWKKWWWKKK.....',
+    '........KKKKKKKK........',
+    '.....KKKWWWWWWWWKKK.....',
+    '....KDDDWWWWWWWWWDDK....',
+    '....KDDDGGGWWGGWWDDK....',
+    '....KDGGGGGWWGGWDGDK....',
+    '....KDWWGGGWWGGWWWDK....',
+    '....KDWWGGGWWGGWDWDK....',
+    '....KDWWGGGWWGGGWWDK....',
+    '....KDWWDDDDDDDDWWDK....',
+    '....KDDDGGGGGGGGDDDK....',
+    '....KDDDDWWDDWWDDDDK....',
+    '.....KKKKWWKKWWKKKK.....',
+    '........KWWKKWWK........',
+    '.......KDDDDDDDDK.......',
+    '.......KDDDDDDDDK.......',
+    '........KKKKKKKK........'
+  ];
+  const PAL = { K: '#000', D: '#464646', G: '#c4c4c4', W: '#fff' };
+  function spriteCanvas(px) {
+    const c = document.createElement('canvas'); c.width = SPRITE[0].length * px; c.height = SPRITE.length * px; c.className = 'sprite';
+    c.setAttribute('role', 'img'); c.setAttribute('aria-label', '임시 캐릭터');
+    const x = c.getContext('2d'); if (!x) return c; SPRITE.forEach((r, j) => [...r].forEach((ch, i) => { if (PAL[ch]) { x.fillStyle = PAL[ch]; x.fillRect(i * px, j * px, px, px); } }));
+    return c;
+  }
   const bar = v => `<div class="bar2"><i style="width:${v}%"></i></div>`;
 
 
@@ -165,11 +213,10 @@
       const dmg = {}; // 부위별 손상도 0~100 (지금은 모두 0)
       const groupPct = ps => Math.round(100 - ps.reduce((n, p) => n + (dmg[p[0]] || 0), 0) / ps.length); // 묶음 전체의 온전함
       const label = pct => pct >= 100 ? '모두 원본' : pct >= 70 ? '가벼운 손상' : pct >= 40 ? '손상' : '위험';
-      const person = `<svg viewBox="0 0 80 160" width="96" height="192" role="img" aria-label="임시 캐릭터" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="40" cy="22" r="14"/><path d="M40 36v6M24 50h32M24 50l-8 42M56 50l8 42M28 50v44h24V50M32 94l-4 56M48 94l4 56M24 150h8M48 150h8"/><circle cx="35" cy="20" r="1.5" fill="currentColor"/><circle cx="45" cy="20" r="1.5" fill="currentColor"/></svg>`;
       const run = store.get('run', {});
       app.innerHTML = `<section class="stub" aria-label="전체 몸 상태"><div class="topbar"><button class="back" id="back">← 게임으로</button></div><h2>전체 몸 상태</h2>
         <section class="who" aria-label="캐릭터">
-          <div class="fig" aria-hidden="false">${person}<small>임시 캐릭터</small></div>
+          <div class="fig" id="fig"><small>임시 캐릭터</small></div>
           <dl class="info">
             <div><dt>이름</dt><dd>아직 없음</dd></div>
             <div><dt>현재 나이</dt><dd>0세 0개월 (태아기)</dd></div>
@@ -179,6 +226,7 @@
         <div class="gbar"><button class="back" id="openAll">모두 펴기</button><button class="back" id="closeAll">모두 접기</button></div>
         ${BODY.map(([g, ps]) => { const pct = groupPct(ps); return `<details class="bgrp" open><summary><span class="gn">${g}</span><span class="gs"><span class="bar2" role="img" aria-label="${g} 통합 상태 ${pct}%"><i style="width:${pct}%"></i></span><b class="mono">${pct}%</b><small>${label(pct)}</small></span></summary><ul class="plist">${ps.map(p => `<li><div><b>${p[0]}</b>${p[1] ? `<small>${p[1]}</small>` : ''}</div><span class="st">${ST}</span>${bar(dmg[p[0]] || 0)}</li>`).join('')}</ul></details>`; }).join('')}
         <small class="foot">상태 · 원본 / 침식 / 감염 / 대체 / 창조 &nbsp;·&nbsp; 묶음 막대는 그 묶음 부위들의 온전함 평균이에요 (100% = 손상 없음)</small></section>`;
+      document.getElementById('fig').prepend(spriteCanvas(6));
       const all = open => document.querySelectorAll('.bgrp').forEach(d => { d.open = open; });
       document.getElementById('openAll').onclick = () => all(true); document.getElementById('closeAll').onclick = () => all(false);
       document.getElementById('back').onclick = () => go('play'); document.getElementById('back').focus();
