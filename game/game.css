@@ -145,3 +145,31 @@ button:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
 .app.wide .stub{max-width:760px;margin:0 auto;width:100%}
 .sheet .q{font-size:17px;font-weight:700;line-height:1.6}
 .gframe .gmain{padding-bottom:0}
+
+/* 몸 상태 화면 */
+.who{display:grid;grid-template-columns:auto minmax(0,1fr);gap:20px;border:3px solid var(--ink);border-radius:14px;padding:16px;align-items:center}
+@media (max-width:560px){.who{grid-template-columns:1fr;justify-items:center}}
+.fig{display:grid;justify-items:center;gap:4px;border:1.5px dashed var(--ink);border-radius:12px;padding:10px 24px}
+.fig small{font-size:12px;font-weight:700}
+.info{margin:0;display:grid;gap:10px;width:100%}
+.info>div{display:grid;grid-template-columns:7em minmax(0,1fr);gap:10px;align-items:start;border-bottom:1px solid var(--ink);padding-bottom:8px}
+.info>div:last-child{border-bottom:0;padding-bottom:0}
+.info dt{font-weight:900;font-size:14px}.info dd{margin:0;font-size:16px}
+.fam{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.fam li{display:flex;justify-content:space-between;gap:10px;font-size:15px}
+.fam em{font-style:normal;font:800 12px var(--font-num);border:1px solid var(--ink);border-radius:6px;padding:0 6px}
+.gbar{display:flex;gap:8px;justify-content:flex-end}
+.gbar .back{min-height:36px;font-size:13px}
+details.bgrp{border:1.5px solid var(--ink);border-radius:14px}
+details.bgrp>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 16px;min-height:56px}
+details.bgrp>summary::-webkit-details-marker{display:none}
+details.bgrp>summary::before{content:"▾";width:14px;flex:none}
+details.bgrp:not([open])>summary::before{content:"▸"}
+details.bgrp>summary:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+details.bgrp[open]{border-width:3px}
+.bgrp .gn{font-size:18px;font-weight:900;min-width:3em}
+.bgrp .gs{flex:1;min-width:200px;display:flex;align-items:center;gap:10px}
+.bgrp .gs .bar2{flex:1;height:14px}
+.bgrp .gs b{font-size:14px;min-width:3.2em;text-align:right}
+.bgrp .gs small{font-size:12px;min-width:5em}
+.bgrp .plist{padding:0 16px 16px}

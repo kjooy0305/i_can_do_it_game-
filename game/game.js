@@ -115,7 +115,7 @@
         </header>
         <div class="gline"></div>
         <div class="gmain">
-          <aside class="rail l" aria-label="주요 신체 상태"><h4>급소</h4>${VITALS.map(v => `<div class="rrow"><span>${v}</span><em>${ST}</em></div>`).join('')}<button class="wbtn" id="bodyBtn">전체 몸 상태 <span aria-hidden="true">▸</span></button></aside>
+          <aside class="rail l" aria-label="주요 신체 상태"><h4>몸 상태</h4>${VITALS.map(v => `<div class="rrow"><span>${v}</span><em>${ST}</em></div>`).join('')}<button class="wbtn" id="bodyBtn">전체 몸 상태 <span aria-hidden="true">▸</span></button></aside>
           <section class="gstage" aria-label="이야기">
             <div class="head2"><span>이번 달</span><span class="mono">#000</span></div>
             <div class="art"><span>장면</span></div>
@@ -162,9 +162,25 @@
     body() {
       if (!store.get('run', null)) { go('home'); return; }
       app.classList.add('wide');
+      const dmg = {}; // 부위별 손상도 0~100 (지금은 모두 0)
+      const groupPct = ps => Math.round(100 - ps.reduce((n, p) => n + (dmg[p[0]] || 0), 0) / ps.length); // 묶음 전체의 온전함
+      const label = pct => pct >= 100 ? '모두 원본' : pct >= 70 ? '가벼운 손상' : pct >= 40 ? '손상' : '위험';
+      const person = `<svg viewBox="0 0 80 160" width="96" height="192" role="img" aria-label="임시 캐릭터" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="40" cy="22" r="14"/><path d="M40 36v6M24 50h32M24 50l-8 42M56 50l8 42M28 50v44h24V50M32 94l-4 56M48 94l4 56M24 150h8M48 150h8"/><circle cx="35" cy="20" r="1.5" fill="currentColor"/><circle cx="45" cy="20" r="1.5" fill="currentColor"/></svg>`;
+      const run = store.get('run', {});
       app.innerHTML = `<section class="stub" aria-label="전체 몸 상태"><div class="topbar"><button class="back" id="back">← 게임으로</button></div><h2>전체 몸 상태</h2>
-        ${BODY.map(([g, ps]) => `<section class="pgrp"><h4>${g}</h4><ul class="plist">${ps.map(p => `<li><div><b>${p[0]}</b>${p[1] ? `<small>${p[1]}</small>` : ''}</div><span class="st">${ST}</span>${bar(0)}</li>`).join('')}</ul></section>`).join('')}
-        <small class="foot">상태 · 원본 / 침식 / 감염 / 대체 / 창조 &nbsp;·&nbsp; 손상도는 막대로 보여요</small></section>`;
+        <section class="who" aria-label="캐릭터">
+          <div class="fig" aria-hidden="false">${person}<small>임시 캐릭터</small></div>
+          <dl class="info">
+            <div><dt>이름</dt><dd>아직 없음</dd></div>
+            <div><dt>현재 나이</dt><dd>0세 0개월 (태아기)</dd></div>
+            <div><dt>가족 현황</dt><dd><ul class="fam"><li><span>엄마</span><em>알 수 없음</em></li><li><span>아빠</span><em>알 수 없음</em></li><li><span>형제</span><em>알 수 없음</em></li></ul></dd></div>
+          </dl>
+        </section>
+        <div class="gbar"><button class="back" id="openAll">모두 펴기</button><button class="back" id="closeAll">모두 접기</button></div>
+        ${BODY.map(([g, ps]) => { const pct = groupPct(ps); return `<details class="bgrp" open><summary><span class="gn">${g}</span><span class="gs"><span class="bar2" role="img" aria-label="${g} 통합 상태 ${pct}%"><i style="width:${pct}%"></i></span><b class="mono">${pct}%</b><small>${label(pct)}</small></span></summary><ul class="plist">${ps.map(p => `<li><div><b>${p[0]}</b>${p[1] ? `<small>${p[1]}</small>` : ''}</div><span class="st">${ST}</span>${bar(dmg[p[0]] || 0)}</li>`).join('')}</ul></details>`; }).join('')}
+        <small class="foot">상태 · 원본 / 침식 / 감염 / 대체 / 창조 &nbsp;·&nbsp; 묶음 막대는 그 묶음 부위들의 온전함 평균이에요 (100% = 손상 없음)</small></section>`;
+      const all = open => document.querySelectorAll('.bgrp').forEach(d => { d.open = open; });
+      document.getElementById('openAll').onclick = () => all(true); document.getElementById('closeAll').onclick = () => all(false);
       document.getElementById('back').onclick = () => go('play'); document.getElementById('back').focus();
     },
     stats() {
