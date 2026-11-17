@@ -14,7 +14,7 @@
     { id: 'ach', title: '업적', sub: () => '달성 0 / 48' },
     { id: 'set', title: '설정', sub: () => '저장 · 전투 · 화면 · 소리' }
   ];
-  const NAMES = { start: '게임 시작', load: '이어서 하기', dict: '사전', ach: '업적', set: '설정', play: '게임 플레이', body: '전체 몸 상태', stats: '스텟' };
+  const NAMES = { start: '게임 시작', load: '이어서 하기', dict: '사전', ach: '업적', set: '설정', play: '게임 플레이', body: '전체 몸 상태', stats: '스텟과 돈' };
   const INGAME = { play: 1, body: 1, stats: 1 }; // 진행 중인 게임이 있어야 열리는 화면
   const LEVELS = [ // 난이도는 미니게임과 일부 선택지의 보정에 쓸 예정 (아직 효과 없음)
     { id: 'hero', name: '영웅', sub: '어려움', desc: '당신은 영웅의 싹입니다. 그런 당신에게 가호가 깃들기를.' },
@@ -122,8 +122,8 @@
             <div class="log"><p class="sys">▸ 시작 · 시드 ${run.seed}${run.auto ? ' (자동)' : ''} · ${lv.name}</p><p>이야기가 여기에 나옵니다.</p></div>
           </section>
           <aside class="rail r" aria-label="스텟 · 돈 · 아이템">
-            <button class="rowbtn" id="statBtn" aria-label="스텟 창 열기"><span class="rh">스텟</span>${STATS.map(k => `<span class="sl"><span>${k}</span><b>${STAT_VAL[k]}</b></span>`).join('')}</button>
-            <button class="rowbtn" id="moneyBtn" aria-label="돈 창 열기"><span class="sl"><span>돈</span><b>0</b></span><small>하무</small></button>
+            <button class="rowbtn" id="statBtn" aria-label="스텟과 돈 화면 열기"><span class="rh">스텟</span>${STATS.map(k => `<span class="sl"><span>${k}</span><b>${STAT_VAL[k]}</b></span>`).join('')}</button>
+            <button class="rowbtn" id="moneyBtn" aria-label="스텟과 돈 화면 열기"><span class="sl"><span>돈</span><b>0</b></span><small>하무</small></button>
             <button class="rowbtn" id="itemBtn" aria-label="아이템 목록 열기"><span class="sl"><span>아이템</span><b>0/12</b></span></button>
           </aside>
         </div>
@@ -139,7 +139,7 @@
       $('bodyBtn').onclick = e => { e.stopPropagation(); go('body'); };
       document.querySelector('.rail.l').onclick = () => go('body');   // 막대 어디를 눌러도 몸 상태 화면으로
       $('statBtn').onclick = () => go('stats');
-      $('moneyBtn').onclick = e => show('돈', `<ul class="plist">${MONEY.map(([n, k]) => `<li><div><b>${n}</b><small>${k}</small></div><span class="st mono">0</span></li>`).join('')}</ul><small class="foot">하무 100 = 므나 1 · 므나 100 = 세오 1</small>`, e.currentTarget);
+      $('moneyBtn').onclick = () => go('stats');
       $('itemBtn').onclick = e => show('아이템 목록', `<div class="box">가진 물건이 없어요.</div><small class="foot">가방 0 / 12</small>`, e.currentTarget);
       menuBtn.onclick = () => {
         menuBtn.setAttribute('aria-expanded', 'true');
@@ -158,9 +158,10 @@
     },
     stats() {
       if (!store.get('run', null)) { go('home'); return; }
-      app.innerHTML = `<section class="stub" aria-label="스텟"><div class="topbar"><button class="back" id="back">← 게임으로</button></div><h2>스텟</h2>
-        <ul class="plist">${STATS.map(k => `<li><div><b>${k}</b></div><span class="st mono">${STAT_VAL[k]}</span>${bar(STAT_VAL[k])}</li>`).join('')}</ul>
-        <small class="foot">값은 태어난 뒤에 정해져요</small></section>`;
+      app.innerHTML = `<section class="stub" aria-label="스텟과 돈"><div class="topbar"><button class="back" id="back">← 게임으로</button></div><h2>스텟과 돈</h2>
+        <section class="pgrp"><h4>스텟</h4><ul class="plist">${STATS.map(k => `<li><div><b>${k}</b></div><span class="st mono">${STAT_VAL[k]}</span>${bar(STAT_VAL[k])}</li>`).join('')}</ul></section>
+        <section class="pgrp"><h4>돈</h4><ul class="plist">${MONEY.map(([n, k]) => `<li><div><b>${n}</b><small>${k}</small></div><span class="st mono">0</span></li>`).join('')}</ul></section>
+        <small class="foot">스텟 값은 태어난 뒤에 정해져요 &nbsp;·&nbsp; 하무 100 = 므나 1 · 므나 100 = 세오 1</small></section>`;
       document.getElementById('back').onclick = () => go('play'); document.getElementById('back').focus();
     },
     stub(id) {
